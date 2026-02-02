@@ -1,0 +1,3 @@
+V2.2-SYSTEM-OK-2026-02-02
+Questo file conferma che il deploy automatico di Cloudflare sta funzionando correttamente.
+Se leggi questo messaggio, il sito è aggiornato.
