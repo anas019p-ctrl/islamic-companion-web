@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
-import logo from '@/assets/logo.png';
+
 import heroPattern from '@/assets/hero-pattern.jpg';
 
 export const HeroSection = () => {
@@ -111,7 +111,7 @@ export const HeroSection = () => {
           >
             <div className="absolute inset-0 blur-3xl bg-primary/30 rounded-full scale-110" />
             <img
-              src={logo}
+              src="/logo.png"
               alt="Logo"
               className="relative w-32 h-32 md:w-40 md:h-40 object-contain float-animation"
             />
