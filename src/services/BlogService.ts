@@ -29,7 +29,7 @@ export class BlogService {
         }
 
         // Generate new insight
-        const prompt = "Generate a 'Daily Islamic Insight' blog post. Structure it with a Title, Excerpt, and Full Content using Markdown. The content should connect a Quranic verse to a Hadith and a practical life lesson. Return JSON: { \"title\": \"...\", \"excerpt\": \"...\", \"content\": \"...\", \"category\": \"Daily Wisdom\" }";
+        const prompt = "Generate a 'Daily Islamic Insight' blog post in Italian. Structure it with a Title, Excerpt, and Full Content using Markdown. CRITICAL: The content MUST be BASED ON AUTHENTIC SOURCES (Quran and Sahih Hadith). Do not use generic or unverified information. The content should connect a specific Quranic verse to a related Hadith and provide a practical life lesson for a modern Muslim. Return ONLY pure JSON: { \"title\": \"...\", \"excerpt\": \"...\", \"content\": \"...\", \"category\": \"Saggezza Quotidiana\" }";
 
         try {
             const response = await ScholarService.generateContent(prompt, 'it');
@@ -62,7 +62,7 @@ export class BlogService {
                 date: today,
                 author: 'AI Scholar',
                 readTime: '3 min read',
-                image: '/images/pattern-gold.png' // Placeholder
+                image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800' // Authentic Mosque Pattern
             };
 
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newPost));

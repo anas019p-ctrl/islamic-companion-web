@@ -27,32 +27,22 @@ interface BlogPost {
 const SAMPLE_POSTS: BlogPost[] = [
     {
         id: '1',
-        title: 'La Bellezza della Preghiera del Fajr',
-        content: 'La preghiera del Fajr è un momento speciale di connessione con Allah...',
-        excerpt: 'Scopri il significato profondo della preghiera dell\'alba e come può trasformare la tua giornata.',
-        image_url: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800',
+        title: 'L\'Importanza della Preghiera (Salah)',
+        content: 'La preghiera è il pilastro della religione e la luce del credente. È il legame diretto tra il servo e il suo Creatore...',
+        excerpt: 'Un approfondimento spirituale sull\'importanza fondamentale della preghiera quotidiana.',
+        image_url: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800', // Mosque interior
         category: 'Spiritualità',
         published_at: new Date().toISOString(),
         is_draft: false
     },
     {
         id: '2',
-        title: 'I Cinque Pilastri: Fondamento della Fede',
-        content: 'I cinque pilastri dell\'Islam costituiscono la base della vita musulmana...',
-        excerpt: 'Un approfondimento sui fondamenti essenziali che ogni musulmano deve conoscere.',
-        image_url: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800',
-        category: 'Fondamenti',
+        title: 'I Meriti della Recitazione del Corano',
+        content: 'La recitazione del Corano porta pace al cuore e intercessione nel Giorno del Giudizio...',
+        excerpt: 'Perché dedicare tempo ogni giorno alla lettura del Libro Sacro di Allah.',
+        image_url: 'https://images.unsplash.com/photo-1584281723351-9d9224214544?w=800', // Quran/Mosque style
+        category: 'Corano',
         published_at: new Date(Date.now() - 86400000).toISOString(),
-        is_draft: false
-    },
-    {
-        id: '3',
-        title: 'Ramadan: Una Guida Spirituale Completa',
-        content: 'Il mese benedetto di Ramadan offre un\'opportunità unica di purificazione...',
-        excerpt: 'Preparati al meglio per il mese sacro con questa guida dettagliata.',
-        image_url: 'https://images.unsplash.com/photo-1532635241-17e820acc59f?w=800',
-        category: 'Ramadan',
-        published_at: new Date(Date.now() - 172800000).toISOString(),
         is_draft: false
     }
 ];

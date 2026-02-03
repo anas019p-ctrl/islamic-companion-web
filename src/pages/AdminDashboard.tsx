@@ -224,6 +224,7 @@ const AdminDashboardContent = () => {
         category: 'literature'
     });
     const [uploadingPdf, setUploadingPdf] = useState(false);
+    const [uploadingBlogImage, setUploadingBlogImage] = useState(false);
 
     const ADMIN_EMAIL = 'anas019p@gmail.com';
 
@@ -331,7 +332,7 @@ const AdminDashboardContent = () => {
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `books/${fileName}`;
 
-            const { error: uploadError, data } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('media')
                 .upload(filePath, file);
 
@@ -347,6 +348,40 @@ const AdminDashboardContent = () => {
             toast({ title: '❌ Upload Failed', description: error.message, variant: 'destructive' });
         } finally {
             setUploadingPdf(false);
+        }
+    };
+
+    const handleBlogImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            toast({ title: '❌ Error', description: 'Only image files are allowed', variant: 'destructive' });
+            return;
+        }
+
+        setUploadingBlogImage(true);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `blog-${Math.random()}.${fileExt}`;
+            const filePath = `blog/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('media')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('media')
+                .getPublicUrl(filePath);
+
+            setNewPost(prev => ({ ...prev, image_url: publicUrl }));
+            toast({ title: '✅ Image Uploaded', description: 'Immagine caricata e pronta' });
+        } catch (error: any) {
+            toast({ title: '❌ Upload Failed', description: error.message, variant: 'destructive' });
+        } finally {
+            setUploadingBlogImage(false);
         }
     };
 
@@ -1051,23 +1086,25 @@ const AdminDashboardContent = () => {
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div className="space-y-1.5">
-                                            <Label>URL Immagine (opzionale)</Label>
+                                            <Label>Immagine Copertina (dal PC)</Label>
                                             <div className="flex gap-2">
                                                 <Input
-                                                    placeholder="https://esempio.com/immagine.jpg"
-                                                    className="glass flex-1"
-                                                    value={newPost.image_url}
-                                                    onChange={e => setNewPost({ ...newPost, image_url: e.target.value })}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="glass flex-1 file:bg-primary file:text-primary-foreground file:border-0 file:rounded-md file:px-2 file:py-1 file:mr-2"
+                                                    onChange={handleBlogImageUpload}
                                                 />
+                                                {uploadingBlogImage && <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-primary" />}
                                                 {newPost.image_url && (
                                                     <div className="w-12 h-10 rounded border border-white/10 overflow-hidden bg-black/50">
                                                         <img src={newPost.image_url} className="w-full h-full object-cover" alt="Preview" />
                                                     </div>
                                                 )}
                                             </div>
+                                            <p className="text-[10px] text-muted-foreground mt-1">L'URL verrà generato automaticamente dopo l'upload.</p>
                                         </div>
                                         <div className="space-y-1.5">
-                                            <Label>URL Video (opzionale)</Label>
+                                            <Label>URL Video (YouTube)</Label>
                                             <Input
                                                 placeholder="https://youtube.com/watch?v=..."
                                                 className="glass"
