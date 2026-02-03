@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import logo from '@/assets/logo.png';
-const logo = '/logo.png';
+import logo from '@/assets/logo.png';
 import { BackButton } from './BackButton';
 
 export const Header = () => {

@@ -6,8 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { QRCodeSVG } from 'qrcode.react';
-// import logo from '@/assets/logo.png';
-const logo = '/logo.png';
+import logo from '@/assets/logo.png';
 
 export const Footer = () => {
   const { t } = useLanguage();

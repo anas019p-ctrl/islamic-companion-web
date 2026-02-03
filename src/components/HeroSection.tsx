@@ -6,10 +6,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 
-// import heroPattern from '@/assets/hero-pattern.jpg';
-const heroPattern = '/hero-pattern.jpg';
-// import logo from '@/assets/logo.png';
-const logo = '/logo.png';
+import heroPattern from '@/assets/hero-pattern.jpg';
+import logo from '@/assets/logo.png';
 
 export const HeroSection = () => {
   const { t, isRTL, language } = useLanguage();
