@@ -32,7 +32,7 @@ export const Header = () => {
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative">
                 <div className="absolute inset-0 blur-md bg-primary/30 rounded-full scale-110 hidden md:block" />
-                <img src={logo} alt="Logo" className="relative w-10 h-10 md:w-12 md:h-12 object-contain z-10" />
+                <img src={logo} alt="Logo" className="relative w-10 h-10 md:w-12 md:h-12 object-contain z-10 rounded-full border border-white/10 shadow-lg" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg md:text-xl font-bold text-gradient-gold drop-shadow-sm flex items-center gap-2">

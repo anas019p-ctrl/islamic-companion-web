@@ -98,7 +98,7 @@ export const HeroSection = () => {
                 <Star className="w-4 h-4 text-amber-400" />
                 <div className="text-left">
                   <p className="text-xs uppercase font-bold text-amber-400 tracking-widest leading-none mb-1">{t('nextPrayer')}</p>
-                  <p className="text-lg font-bold leading-none">{nextP.name.toUpperCase()} â€¢ {nextP.time}</p>
+                  <p className="text-lg font-bold leading-none">{nextP.name.toUpperCase()} • {nextP.time}</p>
                 </div>
               </div>
             )}
@@ -114,7 +114,7 @@ export const HeroSection = () => {
             <img
               src={logo}
               alt="Logo"
-              className="relative w-32 h-32 md:w-40 md:h-40 object-contain float-animation z-10"
+              className="relative w-32 h-32 md:w-40 md:h-40 object-contain float-animation z-10 rounded-full border-2 border-primary/20 shadow-[0_0_30px_rgba(201,164,74,0.3)]"
             />
           </motion.div>
 
@@ -123,7 +123,7 @@ export const HeroSection = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="font-arabic text-3xl md:text-5xl text-primary mb-2 drop-shadow-[0_0_15px_rgba(201,164,74,0.4)]"
           >
-            Ø¨ÙØ³Ù’Ù…Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ø§Ù„Ø±ÙŽÙ‘Ø­Ù’Ù…ÙŽÙ†Ù Ø§Ù„Ø±ÙŽÙ‘Ø­ÙÙŠÙ…
+            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
           </motion.p>
 
           <motion.div
@@ -133,7 +133,7 @@ export const HeroSection = () => {
           >
             <div className="h-[1px] w-8 bg-cyan-500/50" />
             <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] neon-text-cyan font-bold">
-              {t('innovate')} â€¢ {t('accessibility')} â€¢ {t('education_short')}
+              {t('innovate')} <span className="text-primary mx-1">✦</span> {t('accessibility')} <span className="text-primary mx-1">✦</span> {t('education_short')}
             </span>
             <div className="h-[1px] w-8 bg-cyan-500/50" />
           </motion.div>

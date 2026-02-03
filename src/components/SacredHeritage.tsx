@@ -11,23 +11,23 @@ export const SacredHeritage = () => {
         {
             id: 'mecca',
             image: meccaCosmic,
-            title: { ar: 'Ù…ÙƒØ© Ø§Ù„Ù…ÙƒØ±Ù…Ø©', en: 'Holy Makkah', it: 'La Mecca' },
-            location: { ar: 'Ø§Ù„Ù…Ù…Ù„ÙƒØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© Ø§Ù„Ø³Ø¹ÙˆØ¯ÙŠØ©', en: 'Saudi Arabia', it: 'Arabia Saudita' },
+            title: { ar: 'مكة المكرمة', en: 'Holy Makkah', it: 'La Mecca' },
+            location: { ar: 'المملكة العربية السعودية', en: 'Saudi Arabia', it: 'Arabia Saudita' },
             desc: {
-                ar: 'Ø£Ø·Ù‡Ø± Ø¨Ù‚Ø§Ø¹ Ø§Ù„Ø£Ø±Ø¶ ÙˆÙ‚Ø¨Ù„Ø© Ø§Ù„Ù…Ø³Ù„Ù…ÙŠÙ† ÙÙŠ ØµÙ„Ø§ØªÙ‡Ù….',
+                ar: 'أطهر بقاع الأرض وقبلة المسلمين في صلاتهم.',
                 en: 'The holiest site in Islam and the direction of prayer for all Muslims.',
-                it: 'Il sito piÃ¹ sacro dell\'Islam e la direzione della preghiera per tutti i musulmani.'
+                it: 'Il sito più sacro dell\'Islam e la direzione della preghiera per tutti i musulmani.'
             }
         },
         {
             id: 'alaqsa',
             image: alAqsaHeritage,
-            title: { ar: 'Ø§Ù„Ù…Ø³Ø¬Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰', en: 'Al-Aqsa Mosque', it: 'Moschea di Al-Aqsa' },
-            location: { ar: 'Ø§Ù„Ù‚Ø¯Ø³ØŒ ÙÙ„Ø³Ø·ÙŠÙ†', en: 'Jerusalem, Palestine', it: 'Gerusalemme, Palestina' },
+            title: { ar: 'المسجد الأقصى', en: 'Al-Aqsa Mosque', it: 'Moschea di Al-Aqsa' },
+            location: { ar: 'القدس، فلسطين', en: 'Jerusalem, Palestine', it: 'Gerusalemme, Palestina' },
             desc: {
-                ar: 'Ø£ÙˆÙ„Ù‰ Ø§Ù„Ù‚Ø¨Ù„ØªÙŠÙ† ÙˆØ«Ø§Ù„Ø« Ø§Ù„Ø­Ø±Ù…ÙŠÙ† Ø§Ù„Ø´Ø±ÙŠÙÙŠÙ†.',
+                ar: 'أولى القبلتين وثالث الحرمين الشريفين.',
                 en: 'The first Qibla and the third holiest site in Islam.',
-                it: 'La prima Qibla e il terzo sito piÃ¹ sacro dell\'Islam.'
+                it: 'La prima Qibla e il terzo sito più sacro dell\'Islam.'
             }
         }
     ];
