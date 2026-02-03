@@ -12,7 +12,7 @@ export const Footer = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [showQR, setShowQR] = useState(false);
-  const APP_URL = 'https://islamic-companion-web.pages.dev';
+  const APP_URL = 'https://islamic-companion-app.pages.dev';
   const VERSION = 'v2.1-ULTRA-GOLD';
 
   const handleShare = () => {
