@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { QRCodeSVG } from 'qrcode.react';
+import logo from '@/assets/logo.png';
 
 export const Footer = () => {
   const { t } = useLanguage();
@@ -34,7 +35,7 @@ export const Footer = () => {
         <div className="grid md:grid-cols-3 gap-8 items-center">
           {/* Logo & Name */}
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
+            <img src={logo} alt="Logo" className="w-12 h-12 object-contain" />
             <div>
               <span className="text-xl font-bold text-gradient-gold">{t('appName')}</span>
               <p className="text-xs text-muted-foreground">{t('tagline')} <span className="text-[9px] opacity-50 ml-1">{VERSION}</span></p>

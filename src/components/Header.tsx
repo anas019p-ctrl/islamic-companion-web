@@ -3,7 +3,8 @@ import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import logo from '@/assets/logo.png';
 import { BackButton } from './BackButton';
 
 export const Header = () => {
@@ -31,14 +32,14 @@ export const Header = () => {
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative">
                 <div className="absolute inset-0 blur-lg bg-primary/40 rounded-full scale-110 group-hover:bg-primary/60 transition-all opacity-0 group-hover:opacity-100" />
-                <img src="/logo.png" alt="Logo" className="relative w-10 h-10 md:w-12 md:h-12 object-contain" />
+                <img src={logo} alt="Logo" className="relative w-10 h-10 md:w-12 md:h-12 object-contain" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg md:text-xl font-bold text-gradient-gold drop-shadow-sm flex items-center gap-2">
                   {t('appName')}
                   <span className="text-[8px] px-1 bg-primary/20 rounded border border-primary/30 text-primary animate-pulse">V2.1</span>
                 </span>
-                <span className="text-[10px] text-muted-foreground/60 hidden sm:block uppercase tracking-widest">{t('tagline')}</span>
+                <span className="text-xs text-muted-foreground/60 hidden sm:block uppercase tracking-widest">{t('tagline')}</span>
               </div>
             </Link>
           </div>

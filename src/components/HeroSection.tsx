@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 
 import heroPattern from '@/assets/hero-pattern.jpg';
+import logo from '@/assets/logo.png';
 
 export const HeroSection = () => {
   const { t, isRTL, language } = useLanguage();
@@ -79,16 +80,16 @@ export const HeroSection = () => {
             <div className="flex items-center gap-2 px-4 border-r border-white/10 last:border-0">
               <Clock className="w-4 h-4 text-primary" />
               <div className="text-left">
-                <p className="text-[8px] uppercase font-bold text-primary tracking-widest leading-none mb-1">{t('realTime')}</p>
-                <p className="text-sm font-mono font-bold leading-none">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
+                <p className="text-[10px] uppercase font-bold text-primary tracking-widest leading-none mb-1">{t('realTime')}</p>
+                <p className="text-base font-mono font-bold leading-none">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 px-4 border-r border-white/10 last:border-0">
               <Calendar className="w-4 h-4 text-emerald-400" />
               <div className="text-left">
-                <p className="text-[8px] uppercase font-bold text-emerald-400 tracking-widest leading-none mb-1">{t('hijriDate')}</p>
-                <p className="text-sm font-bold leading-none">{getHijriDate()}</p>
+                <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-widest leading-none mb-1">{t('hijriDate')}</p>
+                <p className="text-base font-bold leading-none">{getHijriDate()}</p>
               </div>
             </div>
 
@@ -96,8 +97,8 @@ export const HeroSection = () => {
               <div className="flex items-center gap-2 px-4 border-r border-white/10 last:border-0">
                 <Star className="w-4 h-4 text-amber-400" />
                 <div className="text-left">
-                  <p className="text-[8px] uppercase font-bold text-amber-400 tracking-widest leading-none mb-1">{t('nextPrayer')}</p>
-                  <p className="text-sm font-bold leading-none">{nextP.name.toUpperCase()} • {nextP.time}</p>
+                  <p className="text-[10px] uppercase font-bold text-amber-400 tracking-widest leading-none mb-1">{t('nextPrayer')}</p>
+                  <p className="text-base font-bold leading-none">{nextP.name.toUpperCase()} • {nextP.time}</p>
                 </div>
               </div>
             )}
@@ -111,7 +112,7 @@ export const HeroSection = () => {
           >
             <div className="absolute inset-0 blur-3xl bg-primary/30 rounded-full scale-110" />
             <img
-              src="/logo.png"
+              src={logo}
               alt="Logo"
               className="relative w-32 h-32 md:w-40 md:h-40 object-contain float-animation"
             />
@@ -131,7 +132,7 @@ export const HeroSection = () => {
             className="flex items-center gap-2 mb-4"
           >
             <div className="h-[1px] w-8 bg-cyan-500/50" />
-            <span className="text-[9px] uppercase tracking-[0.4em] neon-text-cyan font-bold">
+            <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] neon-text-cyan font-bold">
               {t('innovate')} • {t('accessibility')} • {t('education_short')}
             </span>
             <div className="h-[1px] w-8 bg-cyan-500/50" />
@@ -194,13 +195,13 @@ export const HeroSection = () => {
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <BookOpen className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-xs font-black uppercase tracking-widest">{t('readQuran')}</span>
+                <span className="text-sm font-black uppercase tracking-widest">{t('readQuran')}</span>
               </Link>
               <Link to="/tools" className="flex flex-col items-center justify-center p-6 rounded-3xl glass-premium border border-white/5 hover:border-primary/40 transition-all group active:scale-95">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <Clock className="w-6 h-6 text-amber-500" />
                 </div>
-                <span className="text-xs font-black uppercase tracking-widest">{t('prayerTimes')}</span>
+                <span className="text-sm font-black uppercase tracking-widest">{t('prayerTimes')}</span>
               </Link>
             </div>
           </motion.div>
