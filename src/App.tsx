@@ -41,6 +41,7 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   useEffect(() => {
     const handleScroll = () => {
+      if (window.innerWidth < 768) return; // Skip heavy work on mobile
       const scrolled = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const scrollFraction = scrolled / maxScroll;
@@ -57,9 +58,9 @@ const AppContent = () => {
     <BrowserRouter>
       <ErrorBoundary>
         <ScrollToTop />
-        <ContentHeatEffect />
+        {window.innerWidth >= 768 && <ContentHeatEffect />}
         <GalaxyAnimation />
-        <GlowingCursor />
+        {window.innerWidth >= 1024 && <GlowingCursor />}
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dua" element={<DuaPage />} />

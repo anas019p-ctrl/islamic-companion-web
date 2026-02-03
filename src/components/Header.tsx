@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { LanguageSelector } from './LanguageSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import logo from '@/assets/logo.png';
+// import logo from '@/assets/logo.png';
+const logo = '/logo.png';
 import { BackButton } from './BackButton';
 
 export const Header = () => {
@@ -31,8 +32,8 @@ export const Header = () => {
             )}
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative">
-                <div className="absolute inset-0 blur-lg bg-primary/40 rounded-full scale-110 group-hover:bg-primary/60 transition-all opacity-0 group-hover:opacity-100" />
-                <img src={logo} alt="Logo" className="relative w-10 h-10 md:w-12 md:h-12 object-contain" />
+                <div className="absolute inset-0 blur-md bg-primary/30 rounded-full scale-110 hidden md:block" />
+                <img src={logo} alt="Logo" className="relative w-10 h-10 md:w-12 md:h-12 object-contain z-10" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg md:text-xl font-bold text-gradient-gold drop-shadow-sm flex items-center gap-2">

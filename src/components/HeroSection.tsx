@@ -6,8 +6,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 
-import heroPattern from '@/assets/hero-pattern.jpg';
-import logo from '@/assets/logo.png';
+// import heroPattern from '@/assets/hero-pattern.jpg';
+const heroPattern = '/hero-pattern.jpg';
+// import logo from '@/assets/logo.png';
+const logo = '/logo.png';
 
 export const HeroSection = () => {
   const { t, isRTL, language } = useLanguage();
@@ -110,11 +112,11 @@ export const HeroSection = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="relative mb-8"
           >
-            <div className="absolute inset-0 blur-3xl bg-primary/30 rounded-full scale-110" />
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full scale-110 hidden md:block" />
             <img
               src={logo}
               alt="Logo"
-              className="relative w-32 h-32 md:w-40 md:h-40 object-contain float-animation"
+              className="relative w-32 h-32 md:w-40 md:h-40 object-contain float-animation z-10"
             />
           </motion.div>
 

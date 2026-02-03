@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'placeholder.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
+        theme_color: '#0a0a0b',
         name: 'Islam & Muslim',
         short_name: 'Companion',
         description: 'Your complete Islamic guide. Learn, reflect, and practice authentic Islam.',

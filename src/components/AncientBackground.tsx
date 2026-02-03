@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import ancientMecca from '@/assets/ancient-mecca-bg.png';
+// import ancientMecca from '@/assets/ancient-mecca-bg.png';
+const ancientMecca = '/ancient-mecca-bg.png';
 
 export const AncientBackground = () => {
     return (

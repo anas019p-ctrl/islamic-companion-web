@@ -12,7 +12,8 @@ export const GalaxyAnimation: React.FC = () => {
 
         let animationFrameId: number;
         let particles: Particle[] = [];
-        const particleCount = 2000;
+        const isMobile = window.innerWidth < 768;
+        const particleCount = isMobile ? 500 : 2000;
         const colors = ['#ffffff', '#c9a44a', '#e5e7eb', '#fcd34d', '#1e293b', '#334155'];
 
         class Particle {

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -296,8 +296,8 @@
   /* Futuristic Utilities */
   .glass {
     background: var(--glass-background);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     border: 1px solid var(--glass-border);
   }
 
@@ -471,7 +471,7 @@
 }
 
 .animate-glow {
-  animation: auraGlow 4s ease-in-out infinite alternate;
+  animation: none ease-in-out infinite alternate;
 }
 
 @keyframes auraGlow {
