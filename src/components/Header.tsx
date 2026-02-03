@@ -39,7 +39,7 @@ export const Header = () => {
                   {t('appName')}
                   <span className="text-[8px] px-1 bg-primary/20 rounded border border-primary/30 text-primary animate-pulse">V2.1</span>
                 </span>
-                <span className="text-xs text-muted-foreground/60 hidden sm:block uppercase tracking-widest">{t('tagline')}</span>
+                <span className="text-sm text-muted-foreground/60 hidden sm:block uppercase tracking-widest">{t('tagline')}</span>
               </div>
             </Link>
           </div>

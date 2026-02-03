@@ -58,7 +58,7 @@ export const SacredHeritage = () => {
                         >
                             {/* Image with Motion */}
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.9, x: index % 2 === 0 ? -50 : 50 }}
+                                initial={{ opacity: 1, scale: 1, x: 0 }}
                                 whileInView={{ opacity: 1, scale: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.8, ease: "easeOut" }}

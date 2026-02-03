@@ -80,16 +80,16 @@ export const HeroSection = () => {
             <div className="flex items-center gap-2 px-4 border-r border-white/10 last:border-0">
               <Clock className="w-4 h-4 text-primary" />
               <div className="text-left">
-                <p className="text-[10px] uppercase font-bold text-primary tracking-widest leading-none mb-1">{t('realTime')}</p>
-                <p className="text-base font-mono font-bold leading-none">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
+                <p className="text-xs uppercase font-bold text-primary tracking-widest leading-none mb-1">{t('realTime')}</p>
+                <p className="text-lg font-mono font-bold leading-none">{time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 px-4 border-r border-white/10 last:border-0">
               <Calendar className="w-4 h-4 text-emerald-400" />
               <div className="text-left">
-                <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-widest leading-none mb-1">{t('hijriDate')}</p>
-                <p className="text-base font-bold leading-none">{getHijriDate()}</p>
+                <p className="text-xs uppercase font-bold text-emerald-400 tracking-widest leading-none mb-1">{t('hijriDate')}</p>
+                <p className="text-lg font-bold leading-none">{getHijriDate()}</p>
               </div>
             </div>
 
@@ -97,8 +97,8 @@ export const HeroSection = () => {
               <div className="flex items-center gap-2 px-4 border-r border-white/10 last:border-0">
                 <Star className="w-4 h-4 text-amber-400" />
                 <div className="text-left">
-                  <p className="text-[10px] uppercase font-bold text-amber-400 tracking-widest leading-none mb-1">{t('nextPrayer')}</p>
-                  <p className="text-base font-bold leading-none">{nextP.name.toUpperCase()} • {nextP.time}</p>
+                  <p className="text-xs uppercase font-bold text-amber-400 tracking-widest leading-none mb-1">{t('nextPrayer')}</p>
+                  <p className="text-lg font-bold leading-none">{nextP.name.toUpperCase()} • {nextP.time}</p>
                 </div>
               </div>
             )}
@@ -106,7 +106,7 @@ export const HeroSection = () => {
 
           {/* Logo with Glow */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
+            initial={{ opacity: 1, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="relative mb-8"
           >
@@ -147,7 +147,7 @@ export const HeroSection = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
 
             <div className="relative z-10 flex flex-col items-center">
-              <p className="text-[10px] uppercase font-black text-primary tracking-[0.3em] mb-4 opacity-70">
+              <p className="text-xs uppercase font-black text-primary tracking-[0.3em] mb-4 opacity-70">
                 {t('nextPrayer')}
               </p>
 
@@ -195,13 +195,13 @@ export const HeroSection = () => {
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <BookOpen className="w-6 h-6 text-primary" />
                 </div>
-                <span className="text-sm font-black uppercase tracking-widest">{t('readQuran')}</span>
+                <span className="text-base font-black uppercase tracking-widest">{t('readQuran')}</span>
               </Link>
               <Link to="/tools" className="flex flex-col items-center justify-center p-6 rounded-3xl glass-premium border border-white/5 hover:border-primary/40 transition-all group active:scale-95">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                   <Clock className="w-6 h-6 text-amber-500" />
                 </div>
-                <span className="text-sm font-black uppercase tracking-widest">{t('prayerTimes')}</span>
+                <span className="text-base font-black uppercase tracking-widest">{t('prayerTimes')}</span>
               </Link>
             </div>
           </motion.div>
