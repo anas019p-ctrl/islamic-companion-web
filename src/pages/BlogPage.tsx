@@ -42,27 +42,56 @@ const BlogPage = () => {
     const fetchPosts = async () => {
         setIsLoading(true);
         try {
-            // Load Daily Insight from AI
-            const dailyInsight = await BlogService.getDailyInsight();
+            // 1. Fetch posts from Supabase
+            const { data: dbPosts, error } = await supabase
+                .from('blog_posts')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            // Map the internal BlogPost format to the page format if needed
-            // Currently they are almost identical. 
-            // The service returns: { id, title, content, excerpt, category, date, author, ... }
-            // The page uses: { id, title, content, excerpt, category, published_at, is_draft, ... }
+            if (error) throw error;
+
+            const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => ({
+                id: post.id,
+                title: post.title,
+                content: post.content,
+                excerpt: post.excerpt || (post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content),
+                image_url: post.image_url,
+                video_url: post.video_url,
+                category: post.category,
+                published_at: post.created_at,
+                is_draft: false
+            }));
+
+            // 2. Load Daily Insight from AI
+            const dailyInsight = await BlogService.getDailyInsight();
 
             const aiPost: BlogPost = {
                 ...dailyInsight,
-                published_at: dailyInsight.date, // Map date to published_at
+                published_at: dailyInsight.date,
                 is_draft: false
             };
 
-            setPosts([aiPost, ...SAMPLE_POSTS]);
+            // 3. Combine and set posts
+            setPosts([aiPost, ...formattedDbPosts]);
         } catch (error) {
-            console.error("Error fetching AI posts:", error);
-            setPosts(SAMPLE_POSTS);
+            console.error("Error fetching posts:", error);
+            // Fallback to AI only if DB fails
+            try {
+                const dailyInsight = await BlogService.getDailyInsight();
+                setPosts([{ ...dailyInsight, published_at: dailyInsight.date, is_draft: false }]);
+            } catch (aiError) {
+                setPosts(SAMPLE_POSTS);
+            }
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const getYoutubeEmbedUrl = (url?: string) => {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : null;
     };
 
     const formatDate = (dateString: string) => {
@@ -136,6 +165,19 @@ const BlogPage = () => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
+                                {selectedPost.video_url && getYoutubeEmbedUrl(selectedPost.video_url) && (
+                                    <div className="mb-8 aspect-video rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            src={getYoutubeEmbedUrl(selectedPost.video_url)!}
+                                            title="YouTube video player"
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                )}
                                 <div className="prose prose-invert max-w-none">
                                     <ScrollArea className="h-[400px] pr-4">
                                         <div className="text-lg leading-relaxed whitespace-pre-wrap">
@@ -143,17 +185,14 @@ const BlogPage = () => {
                                         </div>
                                     </ScrollArea>
                                 </div>
-                                {selectedPost.video_url && (
-                                    <div className="mt-8">
-                                        <Button variant="outline" asChild>
-                                            <a href={selectedPost.video_url} target="_blank" rel="noopener noreferrer">
-                                                <Play className="w-4 h-4 mr-2" />
-                                                {t('watchVideo') || 'Guarda Video'}
-                                                <ExternalLink className="w-3 h-3 ml-2" />
-                                            </a>
-                                        </Button>
-                                    </div>
-                                )}
+                                <div className="mt-8">
+                                    <Button variant="outline" asChild>
+                                        <a href={selectedPost.video_url} target="_blank" rel="noopener noreferrer">
+                                            <ExternalLink className="w-3 h-3 mr-2" />
+                                            Visualizza su YouTube
+                                        </a>
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>
