@@ -8,7 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Calendar, Clock, BookOpen, Play, ExternalLink, ShieldAlert } from 'lucide-react';
+import { Calendar, Clock, BookOpen, Play, ExternalLink, ShieldAlert, Languages, Loader2 } from 'lucide-react';
+import { ScholarService } from '@/lib/ScholarService';
+import { useToast } from '@/hooks/use-toast';
 import { AuthenticImage } from '@/components/AuthenticImage';
 
 interface BlogPost {
@@ -31,9 +33,11 @@ import { BlogService } from '@/services/BlogService';
 
 const BlogPage = () => {
     const { t, language } = useLanguage();
+    const { toast } = useToast();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isTranslating, setIsTranslating] = useState(false);
 
     useEffect(() => {
         fetchPosts();
@@ -44,14 +48,14 @@ const BlogPage = () => {
         try {
             // 1. Fetch posts from Supabase
             const { data: dbPosts, error } = await supabase
-                .from('blog_posts')
+                .from('blog_posts' as any)
                 .select('*')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
 
-            const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => ({
-                id: post.id,
+            const formattedDbPosts: BlogPost[] = (dbPosts || []).map((post: any) => ({
+                id: post.id.toString(),
                 title: post.title,
                 content: post.content,
                 excerpt: post.excerpt || (post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content),
@@ -103,6 +107,35 @@ const BlogPage = () => {
     };
 
     const isRTL = language === 'ar';
+
+    const handleTranslate = async (post: BlogPost) => {
+        if (!post.content || isTranslating) return;
+        setIsTranslating(true);
+        try {
+            const translatedContent = await ScholarService.translate(post.content, language === 'it' ? 'Italian' : language === 'ar' ? 'Arabic' : 'English');
+            const translatedTitle = await ScholarService.translate(post.title, language === 'it' ? 'Italian' : language === 'ar' ? 'Arabic' : 'English');
+
+            setSelectedPost({
+                ...post,
+                content: translatedContent,
+                title: translatedTitle
+            });
+
+            toast({
+                title: t('translated') || "Tradotto con successo",
+                description: t('translatedByAi') || "Il contenuto è stato tradotto dall'IA.",
+            });
+        } catch (error) {
+            console.error("Translation error:", error);
+            toast({
+                title: "Errore",
+                description: "Impossibile tradurre il post.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsTranslating(false);
+        }
+    };
 
     return (
         <div className={`min-h-screen bg-background/50 backdrop-blur-sm ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
@@ -178,6 +211,26 @@ const BlogPage = () => {
                                         ></iframe>
                                     </div>
                                 )}
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                        <Clock className="w-3 h-3" />
+                                        5 min read
+                                    </span>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => handleTranslate(selectedPost)}
+                                        disabled={isTranslating}
+                                        className="h-8 gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10"
+                                    >
+                                        {isTranslating ? (
+                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                        ) : (
+                                            <Languages className="w-3 h-3" />
+                                        )}
+                                        {t('translateToCurrent') || 'Traduci Post'}
+                                    </Button>
+                                </div>
                                 <div className="prose prose-invert max-w-none">
                                     <ScrollArea className="h-[400px] pr-4">
                                         <div className="text-lg leading-relaxed whitespace-pre-wrap">

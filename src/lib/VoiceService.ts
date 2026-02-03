@@ -30,7 +30,10 @@ export class VoiceService {
                 return;
             } catch (error) {
                 console.warn("[VoiceService] ElevenLabs failed, falling back to Browser TTS:", error);
+                // If it's a network error or key error, we might want to tell the user later if browser also fails
             }
+        } else if (detectedLang === 'ar') {
+            console.warn("[VoiceService] No ElevenLabs API Key found for Arabic voice. Falling back to Browser TTS.");
         }
 
         await this.speakBrowser(text, detectedLang);

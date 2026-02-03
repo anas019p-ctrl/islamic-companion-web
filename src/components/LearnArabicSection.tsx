@@ -310,7 +310,7 @@ export const LearnArabicSection = () => {
                   key={index}
                   whileHover={{ scale: 1.05, y: -5 }}
                   onClick={() => VoiceService.speak(item.letter, 'ar')}
-                  className="futuristic-card p-4 text-center cursor-pointer group relative overflow-hidden"
+                  className="futuristic-card p-4 text-center cursor-pointer group relative overflow-hidden notranslate"
                 >
                   <div className="absolute top-0 right-0 p-1 opacity-10">
                     <Volume2 className="w-3 h-3 text-primary" />
@@ -319,10 +319,10 @@ export const LearnArabicSection = () => {
                     {item.letter}
                   </span>
                   <div className="flex flex-col gap-1 border-t border-primary/10 pt-2">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">{item.name}</span>
-                    <span className="text-[9px] text-primary/60">[{item.transliteration}]</span>
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground notranslate">{item.name}</span>
+                    <span className="text-[9px] text-primary/60 notranslate">[{item.transliteration}]</span>
                     <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <p className="text-[9px] text-foreground font-arabic">{item.example}</p>
+                      <p className="text-[9px] text-foreground font-arabic notranslate">{item.example}</p>
                       <p className="text-[8px] text-muted-foreground italic">{item.meaning}</p>
                     </div>
                   </div>
@@ -347,9 +347,9 @@ export const LearnArabicSection = () => {
                       <Volume2 className="w-4 h-4 text-primary opacity-30 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="text-center space-y-2">
-                      <h3 className="font-arabic text-4xl text-foreground">{item.ar}</h3>
+                      <h3 className="font-arabic text-4xl text-foreground notranslate">{item.ar}</h3>
                       <p className="font-bold text-primary">{item[language] || item.en}</p>
-                      <p className="text-[10px] uppercase text-muted-foreground tracking-[0.2em]">{item.tr}</p>
+                      <p className="text-[10px] uppercase text-muted-foreground tracking-[0.2em] notranslate">{item.tr}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -382,7 +382,7 @@ export const LearnArabicSection = () => {
                     </div>
                   </div>
                   <div className="text-right flex items-center gap-6">
-                    <span className="font-arabic text-3xl text-foreground block group-hover:scale-110 transition-transform origin-right">{item.ar}</span>
+                    <span className="font-arabic text-3xl text-foreground block group-hover:scale-110 transition-transform origin-right notranslate">{item.ar}</span>
                     <div className="p-2 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-all">
                       <Volume2 className="w-5 h-5 text-primary" />
                     </div>
