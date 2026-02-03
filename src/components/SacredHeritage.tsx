@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import meccaCosmic from '@/assets/mecca-cosmic.jpg';
 import alAqsaHeritage from '@/assets/al-aqsa-heritage.png';
@@ -11,23 +11,23 @@ export const SacredHeritage = () => {
         {
             id: 'mecca',
             image: meccaCosmic,
-            title: { ar: 'مكة المكرمة', en: 'Holy Makkah', it: 'La Mecca' },
-            location: { ar: 'المملكة العربية السعودية', en: 'Saudi Arabia', it: 'Arabia Saudita' },
+            title: { ar: 'Ù…ÙƒØ© Ø§Ù„Ù…ÙƒØ±Ù…Ø©', en: 'Holy Makkah', it: 'La Mecca' },
+            location: { ar: 'Ø§Ù„Ù…Ù…Ù„ÙƒØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© Ø§Ù„Ø³Ø¹ÙˆØ¯ÙŠØ©', en: 'Saudi Arabia', it: 'Arabia Saudita' },
             desc: {
-                ar: 'أطهر بقاع الأرض وقبلة المسلمين في صلاتهم.',
+                ar: 'Ø£Ø·Ù‡Ø± Ø¨Ù‚Ø§Ø¹ Ø§Ù„Ø£Ø±Ø¶ ÙˆÙ‚Ø¨Ù„Ø© Ø§Ù„Ù…Ø³Ù„Ù…ÙŠÙ† ÙÙŠ ØµÙ„Ø§ØªÙ‡Ù….',
                 en: 'The holiest site in Islam and the direction of prayer for all Muslims.',
-                it: 'Il sito più sacro dell\'Islam e la direzione della preghiera per tutti i musulmani.'
+                it: 'Il sito piÃ¹ sacro dell\'Islam e la direzione della preghiera per tutti i musulmani.'
             }
         },
         {
             id: 'alaqsa',
             image: alAqsaHeritage,
-            title: { ar: 'المسجد الأقصى', en: 'Al-Aqsa Mosque', it: 'Moschea di Al-Aqsa' },
-            location: { ar: 'القدس، فلسطين', en: 'Jerusalem, Palestine', it: 'Gerusalemme, Palestina' },
+            title: { ar: 'Ø§Ù„Ù…Ø³Ø¬Ø¯ Ø§Ù„Ø£Ù‚ØµÙ‰', en: 'Al-Aqsa Mosque', it: 'Moschea di Al-Aqsa' },
+            location: { ar: 'Ø§Ù„Ù‚Ø¯Ø³ØŒ ÙÙ„Ø³Ø·ÙŠÙ†', en: 'Jerusalem, Palestine', it: 'Gerusalemme, Palestina' },
             desc: {
-                ar: 'أولى القبلتين وثالث الحرمين الشريفين.',
+                ar: 'Ø£ÙˆÙ„Ù‰ Ø§Ù„Ù‚Ø¨Ù„ØªÙŠÙ† ÙˆØ«Ø§Ù„Ø« Ø§Ù„Ø­Ø±Ù…ÙŠÙ† Ø§Ù„Ø´Ø±ÙŠÙÙŠÙ†.',
                 en: 'The first Qibla and the third holiest site in Islam.',
-                it: 'La prima Qibla e il terzo sito più sacro dell\'Islam.'
+                it: 'La prima Qibla e il terzo sito piÃ¹ sacro dell\'Islam.'
             }
         }
     ];
@@ -36,7 +36,7 @@ export const SacredHeritage = () => {
         <section className="py-20 bg-transparent overflow-hidden">
             <div className="container px-4 mx-auto">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 1, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     className="text-center mb-16"
@@ -88,7 +88,7 @@ export const SacredHeritage = () => {
                             {/* Content */}
                             <div className="w-full lg:w-1/2 space-y-6 text-center lg:text-left">
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 1, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: 0.2 }}

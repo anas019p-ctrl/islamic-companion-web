@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { LanguageSelector } from './LanguageSelector';
@@ -79,9 +79,9 @@ export const Header = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 1, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            exit={{ opacity: 1, height: 0 }}
             className="md:hidden pb-4"
           >
             <nav className="flex flex-col gap-3">

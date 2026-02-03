@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, BookOpen, ShieldCheck, Clock, Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -73,7 +73,7 @@ export const HeroSection = () => {
 
           {/* Top Status Bar: Clock & Hijri */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 1, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-wrap justify-center gap-6 mb-12 glass p-4 rounded-3xl border border-white/5 shadow-2xl neon-glow-gold"
           >
@@ -98,7 +98,7 @@ export const HeroSection = () => {
                 <Star className="w-4 h-4 text-amber-400" />
                 <div className="text-left">
                   <p className="text-xs uppercase font-bold text-amber-400 tracking-widest leading-none mb-1">{t('nextPrayer')}</p>
-                  <p className="text-lg font-bold leading-none">{nextP.name.toUpperCase()} • {nextP.time}</p>
+                  <p className="text-lg font-bold leading-none">{nextP.name.toUpperCase()} â€¢ {nextP.time}</p>
                 </div>
               </div>
             )}
@@ -119,11 +119,11 @@ export const HeroSection = () => {
           </motion.div>
 
           <motion.p
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 1, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             className="font-arabic text-3xl md:text-5xl text-primary mb-2 drop-shadow-[0_0_15px_rgba(201,164,74,0.4)]"
           >
-            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+            Ø¨ÙØ³Ù’Ù…Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ø§Ù„Ø±ÙŽÙ‘Ø­Ù’Ù…ÙŽÙ†Ù Ø§Ù„Ø±ÙŽÙ‘Ø­ÙÙŠÙ…
           </motion.p>
 
           <motion.div
@@ -133,14 +133,14 @@ export const HeroSection = () => {
           >
             <div className="h-[1px] w-8 bg-cyan-500/50" />
             <span className="text-[10px] md:text-xs uppercase tracking-[0.4em] neon-text-cyan font-bold">
-              {t('innovate')} • {t('accessibility')} • {t('education_short')}
+              {t('innovate')} â€¢ {t('accessibility')} â€¢ {t('education_short')}
             </span>
             <div className="h-[1px] w-8 bg-cyan-500/50" />
           </motion.div>
 
           {/* Main Prayer Widget - CENTRAL FOCUS */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 1, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-sm gradient-border glass-card p-10 rounded-[3.5rem] border-transparent shadow-[0_0_50px_rgba(201,164,74,0.15)] mb-12 relative overflow-hidden group"
           >
@@ -173,7 +173,7 @@ export const HeroSection = () => {
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-bold mb-4 font-amiri"
           >
@@ -181,7 +181,7 @@ export const HeroSection = () => {
           </motion.h1>
 
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
             className="flex flex-col items-center gap-6"
           >
