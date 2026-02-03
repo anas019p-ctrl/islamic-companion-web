@@ -1,7 +1,7 @@
 import { toast } from '@/hooks/use-toast';
 
 export class VoiceService {
-    private static ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY || "";
+    private static ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVEN_LABS_API_KEY || "";
     private static VOICES = {
         ar: "EXAVITQu4vr4xnSDxMaL", // Bella (Arabic Friendly)
         en: "21m00Tcm4TlvDq8ikWAM", // Rachel
