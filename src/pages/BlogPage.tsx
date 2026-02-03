@@ -24,28 +24,8 @@ interface BlogPost {
 }
 
 // Sample blog posts for demo (will be replaced by Supabase data)
-const SAMPLE_POSTS: BlogPost[] = [
-    {
-        id: '1',
-        title: 'L\'Importanza della Preghiera (Salah)',
-        content: 'La preghiera è il pilastro della religione e la luce del credente. È il legame diretto tra il servo e il suo Creatore...',
-        excerpt: 'Un approfondimento spirituale sull\'importanza fondamentale della preghiera quotidiana.',
-        image_url: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800', // Mosque interior
-        category: 'Spiritualità',
-        published_at: new Date().toISOString(),
-        is_draft: false
-    },
-    {
-        id: '2',
-        title: 'I Meriti della Recitazione del Corano',
-        content: 'La recitazione del Corano porta pace al cuore e intercessione nel Giorno del Giudizio...',
-        excerpt: 'Perché dedicare tempo ogni giorno alla lettura del Libro Sacro di Allah.',
-        image_url: 'https://images.unsplash.com/photo-1584281723351-9d9224214544?w=800', // Quran/Mosque style
-        category: 'Corano',
-        published_at: new Date(Date.now() - 86400000).toISOString(),
-        is_draft: false
-    }
-];
+// Sample blog posts (now empty to prioritize real database content or authentic AI generation)
+const SAMPLE_POSTS: BlogPost[] = [];
 
 import { BlogService } from '@/services/BlogService';
 

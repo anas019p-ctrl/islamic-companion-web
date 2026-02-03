@@ -16,15 +16,15 @@ export const AuthenticImage: React.FC<AuthenticImageProps> = ({
 }) => {
     const [error, setError] = useState(!src);
 
-    // Robust URL for high-quality, religiously compliant placeholders
+    // Reliable, person-free Islamic architecture and patterns
     const getFallback = () => {
         switch (fallbackType) {
             case 'mosque':
-                return 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=800&q=80'; // Masjid al-Haram
+                return 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=1200&q=80'; // Grand Mosque (Architecture Only)
             case 'calligraphy':
-                return 'https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800&q=80'; // Islamic Art
+                return 'https://images.unsplash.com/photo-1589111453303-0c4a0659a5fc?w=1200&q=80'; // Calligraphy/Pattern
             default:
-                return 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80'; // Islamic Pattern
+                return 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1200&q=80'; // Islamic Geometric Pattern
         }
     };
 
