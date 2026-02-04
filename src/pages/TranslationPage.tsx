@@ -165,7 +165,7 @@ const TranslationPage = () => {
             const response = await fetch(url);
 
             if (!response.ok || response.status === 429) {
-                const scholarResult = await (await import('@/lib/ScholarService')).ScholarService.translateText(text, targetLang);
+                const scholarResult = await (await import('@/lib/ScholarService')).ScholarService.translate(text, targetLang);
                 if (scholarResult) {
                     setTranslatedText(scholarResult);
                     setIsLoading(false);
@@ -185,7 +185,7 @@ const TranslationPage = () => {
 
                 if (targetLang === 'ar' && isReligious) {
                     try {
-                        const scholarTranslated = await (await import('@/lib/ScholarService')).ScholarService.translateText(text, targetLang);
+                        const scholarTranslated = await (await import('@/lib/ScholarService')).ScholarService.translate(text, targetLang);
                         if (scholarTranslated) translated = scholarTranslated;
                     } catch (e) {
                         console.warn("Scholar religious translation failed");
@@ -199,7 +199,7 @@ const TranslationPage = () => {
                 setTranslatedText(safeTranslated);
             } else {
                 // If API returns success but invalid data, fallback to Scholar
-                const scholarResult = await (await import('@/lib/ScholarService')).ScholarService.translateText(text, targetLang);
+                const scholarResult = await (await import('@/lib/ScholarService')).ScholarService.translate(text, targetLang);
                 if (scholarResult) setTranslatedText(scholarResult);
                 else throw new Error("Invalid response from translation service");
             }
@@ -207,7 +207,7 @@ const TranslationPage = () => {
         } catch (error) {
             console.error("❌ Translation Error, trying final research fallback:", error);
             try {
-                const scholarResult = await (await import('@/lib/ScholarService')).ScholarService.translateText(text, targetLang);
+                const scholarResult = await (await import('@/lib/ScholarService')).ScholarService.translate(text, targetLang);
                 if (scholarResult) {
                     setTranslatedText(scholarResult);
                 } else {
