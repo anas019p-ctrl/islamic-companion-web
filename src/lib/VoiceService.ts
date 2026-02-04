@@ -1,5 +1,6 @@
 import { toast } from '@/hooks/use-toast';
 import { supabase } from "@/integrations/supabase/client";
+import { translations, Language } from './translations';
 
 export class VoiceService {
     private static ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVEN_LABS_API_KEY || "";
@@ -13,6 +14,11 @@ export class VoiceService {
     private static isPaused = false;
     private static currentAudio: HTMLAudioElement | null = null;
     private static currentUtterance: SpeechSynthesisUtterance | null = null;
+
+    private static getTranslation(key: string): string {
+        const lang = (localStorage.getItem('islamic-app-language') as Language) || 'en';
+        return translations[lang]?.[key] || translations.en[key] || key;
+    }
 
     static async speak(text: string, language: string = 'auto', source: string = 'generic', stopExternal: boolean = true): Promise<void> {
         if (!text || text.trim().length === 0) return;
@@ -205,8 +211,8 @@ export class VoiceService {
         if (voice && voice.lang.startsWith(lang)) {
             utterance.voice = voice;
             toast({
-                title: "🔊 Audio in riproduzione",
-                description: `Voce: ${voice.name} (${voice.lang})`,
+                title: `🔊 ${this.getTranslation('audioPlaying')}`,
+                description: `${this.getTranslation('voice')}: ${voice.name} (${voice.lang})`,
             });
         } else if (lang === 'ar') {
             // No Arabic voice available - try with any available voice
@@ -215,13 +221,13 @@ export class VoiceService {
             if (anyVoice) {
                 utterance.voice = anyVoice;
                 toast({
-                    title: "⚠️ Voce Araba non disponibile",
-                    description: "Utilizzo voce alternativa. Per migliore qualità, installa voci arabe sul dispositivo.",
+                    title: `⚠️ ${this.getTranslation('arabicVoiceNotAvailable')}`,
+                    description: this.getTranslation('arabicVoiceFallback'),
                 });
             } else {
                 toast({
-                    title: "❌ Audio non disponibile",
-                    description: "Nessuna voce TTS trovata sul dispositivo.",
+                    title: `❌ ${this.getTranslation('audioNotAvailable')}`,
+                    description: this.getTranslation('noTtsFound'),
                     variant: "destructive"
                 });
                 return;
@@ -236,8 +242,8 @@ export class VoiceService {
             this.isSpeaking = false;
             this.currentUtterance = null;
             toast({
-                title: "❌ Errore Audio",
-                description: "Impossibile riprodurre l'audio.",
+                title: `❌ ${this.getTranslation('audioError')}`,
+                description: this.getTranslation('audioErrorDescShort'),
                 variant: "destructive"
             });
         };

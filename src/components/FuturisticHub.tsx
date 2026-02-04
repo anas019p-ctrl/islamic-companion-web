@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Eye, EyeOff, Ear, Volume2, Settings, Compass, Globe, MessageSquare } from 'lucide-react';
+import { ShieldCheck, Eye, EyeOff, Ear, Volume2, Settings, Compass, Globe, MessageSquare, Zap, Orbit, X } from 'lucide-react';
 import { useAccessibility } from '@/contexts/AccessibilityContext';
 import { Button } from './ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export const FuturisticHub = () => {
     const { isHubOpen, toggleHub, speak, isDeafMode, toggleDeafMode, isBlindMode, toggleBlindMode } = useAccessibility();
-    const { language } = useLanguage();
+    const { language, t } = useLanguage();
 
     return (
         <>
@@ -16,7 +16,7 @@ export const FuturisticHub = () => {
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
                     toggleHub(true);
-                    speak(language === 'it' ? "Hub Innovazione aperto" : "Innovation Hub Opened");
+                    speak(t('hubOpened'));
                 }}
                 className="fixed bottom-6 right-6 w-14 h-14 rounded-2xl glass border border-primary/40 flex items-center justify-center text-primary shadow-[0_0_20px_rgba(201,164,74,0.3)] z-50 overflow-hidden group"
             >
@@ -44,32 +44,32 @@ export const FuturisticHub = () => {
                             {/* Accessibility Board */}
                             <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <HubCard
-                                    title="Inclusione Visione"
+                                    title={t('visionInclusion')}
                                     icon={isBlindMode ? Eye : EyeOff}
                                     active={isBlindMode}
                                     onClick={toggleBlindMode}
-                                    desc="Attiva sintesi vocale e comandi audio."
+                                    desc={t('visionDesc')}
                                 />
                                 <HubCard
-                                    title="Inclusione Udito"
+                                    title={t('hearingInclusion')}
                                     icon={Ear}
                                     active={isDeafMode}
                                     onClick={toggleDeafMode}
-                                    desc="Visualizza onde sonore e sottotitoli."
+                                    desc={t('hearingDesc')}
                                 />
                                 <HubCard
-                                    title="Archivi Hadith"
+                                    title={t('hadithArchive')}
                                     icon={ShieldCheck}
                                     active={false}
                                     onClick={() => window.location.href = '/hadith'}
-                                    desc="Sincronizzazione con 500k Hadith autentici."
+                                    desc={t('hadithDescHub')}
                                 />
                                 <HubCard
-                                    title="Mappa Stellare Qibla"
+                                    title={t('qiblaStarMap')}
                                     icon={Globe}
                                     active={false}
-                                    onClick={() => speak("Mappa Qibla in fase di calcolo cosmico")}
-                                    desc="Calcolo astronomico tramite AR."
+                                    onClick={() => speak(t('qiblaCalculating'))}
+                                    desc={t('qiblaDesc')}
                                 />
                             </div>
 
@@ -81,18 +81,18 @@ export const FuturisticHub = () => {
 
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between text-xs">
-                                            <span>System Sync</span>
+                                            <span>{t('systemSync')}</span>
                                             <span className="text-emerald-500 underline decoration-emerald-500/30">Stable</span>
                                         </div>
                                         <div className="flex items-center justify-between text-xs">
-                                            <span>Holy Data Stream</span>
+                                            <span>{t('holyDataStream')}</span>
                                             <span className="text-primary font-bold">114 Surahs</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <Button variant="ghost" className="w-full mt-8 border border-primary/20 hover:bg-primary/10" onClick={() => toggleHub(false)}>
-                                    Chiudi Interfaccia
+                                    {t('closeInterface')}
                                 </Button>
                             </div>
                         </motion.div>
@@ -116,8 +116,8 @@ const HubCard = ({ title, icon: Icon, active, onClick, desc }: HubCardProps) => 
         whileHover={{ y: -5, scale: 1.02 }}
         onClick={onClick}
         className={`p-6 rounded-3xl cursor-pointer transition-all border ${active
-            ? 'bg-primary/20 border-primary shadow-[0_0_30px_rgba(201,164,74,0.2)]'
-            : 'glass border-white/5 hover:border-primary/30'
+                ? 'bg-primary/20 border-primary shadow-[0_0_30px_rgba(201,164,74,0.2)]'
+                : 'glass border-white/5 hover:border-primary/30'
             }`}
     >
         <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4">

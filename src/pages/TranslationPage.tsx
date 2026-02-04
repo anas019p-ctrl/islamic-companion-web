@@ -128,8 +128,8 @@ const TranslationPage = () => {
                 console.error("Speech recognition error", event);
                 setIsListening(false);
                 toast({
-                    title: "Error",
-                    description: "Mic access denied or error.",
+                    title: t('micErrorTitle'),
+                    description: t('micErrorDesc'),
                     variant: "destructive"
                 });
             };
@@ -143,8 +143,8 @@ const TranslationPage = () => {
     const handleTranslate = async (text: string = sourceText) => {
         if (!text.trim()) {
             toast({
-                title: "Empty Text",
-                description: "Please enter some text to translate.",
+                title: t('emptyTextTitle'),
+                description: t('emptyTextDesc'),
                 variant: "destructive"
             });
             return;
@@ -216,11 +216,11 @@ const TranslationPage = () => {
             } catch (innerError) {
                 const errorMessage = error instanceof Error ? error.message : "Unknown error";
                 toast({
-                    title: "Translation Failed",
+                    title: t('translationFailed'),
                     description: errorMessage,
                     variant: "destructive"
                 });
-                setTranslatedText("Spiacente, i servizi di traduzione sono momentaneamente sovraccarichi. Ti preghiamo di riprovare tra un istante.");
+                setTranslatedText(t('translationServiceOverloaded'));
             }
         } finally {
             setIsLoading(false);
@@ -230,8 +230,8 @@ const TranslationPage = () => {
     const toggleListening = () => {
         if (!recognitionRef.current) {
             toast({
-                title: "Not Supported",
-                description: "Voice input not supported in this browser.",
+                title: t('notSupported'),
+                description: t('voiceInputNotSupported'),
                 variant: "destructive"
             });
             return;
@@ -248,7 +248,7 @@ const TranslationPage = () => {
 
             recognitionRef.current.start();
             setIsListening(true);
-            toast({ title: "Listening...", description: "Speak now." });
+            toast({ title: t('listening'), description: t('speakNow') });
         }
     };
 
@@ -282,7 +282,7 @@ const TranslationPage = () => {
                             className={`rounded-full px-6 transition-all ${isKhutbahMode ? 'neon-glow-primary' : ''}`}
                         >
                             <Mic className={`w-4 h-4 mr-2 ${isKhutbahMode ? 'animate-pulse' : ''}`} />
-                            {isKhutbahMode ? "Khutbah Mode: ON (25min+)" : "Standard Mode"}
+                            {isKhutbahMode ? t('khutbahModeOn') : t('standardMode')}
                         </Button>
                     </div>
                 </motion.div>
@@ -361,7 +361,11 @@ const TranslationPage = () => {
                                                     await VoiceService.speak(translatedText, targetLang);
                                                 } catch (e) {
                                                     console.error("Speech error", e);
-                                                    toast({ title: "Audio Error", description: "Could not play audio.", variant: "destructive" });
+                                                    toast({
+                                                        title: `❌ ${t('audioError')}`,
+                                                        description: t('audioErrorDescShort'),
+                                                        variant: "destructive"
+                                                    });
                                                 }
                                             }}
                                             disabled={!translatedText}
@@ -377,7 +381,7 @@ const TranslationPage = () => {
 
                 <div className="mt-8 text-center">
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
-                        <span className="text-[10px] sm:text-xs">SCHOLARLY INSIGHT</span>
+                        <span className="text-[10px] sm:text-xs">{t('scholarInsight')}</span>
                         <AlertCircle className="w-3 h-3" />
                         {t('verify_religious')}
                     </p>

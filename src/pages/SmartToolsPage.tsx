@@ -189,19 +189,19 @@ const SmartToolsPage = () => {
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
 
-    toast({ title: "In ricerca...", description: `Ricerca coordinate per ${searchQuery}` });
+    toast({ title: t('searching'), description: `${t('searchingCoords')} ${searchQuery}` });
     const result: any = await searchCity(searchQuery);
 
     if (result.success) {
       toast({
-        title: "Posizione Trovata",
-        description: `Impostato su ${result.name}, ${result.country || ''}`,
+        title: t('locationFound'),
+        description: `${t('setLocation')} ${result.name}, ${result.country || ''}`,
         variant: "default"
       });
     } else {
       toast({
-        title: "Città non trovata",
-        description: "Controlla il nome o prova solo il nome della città.",
+        title: t('cityNotFound'),
+        description: t('cityNotFoundDesc'),
         variant: "destructive"
       });
     }
@@ -211,11 +211,11 @@ const SmartToolsPage = () => {
     const lat = parseFloat(manualLat);
     const lng = parseFloat(manualLng);
     if (isNaN(lat) || isNaN(lng)) {
-      toast({ title: "Error", description: "Invalid coordinates", variant: "destructive" });
+      toast({ title: t('error') || 'Error', description: t('invalidCoords'), variant: "destructive" });
       return;
     }
     setManualLocation(lat, lng, altitude);
-    toast({ title: "Location Updated", description: "Calculating with precision coordinates." });
+    toast({ title: t('locationUpdated'), description: t('calculatingPrecision') });
   };
 
   const handleAdhanPreview = (id?: string) => {
@@ -495,7 +495,7 @@ const SmartToolsPage = () => {
                   {/* City Search */}
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Search City (e.g. Rome, Dubai)"
+                      placeholder={t('searchCityPlaceholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="bg-white/5 border-white/10 rounded-2xl h-12"
@@ -509,7 +509,7 @@ const SmartToolsPage = () => {
                       onClick={handleSearch}
                       disabled={prayerLoading}
                     >
-                      {prayerLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Search'}
+                      {prayerLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : t('searchBtn')}
                     </Button>
                   </div>
 
