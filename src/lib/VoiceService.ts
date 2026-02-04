@@ -1,4 +1,5 @@
 import { toast } from '@/hooks/use-toast';
+import { supabase } from "@/integrations/supabase/client";
 
 export class VoiceService {
     private static ELEVENLABS_API_KEY = import.meta.env.VITE_ELEVEN_LABS_API_KEY || "";
@@ -20,23 +21,53 @@ export class VoiceService {
 
         const detectedLang = language === 'auto' ? this.detectLanguage(text) : language;
 
-        const hasValidKey = this.ELEVENLABS_API_KEY &&
+        const hasElevenLabsKey = this.ELEVENLABS_API_KEY &&
             this.ELEVENLABS_API_KEY !== "your_elevenlabs_key_here" &&
             this.ELEVENLABS_API_KEY.length > 10;
 
-        if (hasValidKey) {
+        // Try OpenAI TTS first (via Backend)
+        try {
+            await this.speakOpenAI(text, detectedLang);
+            return;
+        } catch (error) {
+            console.warn("[VoiceService] OpenAI TTS failed, falling back:", error);
+        }
+
+        if (hasElevenLabsKey) {
             try {
                 await this.speakElevenLabs(text, detectedLang);
                 return;
             } catch (error) {
-                console.warn("[VoiceService] ElevenLabs failed, falling back to Browser TTS:", error);
-                // If it's a network error or key error, we might want to tell the user later if browser also fails
+                console.warn("[VoiceService] ElevenLabs failed, falling back:", error);
             }
-        } else if (detectedLang === 'ar') {
-            console.warn("[VoiceService] No ElevenLabs API Key found for Arabic voice. Falling back to Browser TTS.");
         }
 
         await this.speakBrowser(text, detectedLang);
+    }
+
+    private static async speakOpenAI(text: string, lang: string): Promise<void> {
+        const voiceMap: Record<string, string> = {
+            'ar': 'onyx',
+            'it': 'nova',
+            'en': 'alloy'
+        };
+        const voice = voiceMap[lang] || 'alloy';
+
+        const { data, error } = await supabase.functions.invoke('scholar-ai', {
+            body: { action: 'tts', text, voice }
+        });
+
+        if (error) throw new Error(`OpenAI TTS Error: ${error.message}`);
+
+        const audioUrl = URL.createObjectURL(data);
+
+        this.currentAudio = new Audio(audioUrl);
+        this.isSpeaking = true;
+
+        this.currentAudio.onended = () => { this.isSpeaking = false; URL.revokeObjectURL(audioUrl); this.currentAudio = null; };
+        this.currentAudio.onerror = () => { this.isSpeaking = false; URL.revokeObjectURL(audioUrl); this.currentAudio = null; };
+
+        await this.currentAudio.play();
     }
 
     static async playExternal(url: string, volume: number = 1.0): Promise<void> {

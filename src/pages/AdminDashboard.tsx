@@ -1049,7 +1049,46 @@ const AdminDashboardContent = () => {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20">
-                                    <h4 className="font-bold mb-4 text-lg">📝 Crea Nuovo Articolo</h4>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h4 className="font-bold text-lg">📝 Crea Nuovo Articolo</h4>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="glass border-primary/30 text-primary hover:bg-primary/20"
+                                            onClick={async () => {
+                                                const topic = prompt("Di cosa vuoi che parli l'articolo? (es: L'importanza della pazienza)");
+                                                if (!topic) return;
+
+                                                setIsLoading(true);
+                                                try {
+                                                    const { ScholarService } = await import('@/lib/ScholarService');
+                                                    const aiPost = await ScholarService.generateBlogPost(topic);
+                                                    setNewPost({
+                                                        title: aiPost.title,
+                                                        content: aiPost.content,
+                                                        category: 'spirituality',
+                                                        image_url: '',
+                                                        video_url: ''
+                                                    });
+                                                    toast({
+                                                        title: '✨ Articolo Generato!',
+                                                        description: 'L\'AI ha creato una bozza autentica. Controlla e pubblica.'
+                                                    });
+                                                } catch (error) {
+                                                    toast({
+                                                        title: '❌ Errore Generazione',
+                                                        description: 'Impossibile generare l\'articolo con l\'AI.',
+                                                        variant: 'destructive'
+                                                    });
+                                                } finally {
+                                                    setIsLoading(false);
+                                                }
+                                            }}
+                                        >
+                                            <Globe className="w-4 h-4 mr-2" />
+                                            Genera con AI (DeepSeek)
+                                        </Button>
+                                    </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div className="space-y-1.5">
                                             <Label>Titolo</Label>

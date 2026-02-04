@@ -8,6 +8,49 @@ interface QiblaData {
   userLocation: { latitude: number; longitude: number };
 }
 
+// Kaaba coordinates
+const KAABA_LAT = 21.4225;
+const KAABA_LNG = 39.8262;
+
+function toRadians(degrees: number): number {
+  return (degrees * Math.PI) / 180;
+}
+
+function toDegrees(radians: number): number {
+  return (radians * 180) / Math.PI;
+}
+
+function calculateQiblaDirection(latitude: number, longitude: number): number {
+  const lat1 = toRadians(latitude);
+  const lat2 = toRadians(KAABA_LAT);
+  const diffLng = toRadians(KAABA_LNG - longitude);
+
+  const y = Math.sin(diffLng);
+  const x = Math.cos(lat1) * Math.tan(lat2) - Math.sin(lat1) * Math.cos(diffLng);
+
+  let qibla = toDegrees(Math.atan2(y, x));
+
+  // Normalize to 0-360
+  qibla = (qibla + 360) % 360;
+
+  return Math.round(qibla * 100) / 100;
+}
+
+function calculateDistance(latitude: number, longitude: number): number {
+  const R = 6371; // Earth's radius in km
+  const lat1 = toRadians(latitude);
+  const lat2 = toRadians(KAABA_LAT);
+  const diffLat = toRadians(KAABA_LAT - latitude);
+  const diffLng = toRadians(KAABA_LNG - longitude);
+
+  const a = Math.sin(diffLat / 2) * Math.sin(diffLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) *
+    Math.sin(diffLng / 2) * Math.sin(diffLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return Math.round(R * c);
+}
+
 export function useQibla() {
   const [qiblaData, setQiblaData] = useState<QiblaData | null>(null);
   const [compassHeading, setCompassHeading] = useState<number | null>(null);
@@ -19,12 +62,15 @@ export function useQibla() {
     setError(null);
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('qibla-direction', {
-        body: { latitude, longitude },
-      });
+      const direction = calculateQiblaDirection(latitude, longitude);
+      const distance = calculateDistance(latitude, longitude);
 
-      if (fnError) throw fnError;
-      setQiblaData(data);
+      setQiblaData({
+        direction,
+        distance,
+        kaaba: { latitude: KAABA_LAT, longitude: KAABA_LNG },
+        userLocation: { latitude, longitude }
+      });
     } catch (e) {
       console.error('Qibla direction error:', e);
       setError(e instanceof Error ? e.message : 'Failed to calculate Qibla direction');
