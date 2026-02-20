@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import OpenRouterService from './OpenRouterService';
 
 interface AIProvider {
     name: string;
@@ -9,6 +10,12 @@ interface AIProvider {
 
 export class ScholarService {
     private static PROVIDERS: AIProvider[] = [
+        {
+            name: 'OpenRouter',
+            baseUrl: 'https://openrouter.ai/api/v1/chat/completions',
+            model: 'anthropic/claude-3.5-sonnet',
+            apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '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'
+        },
         {
             name: 'OpenAI',
             baseUrl: 'https://api.openai.com/v1/chat/completions',
@@ -133,7 +140,7 @@ CORE RULE: Provide deep insights. Cite authentic sources.`;
                                 const json = JSON.parse(line.substring(6));
                                 const content = json.choices[0]?.delta?.content;
                                 if (content) onChunk(content);
-                            } catch (e) { }
+                            } catch (e) { /* Ignore partial or invalid JSON chunks */ }
                         }
                     }
                 }
@@ -167,6 +174,55 @@ CORE RULE: Provide deep insights. Cite authentic sources.`;
             return JSON.parse(cleanJson);
         } catch (error) {
             console.error("Blog Gen Error:", error);
+            throw error;
+        }
+    }
+
+    /**
+     * 🚀 OPENROUTER ENHANCED METHODS - Unlimited & Fast
+     */
+
+    static async translateWithOpenRouter(text: string, targetLang: string): Promise<string> {
+        try {
+            return await OpenRouterService.translate(text, targetLang, true);
+        } catch (error) {
+            console.warn('OpenRouter translation failed, using fallback');
+            return await this.translate(text, targetLang);
+        }
+    }
+
+    static async explainHadithWithAI(hadithText: string, language: string = 'it'): Promise<string> {
+        try {
+            return await OpenRouterService.explainHadith(hadithText, language);
+        } catch (error) {
+            console.warn('OpenRouter hadith explanation failed');
+            throw error;
+        }
+    }
+
+    static async answerQuestion(question: string, language: string = 'it'): Promise<string> {
+        try {
+            return await OpenRouterService.answerIslamicQuestion(question, language);
+        } catch (error) {
+            console.warn('OpenRouter Q&A failed');
+            return await this.generateContent(question, language);
+        }
+    }
+
+    static async verifyHadithAuthenticity(hadithText: string): Promise<string> {
+        try {
+            return await OpenRouterService.verifyHadith(hadithText);
+        } catch (error) {
+            console.warn('OpenRouter hadith verification failed');
+            throw error;
+        }
+    }
+
+    static async generateKidsStoryWithAI(prophetName: string, language: string = 'it'): Promise<string> {
+        try {
+            return await OpenRouterService.generateKidsStory(prophetName, language);
+        } catch (error) {
+            console.warn('OpenRouter kids story failed');
             throw error;
         }
     }

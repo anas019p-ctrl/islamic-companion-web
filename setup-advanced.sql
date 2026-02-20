@@ -30,9 +30,13 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
 
 -- Enable RLS on user_roles
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Admins can manage roles" ON public.user_roles;
 CREATE POLICY "Admins can manage roles" ON public.user_roles FOR ALL USING (
     EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role = 'admin')
 );
+
+DROP POLICY IF EXISTS "Users can view their own role" ON public.user_roles;
 CREATE POLICY "Users can view their own role" ON public.user_roles FOR SELECT USING (auth.uid() = user_id);
 
 -- Create is_admin function

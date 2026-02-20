@@ -35,6 +35,9 @@ import { GalaxyAnimation } from './components/effects/GalaxyAnimation';
 import { MagicNavigationMenu } from './components/effects/MagicNavigationMenu';
 import { ContentHeatEffect } from './components/effects/ContentHeatEffect';
 import { useEffect } from "react";
+import KidsPage from "./pages/KidsPage";
+import MosqueMapPage from "./pages/MosqueMapPage";
+import CommonMistakesPage from "./pages/CommonMistakesPage";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +82,9 @@ const AppContent = () => {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/security" element={<SecurityPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/kids" element={<KidsPage />} />
+          <Route path="/mosques" element={<MosqueMapPage />} />
+          <Route path="/mistakes" element={<CommonMistakesPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <MagicNavigationMenu />

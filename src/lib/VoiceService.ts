@@ -183,7 +183,7 @@ export class VoiceService {
             'ku': 'ku-TR'
         };
 
-        let targetLang = langMap[lang] || 'en-US';
+        const targetLang = langMap[lang] || 'en-US';
         utterance.lang = targetLang;
         const voices = window.speechSynthesis.getVoices();
 

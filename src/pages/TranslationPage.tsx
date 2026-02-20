@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Mic, Volume2, ArrowRightLeft, BookOpen, AlertCircle } from 'lucide-react';
 import { VoiceService } from '@/lib/VoiceService';
 import { useToast } from '@/hooks/use-toast';
+import OpenRouterService from '@/lib/OpenRouterService';
 
 const languages = [
     { code: 'ar', name: 'Arabic', native: 'العربية' },
@@ -102,6 +103,7 @@ const TranslationPage = () => {
             recognitionRef.current = new SpeechRecognition();
             recognitionRef.current.continuous = isKhutbahMode;
             recognitionRef.current.interimResults = isKhutbahMode;
+            recognitionRef.current.maxAlternatives = 1;
 
             recognitionRef.current.onresult = (event: any) => {
                 let currentTranscript = '';
@@ -113,9 +115,12 @@ const TranslationPage = () => {
 
                 if (currentTranscript) {
                     if (isKhutbahMode) {
-                        setSourceText(prev => prev + currentTranscript);
-                        // Trigger translation periodically for Khutbah
-                        if (currentTranscript.length > 20) handleTranslate(sourceText + currentTranscript);
+                        const newText = sourceText + currentTranscript;
+                        setSourceText(newText);
+                        // INSTANT translation for Friday Khutbah mode - translate every sentence
+                        if (currentTranscript.trim().length > 15) {
+                            handleTranslate(newText);
+                        }
                     } else {
                         setSourceText(currentTranscript.trim());
                         handleTranslate(currentTranscript.trim());
@@ -154,11 +159,27 @@ const TranslationPage = () => {
         setTranslatedText("");
 
         try {
-            // Use FREE MyMemory Translation API (no API key needed!)
+            // 🚀 FIRST: Try OpenRouter AI Translation (UNLIMITED & PERFECT)
+            try {
+                const isReligious = text.toLowerCase().includes('allah') || 
+                                   text.toLowerCase().includes('prophet') || 
+                                   text.toLowerCase().includes('dio') ||
+                                   text.toLowerCase().includes('preghiera');
+                
+                const aiTranslation = await OpenRouterService.translate(text, targetLang, isReligious);
+                if (aiTranslation && aiTranslation.length > 0) {
+                    setTranslatedText(aiTranslation);
+                    setIsLoading(false);
+                    return;
+                }
+            } catch (aiError) {
+                console.warn('OpenRouter translation failed, using fallback:', aiError);
+            }
+
+            // FALLBACK: Use FREE MyMemory Translation API
             const sourceLangCode = sourceLang || 'auto';
             const targetLangCode = targetLang;
 
-            // MyMemory API endpoint
             const encodedText = encodeURIComponent(text);
             const url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=${sourceLangCode}|${targetLangCode}`;
 
