@@ -50,7 +50,7 @@ export class ShamilaService {
                IMPORTANT: Respond ONLY in ${language === 'it' ? 'ITALIAN' : 'ENGLISH'}.`;
 
         try {
-            const aiContent = await ScholarService.generateContent(fallbackPrompt, language);
+            const aiContent = await ScholarService.generateContent(fallbackPrompt, language, 'scholar');
             return {
                 content: aiContent,
                 source: "Archivi Storici (Ricerca Digitale)"

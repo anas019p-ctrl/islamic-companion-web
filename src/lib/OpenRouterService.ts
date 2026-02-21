@@ -160,14 +160,14 @@ export class OpenRouterService {
       {
         role: 'system',
         content: `You are an Islamic educator for children aged ${ageGroup}. 
-        Create a simple, engaging story about ${prophetName} in ${language} that:
-        - Uses simple vocabulary
+        Create a simple, engaging, and highly interactive story about ${prophetName} in ${language} that:
+        - Uses simple vocabulary suitable for children
         - Includes a clear moral lesson
-        - Is age-appropriate
         - Is factually accurate according to Islamic sources
-        - Ends with a lesson children can apply
+        - **IMPORTANT:** Include 2-3 interactive questions within the story (e.g., "What do you think happened next?" or "If you were there, would you help him?") to keep the child engaged.
+        - Ends with a beautiful lesson the child can apply in daily life.
         
-        Length: 200-300 words.`
+        Length: 250-400 words.`
       },
       { role: 'user', content: `Tell a story about ${prophetName}` }
     ];
@@ -191,7 +191,8 @@ export class OpenRouterService {
             "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
             "optionsAr": ["خيار 1", "خيار 2", "خيار 3", "خيار 4"],
             "correct": 0,
-            "explanation": "Brief explanation"
+            "explanation": "Brief explanation",
+            "encouragement": "A very encouraging message for a child (e.g., 'Amazing! You know so much about our Prophets!')"
           }
         ]
         

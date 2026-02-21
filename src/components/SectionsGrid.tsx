@@ -14,6 +14,9 @@ import {
   Video,
   Book,
   History,
+  Baby,
+  MapPin,
+  AlertTriangle,
 } from 'lucide-react';
 import { SectionCard } from './SectionCard';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -32,6 +35,9 @@ const sections = [
   { key: 'library', icon: Book, descKey: 'libraryDesc', href: '/library' },
   { key: 'history', icon: History, descKey: 'historyDesc', href: '/history' },
   { key: 'tools', icon: Compass, descKey: 'toolsDesc', href: '/tools' },
+  { key: 'kids', icon: Baby, descKey: 'kidsDesc', href: '/kids' },
+  { key: 'mosques', icon: MapPin, descKey: 'mosquesDesc', href: '/mosques' },
+  { key: 'commonMistakes', icon: AlertTriangle, descKey: 'commonMistakesDesc', href: '/mistakes' },
 ];
 
 export const SectionsGrid = () => {
@@ -54,6 +60,8 @@ export const SectionsGrid = () => {
         { key: 'dua', icon: BookOpen, descKey: 'duaDesc', href: '/dua' },
         { key: 'fasting', icon: Moon, descKey: 'fastingDesc', href: '/tools' },
         { key: 'tools', icon: Compass, descKey: 'toolsDesc', href: '/tools' },
+        { key: 'mosques', icon: MapPin, descKey: 'mosquesDesc', href: '/mosques' },
+        { key: 'commonMistakes', icon: AlertTriangle, descKey: 'commonMistakesDesc', href: '/mistakes' },
       ]
     },
     {
@@ -63,6 +71,7 @@ export const SectionsGrid = () => {
         { key: 'education', icon: GraduationCap, descKey: 'educationDesc', href: '/education' },
         { key: 'blog', icon: BookOpenCheck, descKey: 'blogDesc', href: '/blog' },
         { key: 'video', icon: Video, descKey: 'videoDesc', href: '/videos' },
+        { key: 'kids', icon: Baby, descKey: 'kidsDesc', href: '/kids' },
         { key: 'history', icon: History, descKey: 'historyDesc', href: '/history' },
       ]
     }

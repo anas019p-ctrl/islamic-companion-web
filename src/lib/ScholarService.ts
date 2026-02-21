@@ -14,6 +14,12 @@ const OPENROUTER_KEY = import.meta.env.VITE_OPENROUTER_API_KEY
     || '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';
 
 export class ScholarService {
+    private static sessionHistory: string[] = [];
+    private static MAX_HISTORY = 5;
+
+    static clearHistory() {
+        this.sessionHistory = [];
+    }
     private static PROVIDERS: AIProvider[] = [
         {
             name: 'OpenRouter',
@@ -54,9 +60,21 @@ export class ScholarService {
         });
     }
 
-    static async generateContent(prompt: string, language: string = 'it'): Promise<string> {
-        const systemPrompt = language === 'it'
-            ? `Sei un assistente studioso islamico specializzato, accademico e professionale.
+    static async generateContent(prompt: string, language: string = 'it', role: 'scholar' | 'kids' | 'general' = 'scholar'): Promise<string> {
+        let systemPrompt = '';
+
+        // Build context-aware prompt with history
+        const contextStr = this.sessionHistory.length > 0
+            ? `\nCONTEXT (Previous topics discussed in this session): ${this.sessionHistory.join(', ')}. Avoid repeating the same details if already mentioned.`
+            : '';
+
+        if (role === 'kids') {
+            systemPrompt = language === 'it'
+                ? "Sei un maestro saggio e divertente per bambini musulmani. Parla in modo semplice, incoraggiante e interattivo. Usa emoji e fai domande per coinvolgere il bambino."
+                : "You are a wise and fun teacher for Muslim kids. Speak simply, encouragingly, and interactively. Use emojis and ask questions to engage the child.";
+        } else {
+            systemPrompt = language === 'it'
+                ? `Sei un assistente studioso islamico specializzato, accademico e professionale.
 CATEGORIE DI CONOSCENZA:
 1. Teologia e Fede: Tawhid e i 6 articoli di fede.
 2. Pratica e Culto: 5 pilastri, preghiera, digiuno.
@@ -65,7 +83,7 @@ CATEGORIE DI CONOSCENZA:
 5. Etica: Halal/Haram, famiglia, moralità.
 REGOLA FONDAMENTALE: "Non limitarti mai. Fornisci approfondimenti storici o dottrinali profondi. Rispondi in modo chiaro, rispettoso e accademico."
 Cita sempre fonti autentiche.`
-            : `You are a specialized Islamic Scholar Assistant.
+                : `You are a specialized Islamic Scholar Assistant.
 KNOWLEDGE CATEGORIES:
 1. Theology & Faith: Tawhid and 6 articles of faith.
 2. Practice & Worship: 5 pillars.
@@ -73,6 +91,9 @@ KNOWLEDGE CATEGORIES:
 4. History: Seerah, Islamic history.
 5. Ethics: Halal/Haram.
 CORE RULE: Provide deep insights. Cite authentic sources.`;
+        }
+
+        systemPrompt += contextStr; // Append context to system prompt
 
         const messages = [
             { role: "system", content: systemPrompt },
@@ -83,6 +104,13 @@ CORE RULE: Provide deep insights. Cite authentic sources.`;
 
         // 🛡️ ACCURACY VALIDATION STEP
         const validatedContent = await this.validateResponseAccuracy(content, language);
+
+        // Update history
+        this.sessionHistory.push(prompt.substring(0, 50)); // Store first 50 chars of prompt
+        if (this.sessionHistory.length > this.MAX_HISTORY) {
+            this.sessionHistory.shift(); // Remove oldest entry if history exceeds max
+        }
+
         return validatedContent;
     }
 
@@ -230,10 +258,14 @@ CORE RULE: Provide deep insights. Cite authentic sources.`;
 
     static async generateKidsStoryWithAI(prophetName: string, language: string = 'it'): Promise<string> {
         try {
+            // The original instruction snippet for this method was incorrect.
+            // Assuming the intent was to use OpenRouterService and then fallback.
+            // History update for generateContent is handled within generateContent itself.
             return await OpenRouterService.generateKidsStory(prophetName, language);
         } catch (error) {
             console.warn('OpenRouter kids story failed');
-            throw error;
+            const prompt = `Racconta una storia interattiva per bambini sul profeta ${prophetName}.`;
+            return await this.generateContent(prompt, language, 'kids');
         }
     }
 }

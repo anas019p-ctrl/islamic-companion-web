@@ -61,6 +61,9 @@ export const Header = () => {
             <Link to="/translate" className="magic-nav-item text-[11px] font-black uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-all">
               {t('translator_nav')}
             </Link>
+            <Link to="/kids" className="magic-nav-item text-[11px] font-black uppercase tracking-widest text-pink-500 hover:text-pink-400 transition-all flex items-center gap-1">
+              {t('kids')}
+            </Link>
             <LanguageSelector />
           </nav>
 
@@ -108,6 +111,15 @@ export const Header = () => {
               </Link>
               <Link to="/videos" className="px-4 py-2 rounded-lg bg-secondary/30 text-sm font-medium">
                 {t('video_edu')}
+              </Link>
+              <Link to="/kids" className="px-4 py-2 rounded-lg bg-pink-500/10 text-sm font-medium text-pink-500">
+                {t('kids')}
+              </Link>
+              <Link to="/mosques" className="px-4 py-2 rounded-lg bg-amber-500/10 text-sm font-medium text-amber-500">
+                {t('mosques')}
+              </Link>
+              <Link to="/mistakes" className="px-4 py-2 rounded-lg bg-orange-500/10 text-sm font-medium text-orange-500">
+                {t('commonMistakes')}
               </Link>
               <Link to="/scholar" className="px-4 py-2 rounded-lg bg-emerald-500/10 text-sm font-medium text-emerald-500">
                 {t('ai_guide')}

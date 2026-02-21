@@ -220,7 +220,7 @@ const mosques = await IslamicAPIService.getNearbyMosques(41.9028, 12.4964, 5000)
 
 ### Accesso Admin:
 1. Vai su `/admin`
-2. Login con email: `anas019@gmail.com`
+2. Login con email: `anas019p@gmail.com`
 3. Nuovo tab: **"API & Content"**
 
 ### Funzioni Disponibili:

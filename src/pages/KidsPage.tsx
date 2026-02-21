@@ -10,11 +10,14 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import {
-  Baby, BookOpen, Gamepad2, Trophy, Star, Sparkles,
+  Baby, BookOpen, Gamepad2, Trophy, Star, Sparkles, Video,
   Volume2, CheckCircle2, XCircle, Heart, Lightbulb, Globe, Wand2, Info
 } from 'lucide-react';
 import { ScholarService } from '@/lib/ScholarService';
 import { OpenRouterService } from '@/lib/OpenRouterService';
+import { YouTubeService, VideoContent } from '@/lib/YouTubeService';
+import { EducationalErrorBoundary } from '@/components/EducationalErrorBoundary';
+import { useEffect } from 'react';
 
 const prophetStories = [
   {
@@ -161,6 +164,33 @@ const KidsPage = () => {
   const [aiStories, setAiStories] = useState<any[]>([]);
   const [aiQuiz, setAiQuiz] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('stories');
+  const [badges, setBadges] = useState<string[]>([]);
+  const [selectedVideo, setSelectedVideo] = useState<VideoContent | null>(null);
+
+  // Persistence for Gamification
+  useEffect(() => {
+    const savedPoints = localStorage.getItem('kids_points');
+    const savedBadges = localStorage.getItem('kids_badges');
+    if (savedPoints) setTotalPoints(parseInt(savedPoints));
+    if (savedBadges) setBadges(JSON.parse(savedBadges));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('kids_points', totalPoints.toString());
+    localStorage.setItem('kids_badges', JSON.stringify(badges));
+
+    // Check for new badges
+    if (totalPoints >= 100 && !badges.includes('explorer')) {
+      const newBadges = [...badges, 'explorer'];
+      setBadges(newBadges);
+      toast({ title: `🎓 ${t('congratulations')}`, description: t('badgeExplorer') });
+    }
+    if (totalPoints >= 500 && !badges.includes('scholar')) {
+      const newBadges = [...badges, 'scholar'];
+      setBadges(newBadges);
+      toast({ title: `🏮 ${t('congratulations')}`, description: t('badgeScholar') });
+    }
+  }, [totalPoints, badges]);
 
   const isArabic = language === 'ar';
 
@@ -270,177 +300,258 @@ const KidsPage = () => {
             </p>
           </div>
 
-          <div className="mt-6 flex justify-center gap-4">
-            <Badge variant="secondary" className="text-lg py-2 px-6 bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-              <Trophy className="w-5 h-5 mr-2" />
-              {totalPoints} {isArabic ? 'نقطة' : 'Points'}
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <Badge variant="secondary" className="text-lg py-2 px-8 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-lg animate-pulse">
+              <Star className="w-6 h-6 mr-2 fill-white" />
+              {totalPoints} {t('starPoints')}
             </Badge>
+
+            {badges.length > 0 && (
+              <div className="flex gap-2 mt-2">
+                {badges.map(badge => (
+                  <Badge key={badge} className="bg-purple-500/20 text-purple-600 border-purple-500/30 px-3 py-1 flex items-center gap-1">
+                    <Trophy className="w-3 h-3" />
+                    {badge === 'explorer' ? t('badgeExplorer') : t('badgeScholar')}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         </motion.div>
 
         <Tabs defaultValue="stories" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 h-14">
-            <TabsTrigger value="stories" className="text-base">
-              <BookOpen className="w-5 h-5 mr-2" />
-              {isArabic ? 'قصص الأنبياء' : 'Prophet Stories'}
+          <TabsList className="grid w-full grid-cols-4 mb-8 h-14 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl p-1 gap-2 border border-purple-500/20">
+            <TabsTrigger value="stories" className="rounded-xl data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all">
+              <BookOpen className="w-4 h-4 mr-2" />
+              {isArabic ? 'قصص' : 'Storie'}
             </TabsTrigger>
-            <TabsTrigger value="quiz" className="text-base">
-              <Gamepad2 className="w-5 h-5 mr-2" />
-              {isArabic ? 'اختبار مرح' : 'Fun Quiz'}
+            <TabsTrigger value="quiz" className="rounded-xl data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all">
+              <Gamepad2 className="w-4 h-4 mr-2" />
+              {isArabic ? 'اختبار' : 'Quiz'}
             </TabsTrigger>
-            <TabsTrigger value="deeds" className="text-base">
-              <Star className="w-5 h-5 mr-2" />
-              {isArabic ? 'الأعمال الصالحة' : 'Good Deeds'}
+            <TabsTrigger value="videos" className="rounded-xl data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all">
+              <Video className="w-4 h-4 mr-2" />
+              {isArabic ? 'فيديوهات' : 'Video'}
+            </TabsTrigger>
+            <TabsTrigger value="deeds" className="rounded-xl data-[state=active]:bg-pink-600 data-[state=active]:text-white transition-all">
+              <Star className="w-4 h-4 mr-2" />
+              {isArabic ? 'أعمال صالحة' : 'Azioni'}
             </TabsTrigger>
           </TabsList>
 
           {/* PROPHET STORIES TAB */}
           <TabsContent value="stories">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-primary" />
-                {isArabic ? 'قصص الأنبياء' : 'Prophet Stories'}
-              </h2>
-              <Button
-                onClick={generateAIStory}
-                disabled={isGenerating}
-                className="glass border-primary/30 text-primary hover:bg-primary/20"
-              >
-                {isGenerating ? <Sparkles className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
-                {isArabic ? 'توليد قصة بالذكاء الاصطناعي' : 'Generate with AI'}
-              </Button>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[...aiStories, ...prophetStories].map((prophet, index) => (
-                <motion.div
-                  key={prophet.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
+            <EducationalErrorBoundary>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <BookOpen className="w-6 h-6 text-primary" />
+                  {isArabic ? 'قصص الأنبياء' : 'Prophet Stories'}
+                </h2>
+                <Button
+                  onClick={generateAIStory}
+                  disabled={isGenerating}
+                  className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-2xl p-8 h-auto flex flex-col items-center gap-3 shadow-xl hover:shadow-2xl transition-all border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1"
                 >
-                  <Card
-                    className={`cursor-pointer hover:scale-105 transition-all duration-300 bg-gradient-to-br ${prophet.color} text-white border-0 shadow-lg hover:shadow-2xl`}
-                    onClick={() => setSelectedStory(selectedStory === prophet.id ? null : prophet.id)}
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Wand2 className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div className="text-center">
+                    <p className="font-bold text-lg">{isArabic ? 'قصة ذكية جديدة' : 'Nuova Storia AI'}</p>
+                    <p className="text-xs opacity-80">{isArabic ? 'أنشئ قصة مخصصة لك' : 'Crea una storia magica'}</p>
+                  </div>
+                </Button>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[...aiStories, ...prophetStories].map((prophet, index) => (
+                  <motion.div
+                    key={prophet.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span className="text-2xl">{prophet.emoji}</span>
-                        <span className="text-lg">{isArabic ? prophet.nameAr : prophet.name}</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {selectedStory === prophet.id && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          className="space-y-3"
-                        >
-                          <p className="text-sm leading-relaxed">
-                            {isArabic ? prophet.storyAr : prophet.story}
-                          </p>
-                          <div className="pt-3 border-t border-white/30">
-                            <p className="text-xs font-semibold mb-1">
-                              {isArabic ? '💡 العبرة:' : '💡 Lesson:'}
+                    <Card
+                      className={`cursor-pointer hover:scale-105 transition-all duration-300 bg-gradient-to-br ${prophet.color} text-white border-0 shadow-lg hover:shadow-2xl`}
+                      onClick={() => setSelectedStory(selectedStory === prophet.id ? null : prophet.id)}
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span className="text-2xl">{prophet.emoji}</span>
+                          <span className="text-lg">{isArabic ? prophet.nameAr : prophet.name}</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {selectedStory === prophet.id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            className="space-y-3"
+                          >
+                            <p className="text-sm leading-relaxed">
+                              {isArabic ? prophet.storyAr : prophet.story}
                             </p>
-                            <p className="text-sm italic">
-                              {isArabic ? prophet.lessonAr : prophet.lesson}
-                            </p>
-                          </div>
-                        </motion.div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
+                            <div className="pt-3 border-t border-white/30">
+                              <p className="text-xs font-semibold mb-1">
+                                {isArabic ? '💡 العبرة:' : '💡 Lesson:'}
+                              </p>
+                              <p className="text-sm italic">
+                                {isArabic ? prophet.lessonAr : prophet.lesson}
+                              </p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </EducationalErrorBoundary>
           </TabsContent>
 
           {/* QUIZ TAB */}
           <TabsContent value="quiz">
-            <Card className="glass-premium border-purple-500/30">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-center text-2xl">
-                  {isArabic ? '🎮 اختبر معلوماتك!' : '🎮 Test Your Knowledge!'}
-                </CardTitle>
-                <Button
-                  onClick={generateAIQuiz}
-                  disabled={isGenerating}
-                  variant="outline"
-                  size="sm"
-                  className="glass border-purple-500/30 text-purple-400"
-                >
-                  {isGenerating ? <Sparkles className="w-4 h-4 animate-spin mr-2" /> : <Gamepad2 className="w-4 h-4 mr-2" />}
-                  {isArabic ? 'توليد اختبار جديد' : 'New AI Quiz'}
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {!quizFinished ? (
-                  <>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>{isArabic ? 'السؤال' : 'Question'} {currentQuestion + 1}/{quizQuestions.length}</span>
-                        <span>{isArabic ? 'النتيجة' : 'Score'}: {quizScore}</span>
+            <EducationalErrorBoundary>
+              <Card className="glass-premium border-purple-500/30">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-center text-2xl">
+                    {isArabic ? '🎮 اختبر معلوماتك!' : '🎮 Test Your Knowledge!'}
+                  </CardTitle>
+                  <Button
+                    onClick={generateAIQuiz}
+                    disabled={isGenerating}
+                    variant="outline"
+                    size="sm"
+                    className="glass border-purple-500/30 text-purple-400"
+                  >
+                    {isGenerating ? <Sparkles className="w-4 h-4 animate-spin mr-2" /> : <Gamepad2 className="w-4 h-4 mr-2" />}
+                    {isArabic ? 'توليد اختبار جديد' : 'New AI Quiz'}
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {!quizFinished ? (
+                    <>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                          <span>{isArabic ? 'السؤال' : 'Question'} {currentQuestion + 1}/{quizQuestions.length}</span>
+                          <span>{isArabic ? 'النتيجة' : 'Score'}: {quizScore}</span>
+                        </div>
+                        <Progress value={((currentQuestion + 1) / quizQuestions.length) * 100} className="h-2" />
                       </div>
-                      <Progress value={((currentQuestion + 1) / quizQuestions.length) * 100} className="h-2" />
-                    </div>
 
-                    <div className="text-center py-6">
-                      <span className="text-6xl mb-4 block">{quizQuestions[currentQuestion].emoji}</span>
-                      <h3 className="text-xl font-bold mb-6">
-                        {isArabic ? quizQuestions[currentQuestion].questionAr : quizQuestions[currentQuestion].question}
+                      <div className="text-center py-6">
+                        <span className="text-6xl mb-4 block">{quizQuestions[currentQuestion].emoji}</span>
+                        <h3 className="text-xl font-bold mb-6">
+                          {isArabic ? quizQuestions[currentQuestion].questionAr : quizQuestions[currentQuestion].question}
+                        </h3>
+
+                        <div className="grid gap-3 max-w-md mx-auto">
+                          {(aiQuiz.length > 0 ? aiQuiz : quizQuestions)[currentQuestion].options.map((option, index) => (
+                            <Button
+                              key={index}
+                              onClick={() => handleAnswerSelect(index)}
+                              disabled={selectedAnswer !== null}
+                              variant={selectedAnswer === index ? (index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ? 'default' : 'destructive') : 'outline'}
+                              className={`h-auto py-4 text-base ${selectedAnswer === index && index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ? 'bg-green-500 hover:bg-green-600' : ''}`}
+                            >
+                              {selectedAnswer === index && (
+                                index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ?
+                                  <CheckCircle2 className="w-5 h-5 mr-2" /> :
+                                  <XCircle className="w-5 h-5 mr-2" />
+                              )}
+                              {isArabic && (aiQuiz.length === 0) ? quizQuestions[currentQuestion].optionsAr[index] : option}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12 space-y-6">
+                      <div className="text-8xl mb-4">
+                        {quizScore >= quizQuestions.length * 0.8 ? '🏆' : quizScore >= quizQuestions.length * 0.5 ? '🎉' : '📚'}
+                      </div>
+                      <h3 className="text-3xl font-bold">
+                        {isArabic ? 'انتهى الاختبار!' : 'Quiz Complete!'}
                       </h3>
-
-                      <div className="grid gap-3 max-w-md mx-auto">
-                        {(aiQuiz.length > 0 ? aiQuiz : quizQuestions)[currentQuestion].options.map((option, index) => (
-                          <Button
-                            key={index}
-                            onClick={() => handleAnswerSelect(index)}
-                            disabled={selectedAnswer !== null}
-                            variant={selectedAnswer === index ? (index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ? 'default' : 'destructive') : 'outline'}
-                            className={`h-auto py-4 text-base ${selectedAnswer === index && index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ? 'bg-green-500 hover:bg-green-600' : ''}`}
-                          >
-                            {selectedAnswer === index && (
-                              index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ?
-                                <CheckCircle2 className="w-5 h-5 mr-2" /> :
-                                <XCircle className="w-5 h-5 mr-2" />
-                            )}
-                            {isArabic && (aiQuiz.length === 0) ? quizQuestions[currentQuestion].optionsAr[index] : option}
-                          </Button>
-                        ))}
-                      </div>
+                      <p className="text-2xl text-primary">
+                        {isArabic ? `نتيجتك: ${quizScore}/${quizQuestions.length}` : `Your Score: ${quizScore}/${quizQuestions.length}`}
+                      </p>
+                      <p className="text-lg text-muted-foreground">
+                        {quizScore >= quizQuestions.length * 0.8 ?
+                          (isArabic ? 'ممتاز! ماشاء الله!' : 'Excellent! MashaAllah!') :
+                          quizScore >= quizQuestions.length * 0.5 ?
+                            (isArabic ? 'عمل جيد! استمر!' : 'Good job! Keep it up!') :
+                            (isArabic ? 'حاول مرة أخرى!' : 'Try again!')
+                        }
+                      </p>
+                      <Button onClick={resetQuiz} size="lg" className="mt-4">
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        {isArabic ? 'ابدأ من جديد' : 'Play Again'}
+                      </Button>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12 space-y-6">
-                    <div className="text-8xl mb-4">
-                      {quizScore >= quizQuestions.length * 0.8 ? '🏆' : quizScore >= quizQuestions.length * 0.5 ? '🎉' : '📚'}
-                    </div>
-                    <h3 className="text-3xl font-bold">
-                      {isArabic ? 'انتهى الاختبار!' : 'Quiz Complete!'}
-                    </h3>
-                    <p className="text-2xl text-primary">
-                      {isArabic ? `نتيجتك: ${quizScore}/${quizQuestions.length}` : `Your Score: ${quizScore}/${quizQuestions.length}`}
-                    </p>
-                    <p className="text-lg text-muted-foreground">
-                      {quizScore >= quizQuestions.length * 0.8 ?
-                        (isArabic ? 'ممتاز! ماشاء الله!' : 'Excellent! MashaAllah!') :
-                        quizScore >= quizQuestions.length * 0.5 ?
-                          (isArabic ? 'عمل جيد! استمر!' : 'Good job! Keep it up!') :
-                          (isArabic ? 'حاول مرة أخرى!' : 'Try again!')
-                      }
-                    </p>
-                    <Button onClick={resetQuiz} size="lg" className="mt-4">
-                      <Sparkles className="w-5 h-5 mr-2" />
-                      {isArabic ? 'ابدأ من جديد' : 'Play Again'}
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            </EducationalErrorBoundary>
           </TabsContent>
 
-          {/* GOOD DEEDS TAB */}
+          {/* VIDEOS TAB */}
+          <TabsContent value="videos">
+            <EducationalErrorBoundary>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {['stories', 'learning', 'songs'].map((cat) => (
+                  <div key={cat} className="space-y-4">
+                    <h3 className="text-xl font-bold capitalize flex items-center gap-2 px-2">
+                      <div className="w-2 h-8 bg-amber-500 rounded-full" />
+                      {cat}
+                    </h3>
+                    {YouTubeService.getVideos(cat as any).map((video) => (
+                      <motion.div
+                        key={video.id}
+                        whileHover={{ scale: 1.02 }}
+                        className="group relative cursor-pointer overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md"
+                        onClick={() => setSelectedVideo(video)}
+                      >
+                        <img
+                          src={video.thumbnail}
+                          alt={video.title}
+                          className="w-full aspect-video object-cover transition-transform group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-amber-600 shadow-xl">
+                            <Gamepad2 className="w-6 h-6 fill-current" />
+                          </div>
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-bold text-sm line-clamp-2">{video.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{video.channel}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </EducationalErrorBoundary>
+          </TabsContent>
+
+          {/* VIDEO OVERLAY */}
+          {selectedVideo && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 md:p-12 animate-in fade-in zoom-in duration-300">
+              <div className="relative w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl">
+                <Button
+                  onClick={() => setSelectedVideo(null)}
+                  className="absolute top-4 right-4 z-[110] bg-white/20 hover:bg-white/40 rounded-full w-10 h-10 p-0"
+                >
+                  <XCircle className="w-6 h-6 text-white" />
+                </Button>
+                <iframe
+                  src={YouTubeService.getEmbedUrl(selectedVideo.id)}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          )}
           <TabsContent value="deeds">
             <Card className="glass-premium border-green-500/30">
               <CardHeader>
