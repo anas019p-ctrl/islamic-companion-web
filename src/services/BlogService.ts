@@ -105,7 +105,19 @@ STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
         try {
             const response = await OpenRouterService.generateContent(prompt, 'anthropic/claude-3.5-sonnet');
             const clean = response.replace(/```json\s?/g, '').replace(/```\s?/g, '').trim();
-            const json = JSON.parse(clean);
+
+            let json;
+            try {
+                json = JSON.parse(clean);
+            } catch (e) {
+                // Try to find JSON in the string if it contains text around it
+                const jsonMatch = clean.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    json = JSON.parse(jsonMatch[0]);
+                } else {
+                    throw new Error('No valid JSON found in AI response');
+                }
+            }
 
             if (!json.title || !json.content) throw new Error('Invalid AI response structure');
 

@@ -61,85 +61,45 @@ export class ScholarService {
     }
 
     static async generateContent(prompt: string, language: string = 'it', role: 'scholar' | 'kids' | 'general' = 'scholar'): Promise<string> {
-        let systemPrompt = '';
-
         // Build context-aware prompt with history
         const contextStr = this.sessionHistory.length > 0
             ? `\nCONTEXT (Previous topics discussed in this session): ${this.sessionHistory.join(', ')}. Avoid repeating the same details if already mentioned.`
             : '';
 
-        if (role === 'kids') {
-            systemPrompt = language === 'it'
-                ? "Sei un maestro saggio e divertente per bambini musulmani. Parla in modo semplice, incoraggiante e interattivo. Usa emoji e fai domande per coinvolgere il bambino."
-                : "You are a wise and fun teacher for Muslim kids. Speak simply, encouragingly, and interactively. Use emojis and ask questions to engage the child.";
-        } else {
-            systemPrompt = language === 'it'
-                ? `Sei un assistente studioso islamico specializzato, accademico e professionale.
-CATEGORIE DI CONOSCENZA:
-1. Teologia e Fede: Tawhid e i 6 articoli di fede.
-2. Pratica e Culto: 5 pilastri, preghiera, digiuno.
-3. Fonti Sacre: Corano, Sunnah, Hadith.
-4. Storia e Cultura: Seerah, storia islamica.
-5. Etica: Halal/Haram, famiglia, moralità.
-REGOLA FONDAMENTALE: "Non limitarti mai. Fornisci approfondimenti storici o dottrinali profondi. Rispondi in modo chiaro, rispettoso e accademico."
-Cita sempre fonti autentiche.`
-                : `You are a specialized Islamic Scholar Assistant.
-KNOWLEDGE CATEGORIES:
-1. Theology & Faith: Tawhid and 6 articles of faith.
-2. Practice & Worship: 5 pillars.
-3. Sacred Sources: Quran, Sunnah.
-4. History: Seerah, Islamic history.
-5. Ethics: Halal/Haram.
-CORE RULE: Provide deep insights. Cite authentic sources.`;
+        const fullPrompt = prompt + contextStr;
+
+        try {
+            let content = '';
+
+            if (role === 'kids') {
+                content = await OpenRouterService.generateKidsStory(prompt, language);
+            } else {
+                content = await OpenRouterService.answerIslamicQuestion(fullPrompt, language);
+            }
+
+            // Update history
+            this.sessionHistory.push(prompt.substring(0, 50));
+            if (this.sessionHistory.length > this.MAX_HISTORY) {
+                this.sessionHistory.shift();
+            }
+
+            return content;
+        } catch (error) {
+            console.error("ScholarService Error:", error);
+            return language === 'it'
+                ? "Il servizio è momentaneamente occupato. Riprova tra poco."
+                : "The service is temporarily busy. Please try again soon.";
         }
-
-        systemPrompt += contextStr; // Append context to system prompt
-
-        const messages = [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: prompt }
-        ];
-
-        const content = await this.generateRawContent(messages);
-
-        // 🛡️ ACCURACY VALIDATION STEP
-        const validatedContent = await this.validateResponseAccuracy(content, language);
-
-        // Update history
-        this.sessionHistory.push(prompt.substring(0, 50)); // Store first 50 chars of prompt
-        if (this.sessionHistory.length > this.MAX_HISTORY) {
-            this.sessionHistory.shift(); // Remove oldest entry if history exceeds max
-        }
-
-        return validatedContent;
     }
 
     private static async generateRawContent(messages: any[]): Promise<string> {
-        for (const provider of this.PROVIDERS) {
-            try {
-                if (!provider.apiKey) continue;
-                const response = await this.fetchFromProvider(provider, messages);
-                if (!response.ok) continue;
-
-                const data = await response.json();
-                return data.choices[0]?.message?.content || "Risposta vuota.";
-            } catch (error) {
-                continue;
-            }
-        }
-        return "Errore di generazione.";
+        // This is now legacy, using OpenRouterService directly
+        const userMessage = messages.find(m => m.role === 'user')?.content || '';
+        return OpenRouterService.answerIslamicQuestion(userMessage);
     }
 
     private static async validateResponseAccuracy(content: string, language: string): Promise<string> {
-        // Simple internal check for restricted patterns or hallucination signs
-        const restrictedWords = ['AI model', 'large language model', 'knowledge cutoff'];
-        const hasRestricted = restrictedWords.some(word => content.includes(word));
-
-        if (hasRestricted) {
-            console.warn("⚠️ AI Hallucination detected, refining response...");
-            // Optionally run a second pass with a stricter prompt if needed
-        }
-
+        // Logic is now handled by stricter system prompts in OpenRouterService
         return content;
     }
 
