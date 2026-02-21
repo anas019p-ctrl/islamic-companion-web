@@ -155,61 +155,60 @@ export class OpenRouterService {
   /**
    * 👶 GENERATE KIDS STORY (Islamic Prophets/Companions)
    */
-  static async generateKidsStory(prophetName: string, language: string = 'en', ageGroup: string = '6-10'): Promise<string> {
+  static async generateKidsStory(prompt: string, language: string = 'en'): Promise<string> {
     const messages = [
       {
         role: 'system',
-        content: `You are an Islamic educator for children aged ${ageGroup}. 
-        Create a simple, engaging, and highly interactive story about ${prophetName} in ${language} that:
+        content: `You are a talented Muslim storyteller for kids. Create a simple, engaging, and highly interactive story or educational content in ${language} that:
         - Uses simple vocabulary suitable for children
         - Includes a clear moral lesson
         - Is factually accurate according to Islamic sources
-        - **IMPORTANT:** Include 2-3 interactive questions within the story (e.g., "What do you think happened next?" or "If you were there, would you help him?") to keep the child engaged.
+        - **IMPORTANT:** Include 2-3 interactive questions within the story (e.g., "What do you think happened next?") to keep the child engaged.
         - Ends with a beautiful lesson the child can apply in daily life.
         
-        Length: 250-400 words.`
+        STYLE: Educational, fun, and purely Islamic.`
       },
-      { role: 'user', content: `Tell a story about ${prophetName}` }
+      { role: 'user', content: prompt }
     ];
 
-    return await this.request(messages, 'google/gemini-2.0-flash-001', 0.8);
+    return await this.request(messages, this.DEFAULT_MODEL, 0.7);
   }
 
   /**
    * 📚 GENERATE ISLAMIC QUIZ QUESTIONS
    */
-  static async generateQuizQuestions(topic: string, difficulty: string = 'medium', count: number = 5): Promise<any[]> {
+  static async generateQuizQuestions(topic: string, language: string = 'en', difficulty: string = 'medium', count: number = 5): Promise<any[]> {
     const messages = [
       {
         role: 'system',
-        content: `Generate ${count} ${difficulty} difficulty multiple-choice quiz questions about ${topic}.
+        content: `Generate ${count} ${difficulty} difficulty multiple-choice quiz questions about ${topic} in ${language}.
         Return ONLY a valid JSON array with this exact structure:
         [
           {
-            "question": "Question text",
-            "questionAr": "Arabic translation",
+            "question": "Question text in ${language}",
             "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-            "optionsAr": ["خيار 1", "خيار 2", "خيار 3", "خيار 4"],
             "correct": 0,
-            "explanation": "Brief explanation",
-            "encouragement": "A very encouraging message for a child (e.g., 'Amazing! You know so much about our Prophets!')"
+            "explanation": "Brief explanation in ${language}",
+            "encouragement": "A very encouraging message for a child in ${language} (e.g., 'Amazing! You know so much!')"
           }
         ]
         
         Ensure questions are factually correct and appropriate for Islamic education.`
       },
-      { role: 'user', content: `Generate quiz about ${topic}` }
+      { role: 'user', content: `Generate quiz about ${topic} in ${language}` }
     ];
 
-    const response = await this.request(messages, 'google/gemini-2.0-flash-001', 0.6);
+    const response = await this.request(messages, this.DEFAULT_MODEL, 0.6);
 
     try {
       return JSON.parse(response);
     } catch (e) {
       const jsonMatch = response.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        return JSON.parse(jsonMatch[jsonMatch.length - 1]); // Get last array if multiple
       }
+      const rawMatch = response.match(/\[.*\]/s);
+      if (rawMatch) return JSON.parse(rawMatch[0]);
       throw new Error('Failed to parse quiz questions');
     }
   }
@@ -247,7 +246,7 @@ export class OpenRouterService {
       { role: 'user', content: question }
     ];
 
-    return await this.request(messages, 'google/gemini-2.0-flash-001', 0.5);
+    return await this.request(messages, this.DEFAULT_MODEL, 0.5);
   }
 
   /**
