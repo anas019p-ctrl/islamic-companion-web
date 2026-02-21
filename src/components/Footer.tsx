@@ -13,7 +13,7 @@ export const Footer = () => {
   const { toast } = useToast();
   const [showQR, setShowQR] = useState(false);
   const APP_URL = 'https://islamic-companion-web.pages.dev';
-  const VERSION = 'v2.1-ULTRA-GOLD';
+  const VERSION = 'v2.2-MIRACLE-SYNC-SUCCESS';
 
   const handleShare = () => {
     const url = window.location.origin;
