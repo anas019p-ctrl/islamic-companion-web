@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,41 +12,29 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Sun, Moon, Play, Pause, Heart, Volume2, Book, Bookmark, Compass, Coffee, Stars, ShieldCheck, Bed } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { COMPREHENSIVE_ADKAR, ADKAR_COUNTS, type Dua } from '@/data/adkar-database';
 
 const DuaPage = () => {
   const { t, language } = useLanguage();
   const { toast } = useToast();
-  const [duas, setDuas] = useState<Dua[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('morning');
 
-  useEffect(() => {
-    fetchDuas();
-  }, []);
-
-  const fetchDuas = async () => {
-    try {
+  const { data: duas = COMPREHENSIVE_ADKAR, isLoading } = useQuery({
+    queryKey: ['duas'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('duas')
         .select('*')
         .order('order_index');
 
-      // Always use comprehensive database (much richer than DB)
       if (error || !data || data.length < COMPREHENSIVE_ADKAR.length) {
-        setDuas(COMPREHENSIVE_ADKAR);
-        console.log(`✅ Loaded ${COMPREHENSIVE_ADKAR.length} authentic Adkar from comprehensive database`);
-      } else {
-        setDuas(data as any);
+        return COMPREHENSIVE_ADKAR;
       }
-    } catch (error) {
-      setDuas(COMPREHENSIVE_ADKAR);
-      console.log(`✅ Loaded ${COMPREHENSIVE_ADKAR.length} authentic Adkar from comprehensive database`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return data as any;
+    },
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
 
   const filteredDuas = duas.filter(dua => dua.category === activeCategory);
   const isRTL = language === 'ar';
@@ -55,7 +44,7 @@ const DuaPage = () => {
   };
 
   const speak = (text: string) => {
-    VoiceService.speak(text, 'ar');
+    AudioService.speak(text, 'ar-SA');
   };
 
   return (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Header } from '@/components/Header';
@@ -11,7 +12,7 @@ import { Search, Book, User, Volume2, ShieldCheck, Loader2, BookOpen } from 'luc
 import { useToast } from '@/hooks/use-toast';
 import { islamicApi } from '@/services/islamicApi';
 import { useAccessibility } from '@/contexts/AccessibilityContext';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { ShamilaService } from '@/lib/ShamilaService';
 import { BackButton } from '@/components/BackButton';
 import { ScholarService } from '@/lib/ScholarService';
@@ -30,35 +31,17 @@ interface Hadith {
 
 const HadithPage = () => {
   const { language, isRTL, t } = useLanguage();
-   
+
   const { speak } = useAccessibility();
   const { toast } = useToast();
-  const [hadiths, setHadiths] = useState<Hadith[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [activeCollection, setActiveCollection] = useState('bukhari');
-  const [explainingId, setExplainingId] = useState<string | null>(null);
-  const [explanations, setExplanations] = useState<Record<string, string>>({});
-  const [translatingId, setTranslatingId] = useState<string | null>(null);
-  const [cachedTranslations, setCachedTranslations] = useState<Record<string, Record<string, string>>>(() => {
-    const saved = localStorage.getItem('hadith_translations');
-    return saved ? JSON.parse(saved) : {};
-  });
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    fetchHadiths();
-  }, [activeCollection]);
-
-  const fetchHadiths = async () => {
-    setIsLoading(true);
-    try {
-      // Fetch specific collection from API
-       
+  const { data: hadiths = [], isLoading } = useQuery({
+    queryKey: ['hadiths', activeCollection],
+    queryFn: async () => {
       const apiHadiths: any[] = await islamicApi.getHadithsByCollection(activeCollection);
-
-      // Transform and validate data
-       
-      const validHadiths: Hadith[] = apiHadiths.map((h: any, idx: number) => {
+      return apiHadiths.map((h: any, idx: number) => {
         const isIta = h.edition?.startsWith('ita-') || h.text?.toLowerCase().includes('dio') || h.text?.toLowerCase().includes('profeta');
         const isAra = h.edition?.startsWith('ara-');
 
@@ -75,20 +58,18 @@ const HadithPage = () => {
           grade: h.grade,
           source: (h.edition || activeCollection).toUpperCase()
         };
-      });
+      }) as Hadith[];
+    },
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
 
-      setHadiths(validHadiths);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Failed to load hadiths",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [explainingId, setExplainingId] = useState<string | null>(null);
+  const [explanations, setExplanations] = useState<Record<string, string>>({});
+  const [translatingId, setTranslatingId] = useState<string | null>(null);
+  const [cachedTranslations, setCachedTranslations] = useState<Record<string, Record<string, string>>>(() => {
+    const saved = localStorage.getItem('hadith_translations');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   const getTranslation = async (hadith: Hadith): Promise<string | null> => {
     // 1. Direct match
@@ -119,7 +100,7 @@ const HadithPage = () => {
       setTranslatingId(hadith.id);
 
       // Use our high-quality Digital Scholar primarily for superior results
-      const translatedText = await ScholarService.translateText(fallbackText, language);
+      const translatedText = await ScholarService.translate(fallbackText, language);
 
       if (translatedText && translatedText !== fallbackText) {
         // Cache the translation
@@ -285,7 +266,10 @@ const HadithPage = () => {
                             className="h-9 w-9 hover:bg-primary/10 rounded-xl text-primary"
                             onClick={async () => {
                               const text = await getTranslation(hadith);
-                              if (text) VoiceService.speak(text, language);
+                              if (text) {
+                                const langToSpeak = language === 'ar' ? 'ar-SA' : (language === 'it' ? 'it-IT' : 'en-US');
+                                AudioService.speak(text, langToSpeak);
+                              }
                             }}
                           >
                             <Volume2 className="w-4 h-4" />
@@ -315,7 +299,7 @@ const HadithPage = () => {
                               className="text-[10px] h-9 rounded-xl uppercase tracking-widest border-primary/20 hover:bg-primary/10 transition-all font-bold"
                               onClick={async () => {
                                 const text = await getTranslation(hadith);
-                                if (text) VoiceService.speak(text, language);
+                                if (text) AudioService.speak(text, language);
                               }}
                             >
                               <Volume2 className="w-3.5 h-3.5 mr-2 text-primary" />

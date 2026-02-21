@@ -8,6 +8,12 @@ export interface Dhikr {
     en: string;
     it: string;
     ar: string;
+    fr?: string;
+    es?: string;
+    de?: string;
+    tr?: string;
+    bn?: string;
+    sq?: string;
   };
   repetitions: number;
   category: string;
@@ -15,6 +21,12 @@ export interface Dhikr {
     en: string;
     it: string;
     ar: string;
+    fr?: string;
+    es?: string;
+    de?: string;
+    tr?: string;
+    bn?: string;
+    sq?: string;
   };
   source: string;
   audioUrl?: string;
@@ -26,6 +38,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار الصباح',
     nameEn: 'Morning Adhkar',
     nameIt: 'Dhikr del Mattino',
+    nameFr: 'Adhkar du Matin',
+    nameEs: 'Adhkar de la Mañana',
     icon: '🌅',
     time: 'After Fajr until sunrise'
   },
@@ -34,6 +48,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار المساء',
     nameEn: 'Evening Adhkar',
     nameIt: 'Dhikr della Sera',
+    nameFr: 'Adhkar du Soir',
+    nameEs: 'Adhkar de la Tarde',
     icon: '🌆',
     time: 'After Asr until Maghrib'
   },
@@ -42,6 +58,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار النوم',
     nameEn: 'Before Sleep',
     nameIt: 'Prima di Dormire',
+    nameFr: 'Avant de Dormir',
+    nameEs: 'Antes de Dormir',
     icon: '🌙',
     time: 'Before sleeping'
   },
@@ -50,6 +68,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار بعد الصلاة',
     nameEn: 'After Prayer',
     nameIt: 'Dopo la Preghiera',
+    nameFr: 'Après la Prière',
+    nameEs: 'Después de la Oración',
     icon: '🤲',
     time: 'After each Salah'
   },
@@ -58,6 +78,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار السفر',
     nameEn: 'Travel Duas',
     nameIt: 'Du\'a di Viaggio',
+    nameFr: 'Douas de Voyage',
+    nameEs: 'Duas de Viaje',
     icon: '✈️',
     time: 'When traveling'
   },
@@ -66,6 +88,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار الطعام',
     nameEn: 'Food & Drink',
     nameIt: 'Cibo e Bevande',
+    nameFr: 'Nourriture et Boisson',
+    nameEs: 'Comida y Bebida',
     icon: '🍽️',
     time: 'Before/After eating'
   },
@@ -74,6 +98,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار المرض',
     nameEn: 'Sickness & Healing',
     nameIt: 'Malattia e Guarigione',
+    nameFr: 'Maladie et Guérison',
+    nameEs: 'Enfermedad y Curación',
     icon: '🩺',
     time: 'When sick or visiting the sick'
   },
@@ -82,6 +108,8 @@ export const adhkarCategories = {
     nameAr: 'أذكار متنوعة',
     nameEn: 'General Dhikr',
     nameIt: 'Dhikr Generale',
+    nameFr: 'Dhikr Général',
+    nameEs: 'Dhikr General',
     icon: '📿',
     time: 'Anytime'
   }

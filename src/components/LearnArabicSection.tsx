@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { ScholarService } from '@/lib/ScholarService';
 import { useToast } from '@/hooks/use-toast';
 import { ALL_VOCABULARY, ALL_PHRASES, ALL_GRAMMAR } from '@/data/arabic-vocabulary-massive';
@@ -309,7 +309,7 @@ export const LearnArabicSection = () => {
                 <motion.div
                   key={index}
                   whileHover={{ scale: 1.05, y: -5 }}
-                  onClick={() => VoiceService.speak(item.letter, 'ar')}
+                  onClick={() => AudioService.speak(item.letter, 'ar')}
                   className="futuristic-card p-4 text-center cursor-pointer group relative overflow-hidden notranslate"
                 >
                   <div className="absolute top-0 right-0 p-1 opacity-10">
@@ -340,7 +340,7 @@ export const LearnArabicSection = () => {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               {vocabularyToUse.map((item: any, index) => (
-                <Card key={index} className="futuristic-card group cursor-pointer" onClick={() => VoiceService.speak(item.ar, 'ar')}>
+                <Card key={index} className="futuristic-card group cursor-pointer" onClick={() => AudioService.speak(item.ar, 'ar')}>
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <Badge variant="outline" className="text-[8px] uppercase tracking-tighter opacity-50">{item.cat}</Badge>
@@ -369,7 +369,7 @@ export const LearnArabicSection = () => {
                 <motion.div
                   key={index}
                   whileHover={{ x: 10, backgroundColor: 'rgba(201,164,74,0.05)' }}
-                  onClick={() => VoiceService.speak(item.ar, 'ar', 'phrase')}
+                  onClick={() => AudioService.speak(item.ar, 'ar')}
                   className="futuristic-card p-6 flex items-center justify-between cursor-pointer group border-l-4 border-l-transparent hover:border-l-primary transition-all"
                 >
                   <div className="flex items-center gap-6">
@@ -417,7 +417,7 @@ export const LearnArabicSection = () => {
                       <h3 className="font-arabic text-3xl">{lesson.example_ar}</h3>
                       <p className="text-xs text-muted-foreground">{lesson.example_tr}</p>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => VoiceService.speak(lesson.example_ar, 'ar')}>
+                    <Button variant="ghost" size="icon" onClick={() => AudioService.speak(lesson.example_ar, 'ar')}>
                       <Volume2 className="w-5 h-5" />
                     </Button>
                   </div>

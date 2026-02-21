@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export const InstructionsPage = () => {
+const InstructionsPage = () => {
     const { t, language } = useLanguage();
 
     const sections = [
@@ -115,3 +115,5 @@ export const InstructionsPage = () => {
         </div>
     );
 };
+
+export default InstructionsPage;

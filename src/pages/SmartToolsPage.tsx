@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { useToast } from '@/hooks/use-toast';
 
 import { ADHAN_LIBRARY } from '@/lib/AdhanLibrary';
@@ -72,14 +72,14 @@ const SmartToolsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [countdown, setCountdown] = useState<string>('--:--:--');
   const [nextPrayerName, setNextPrayerName] = useState<string>('');
-  const [audioStatus, setAudioStatus] = useState(VoiceService.getStatus());
+  const [audioStatus, setAudioStatus] = useState(AudioService.getStatus());
 
   const statusInterval = useRef<any>(null);
 
   useEffect(() => {
     const cleanup = startCompass();
     statusInterval.current = setInterval(() => {
-      setAudioStatus(VoiceService.getStatus());
+      setAudioStatus(AudioService.getStatus());
     }, 500);
 
     return () => {
@@ -166,7 +166,7 @@ const SmartToolsPage = () => {
   const handleAutoAdhan = (prayerName: string) => {
     const adhanId = selectedAdhans[prayerName] || ADHAN_LIBRARY[0].id;
     const adhan = ADHAN_LIBRARY.find(a => a.id === adhanId) || ADHAN_LIBRARY[0];
-    VoiceService.playExternal(adhan.url);
+    AudioService.playExternal(adhan.url);
     toast({
       title: `Adhan Time: ${getPrayerName(prayerName)}`,
       description: `Playing ${adhan.name}`,
@@ -221,7 +221,7 @@ const SmartToolsPage = () => {
   const handleAdhanPreview = (id?: string) => {
     const adhanId = id || selectedAdhans[activePrayerTab] || ADHAN_LIBRARY[0].id;
     const adhan = ADHAN_LIBRARY.find(a => a.id === adhanId) || ADHAN_LIBRARY[0];
-    VoiceService.playExternal(adhan.url);
+    AudioService.playExternal(adhan.url);
   };
 
   const getRotation = () => {
@@ -325,7 +325,7 @@ const SmartToolsPage = () => {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 opacity-30 hover:opacity-100 hover:bg-primary/20 rounded-lg"
-                                onClick={() => VoiceService.speak(`${getPrayerName(p)} time is ${time}`, language)}
+                                onClick={() => AudioService.speak(`${getPrayerName(p)} time is ${time}`, language)}
                               >
                                 <Volume2 className="w-4 h-4" />
                               </Button>

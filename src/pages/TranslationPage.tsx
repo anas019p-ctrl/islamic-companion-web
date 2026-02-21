@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Mic, Volume2, ArrowRightLeft, BookOpen, AlertCircle } from 'lucide-react';
-import { VoiceService } from '@/lib/VoiceService';
 import { useToast } from '@/hooks/use-toast';
 import OpenRouterService from '@/lib/OpenRouterService';
+import AudioService from '@/lib/AudioService';
 
 const languages = [
     { code: 'ar', name: 'Arabic', native: 'العربية' },
@@ -161,11 +161,11 @@ const TranslationPage = () => {
         try {
             // 🚀 FIRST: Try OpenRouter AI Translation (UNLIMITED & PERFECT)
             try {
-                const isReligious = text.toLowerCase().includes('allah') || 
-                                   text.toLowerCase().includes('prophet') || 
-                                   text.toLowerCase().includes('dio') ||
-                                   text.toLowerCase().includes('preghiera');
-                
+                const isReligious = text.toLowerCase().includes('allah') ||
+                    text.toLowerCase().includes('prophet') ||
+                    text.toLowerCase().includes('dio') ||
+                    text.toLowerCase().includes('preghiera');
+
                 const aiTranslation = await OpenRouterService.translate(text, targetLang, isReligious);
                 if (aiTranslation && aiTranslation.length > 0) {
                     setTranslatedText(aiTranslation);
@@ -379,7 +379,7 @@ const TranslationPage = () => {
                                             className="rounded-full w-10 h-10 hover:bg-primary/20"
                                             onClick={async () => {
                                                 try {
-                                                    await VoiceService.speak(translatedText, targetLang);
+                                                    await AudioService.speak(translatedText, targetLang);
                                                 } catch (e) {
                                                     console.error("Speech error", e);
                                                     toast({

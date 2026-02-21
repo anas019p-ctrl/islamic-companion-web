@@ -9,10 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Baby, BookOpen, Gamepad2, Trophy, Star, Sparkles, 
-  Volume2, CheckCircle2, XCircle, Heart, Lightbulb 
+import {
+  Baby, BookOpen, Gamepad2, Trophy, Star, Sparkles,
+  Volume2, CheckCircle2, XCircle, Heart, Lightbulb, Globe, Wand2, Info
 } from 'lucide-react';
+import { ScholarService } from '@/lib/ScholarService';
+import { OpenRouterService } from '@/lib/OpenRouterService';
 
 const prophetStories = [
   {
@@ -155,6 +157,10 @@ const KidsPage = () => {
   const [quizFinished, setQuizFinished] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [completedDeeds, setCompletedDeeds] = useState<number[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiStories, setAiStories] = useState<any[]>([]);
+  const [aiQuiz, setAiQuiz] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('stories');
 
   const isArabic = language === 'ar';
 
@@ -204,6 +210,48 @@ const KidsPage = () => {
     }
   };
 
+  const generateAIStory = async () => {
+    const prophet = prompt(isArabic ? "ادخل اسم النبي (مثال: النبي يونس)" : "Enter Prophet Name (e.g., Prophet Yunus)");
+    if (!prophet) return;
+
+    setIsGenerating(true);
+    try {
+      const story = await ScholarService.generateKidsStoryWithAI(prophet, language);
+      const newStory = {
+        id: Date.now(),
+        name: prophet,
+        nameAr: prophet,
+        story: story,
+        storyAr: story,
+        lesson: "Always trust Allah.",
+        emoji: '✨',
+        color: 'from-pink-500 to-rose-600',
+        isAiGenerated: true
+      };
+      setAiStories(prev => [newStory, ...prev]);
+      setSelectedStory(newStory.id);
+      toast({ title: '✨ Story Generated!', description: 'Your AI prophet story is ready!' });
+    } catch (error) {
+      toast({ title: '❌ Error', description: 'Could not generate story.', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const generateAIQuiz = async () => {
+    setIsGenerating(true);
+    try {
+      const questions = await OpenRouterService.generateQuizQuestions('islamic basics for kids', language);
+      setAiQuiz(questions);
+      resetQuiz();
+      toast({ title: '🎮 New Quiz Ready!', description: 'AI has created a fresh quiz for you!' });
+    } catch (error) {
+      toast({ title: '❌ Error', description: 'Could not generate quiz questions.', variant: 'destructive' });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className={`min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <Header />
@@ -248,15 +296,30 @@ const KidsPage = () => {
 
           {/* PROPHET STORIES TAB */}
           <TabsContent value="stories">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <BookOpen className="w-6 h-6 text-primary" />
+                {isArabic ? 'قصص الأنبياء' : 'Prophet Stories'}
+              </h2>
+              <Button
+                onClick={generateAIStory}
+                disabled={isGenerating}
+                className="glass border-primary/30 text-primary hover:bg-primary/20"
+              >
+                {isGenerating ? <Sparkles className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                {isArabic ? 'توليد قصة بالذكاء الاصطناعي' : 'Generate with AI'}
+              </Button>
+            </div>
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {prophetStories.map((prophet, index) => (
+              {[...aiStories, ...prophetStories].map((prophet, index) => (
                 <motion.div
                   key={prophet.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card 
+                  <Card
                     className={`cursor-pointer hover:scale-105 transition-all duration-300 bg-gradient-to-br ${prophet.color} text-white border-0 shadow-lg hover:shadow-2xl`}
                     onClick={() => setSelectedStory(selectedStory === prophet.id ? null : prophet.id)}
                   >
@@ -296,10 +359,20 @@ const KidsPage = () => {
           {/* QUIZ TAB */}
           <TabsContent value="quiz">
             <Card className="glass-premium border-purple-500/30">
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-center text-2xl">
                   {isArabic ? '🎮 اختبر معلوماتك!' : '🎮 Test Your Knowledge!'}
                 </CardTitle>
+                <Button
+                  onClick={generateAIQuiz}
+                  disabled={isGenerating}
+                  variant="outline"
+                  size="sm"
+                  className="glass border-purple-500/30 text-purple-400"
+                >
+                  {isGenerating ? <Sparkles className="w-4 h-4 animate-spin mr-2" /> : <Gamepad2 className="w-4 h-4 mr-2" />}
+                  {isArabic ? 'توليد اختبار جديد' : 'New AI Quiz'}
+                </Button>
               </CardHeader>
               <CardContent className="space-y-6">
                 {!quizFinished ? (
@@ -319,20 +392,20 @@ const KidsPage = () => {
                       </h3>
 
                       <div className="grid gap-3 max-w-md mx-auto">
-                        {quizQuestions[currentQuestion].options.map((option, index) => (
+                        {(aiQuiz.length > 0 ? aiQuiz : quizQuestions)[currentQuestion].options.map((option, index) => (
                           <Button
                             key={index}
                             onClick={() => handleAnswerSelect(index)}
                             disabled={selectedAnswer !== null}
-                            variant={selectedAnswer === index ? (index === quizQuestions[currentQuestion].correct ? 'default' : 'destructive') : 'outline'}
-                            className={`h-auto py-4 text-base ${selectedAnswer === index && index === quizQuestions[currentQuestion].correct ? 'bg-green-500 hover:bg-green-600' : ''}`}
+                            variant={selectedAnswer === index ? (index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ? 'default' : 'destructive') : 'outline'}
+                            className={`h-auto py-4 text-base ${selectedAnswer === index && index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ? 'bg-green-500 hover:bg-green-600' : ''}`}
                           >
                             {selectedAnswer === index && (
-                              index === quizQuestions[currentQuestion].correct ? 
-                              <CheckCircle2 className="w-5 h-5 mr-2" /> : 
-                              <XCircle className="w-5 h-5 mr-2" />
+                              index === (aiQuiz.length > 0 ? aiQuiz[currentQuestion].correct : quizQuestions[currentQuestion].correct) ?
+                                <CheckCircle2 className="w-5 h-5 mr-2" /> :
+                                <XCircle className="w-5 h-5 mr-2" />
                             )}
-                            {isArabic ? quizQuestions[currentQuestion].optionsAr[index] : option}
+                            {isArabic && (aiQuiz.length === 0) ? quizQuestions[currentQuestion].optionsAr[index] : option}
                           </Button>
                         ))}
                       </div>
@@ -350,11 +423,11 @@ const KidsPage = () => {
                       {isArabic ? `نتيجتك: ${quizScore}/${quizQuestions.length}` : `Your Score: ${quizScore}/${quizQuestions.length}`}
                     </p>
                     <p className="text-lg text-muted-foreground">
-                      {quizScore >= quizQuestions.length * 0.8 ? 
-                        (isArabic ? 'ممتاز! ماشاء الله!' : 'Excellent! MashaAllah!') : 
+                      {quizScore >= quizQuestions.length * 0.8 ?
+                        (isArabic ? 'ممتاز! ماشاء الله!' : 'Excellent! MashaAllah!') :
                         quizScore >= quizQuestions.length * 0.5 ?
-                        (isArabic ? 'عمل جيد! استمر!' : 'Good job! Keep it up!') :
-                        (isArabic ? 'حاول مرة أخرى!' : 'Try again!')
+                          (isArabic ? 'عمل جيد! استمر!' : 'Good job! Keep it up!') :
+                          (isArabic ? 'حاول مرة أخرى!' : 'Try again!')
                       }
                     </p>
                     <Button onClick={resetQuiz} size="lg" className="mt-4">
@@ -387,7 +460,7 @@ const KidsPage = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <Card 
+                      <Card
                         className={`transition-all duration-300 ${completedDeeds.includes(deed.id) ? 'bg-green-500/20 border-green-500' : 'hover:border-primary'}`}
                       >
                         <CardContent className="p-4 flex items-center justify-between">

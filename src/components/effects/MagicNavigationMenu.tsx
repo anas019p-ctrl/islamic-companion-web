@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, User, MessageCircle, Image, Settings, Library } from 'lucide-react';
+import { Home, User, MessageCircle, Image, Settings, Library, Map, Baby, AlertTriangle, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const menuItems = [
     { icon: Home, label: 'Home', path: '/' },
     { icon: Library, label: 'Dua', path: '/dua' },
+    { icon: Map, label: 'Mosques', path: '/mosques' },
+    { icon: Baby, label: 'Kids', path: '/kids' },
+    { icon: BookOpen, label: 'Quran', path: '/quran' },
+    { icon: AlertTriangle, label: 'Mistakes', path: '/mistakes' },
     { icon: MessageCircle, label: 'Blog', path: '/blog' },
     { icon: Image, label: 'Media', path: '/videos' }
 ];
@@ -64,7 +68,10 @@ export const MagicNavigationMenu: React.FC = () => {
                     return (
                         <button
                             key={index}
-                            onClick={() => navigate(item.path)}
+                            onClick={() => {
+                                if ('vibrate' in navigator) navigator.vibrate(10);
+                                navigate(item.path);
+                            }}
                             onMouseEnter={() => setHoveredIndex(index)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             className={`relative z-10 h-12 w-12 flex items-center justify-center rounded-full transition-all duration-300 ${isActive

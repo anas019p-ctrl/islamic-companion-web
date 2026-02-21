@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -11,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, Book, Users, Star, Shield, Heart, Gem, Loader2, BookOpen, Volume2, Search, Download, FileText, X, GraduationCap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScholarService } from '@/lib/ScholarService';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { ShamilaService } from '@/lib/ShamilaService';
 import { BackButton } from '@/components/BackButton';
 
@@ -673,7 +675,7 @@ const SahabaPage = () => {
                                                     <h4 className="text-xs uppercase tracking-widest text-primary font-bold flex items-center gap-2">
                                                         <Star className="w-4 h-4" /> {t('storyGreatness')}
                                                     </h4>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/20" onClick={() => VoiceService.speak(selectedSahbi.story_ar, 'ar')}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/20" onClick={() => AudioService.speak(selectedSahbi.story_ar, 'ar-SA')}>
                                                         <Volume2 className="w-4 h-4 text-primary" />
                                                     </Button>
                                                 </div>
@@ -690,7 +692,8 @@ const SahabaPage = () => {
                                                     </h4>
                                                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-neutral-500/20"
                                                         onClick={() => {
-                                                            VoiceService.speak(getStory(selectedSahbi), language);
+                                                            const langToSpeak = language === 'ar' ? 'ar-SA' : (language === 'it' ? 'it-IT' : 'en-US');
+                                                            AudioService.speak(getStory(selectedSahbi), langToSpeak);
                                                         }}>
                                                         <Volume2 className="w-4 h-4 text-muted-foreground" />
                                                     </Button>
@@ -751,8 +754,8 @@ const SahabaPage = () => {
                                                             <Button
                                                                 variant="secondary"
                                                                 onClick={() => {
-                                                                    const langToSpeak = language === 'ar' ? 'ar' : (language === 'it' ? 'it' : 'en');
-                                                                    VoiceService.speak(deepStories[selectedSahbi.id], langToSpeak);
+                                                                    const langToSpeak = language === 'ar' ? 'ar-SA' : (language === 'it' ? 'it-IT' : 'en-US');
+                                                                    AudioService.speak(deepStories[selectedSahbi.id], langToSpeak);
                                                                 }}
                                                                 className="h-10 rounded-lg text-[9px] uppercase font-bold tracking-widest"
                                                             >

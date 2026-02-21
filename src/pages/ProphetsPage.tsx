@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, Book, Star, Clock, Heart, Shield, Loader2, BookOpen, Volume2, Download, FileText, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScholarService } from '@/lib/ScholarService';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { ShamilaService } from '@/lib/ShamilaService';
 import { BackButton } from '@/components/BackButton';
 
@@ -171,34 +172,25 @@ const prophetsFallback: Prophet[] = [
 const ProphetsPage = () => {
   const { language, t } = useLanguage();
   const { toast } = useToast();
-  const [prophets, setProphets] = useState<Prophet[]>([]);
-  const [selectedProphet, setSelectedProphet] = useState<Prophet | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [deepStories, setDeepStories] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    fetchProphets();
-  }, []);
-
-  const fetchProphets = async () => {
-    try {
+  const { data: prophets = prophetsFallback, isLoading } = useQuery({
+    queryKey: ['prophets'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('prophets')
         .select('*')
         .order('timeline_order');
 
       if (error || !data || data.length < 6) {
-        setProphets(prophetsFallback);
-      } else {
-        setProphets(data as any);
+        return prophetsFallback;
       }
-    } catch (error) {
-      setProphets(prophetsFallback);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return data as Prophet[];
+    },
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
+
+  const [selectedProphet, setSelectedProphet] = useState<Prophet | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [deepStories, setDeepStories] = useState<Record<string, string>>({});
 
   const getProphetName = (prophet: Prophet) => {
     if (language === 'ar') return prophet.name_ar;
@@ -351,7 +343,7 @@ const ProphetsPage = () => {
                           <h4 className="flex items-center gap-2 text-xs uppercase font-bold text-primary">
                             <Book className="w-4 h-4" /> {t('storyGreatness')}
                           </h4>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/20" onClick={() => VoiceService.speak(selectedProphet.story_ar, 'ar')}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/20" onClick={() => AudioService.speak(selectedProphet.story_ar, 'ar-SA')}>
                             <Volume2 className="w-4 h-4 text-primary" />
                           </Button>
                         </div>
@@ -365,7 +357,10 @@ const ProphetsPage = () => {
                           <h4 className="flex items-center gap-2 text-xs uppercase font-bold text-muted-foreground">
                             <Book className="w-4 h-4 text-primary" /> {t('westernAccount')}
                           </h4>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/20" onClick={() => VoiceService.speak(getProphetStory(selectedProphet), language)}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/20" onClick={() => {
+                            const langToSpeak = language === 'ar' ? 'ar-SA' : (language === 'it' ? 'it-IT' : 'en-US');
+                            AudioService.speak(getProphetStory(selectedProphet), langToSpeak);
+                          }}>
                             <Volume2 className="w-4 h-4 text-muted-foreground" />
                           </Button>
                         </div>
@@ -424,7 +419,10 @@ const ProphetsPage = () => {
                             <div className="grid grid-cols-2 gap-3 no-print">
                               <Button
                                 variant="secondary"
-                                onClick={() => VoiceService.speak(deepStories[selectedProphet.id], language)}
+                                onClick={() => {
+                                  const langToSpeak = language === 'ar' ? 'ar-SA' : (language === 'it' ? 'it-IT' : 'en-US');
+                                  AudioService.speak(deepStories[selectedProphet.id], langToSpeak);
+                                }}
                                 className="h-10 rounded-lg text-[9px] uppercase font-bold tracking-widest"
                               >
                                 <Volume2 className="w-3 h-3 mr-2" />

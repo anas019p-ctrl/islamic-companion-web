@@ -1,5 +1,4 @@
-
-import { ScholarService } from '@/lib/ScholarService';
+import OpenRouterService from '@/lib/OpenRouterService';
 
 export interface BlogPost {
     id: string;
@@ -13,72 +12,135 @@ export interface BlogPost {
     image?: string;
 }
 
+const FALLBACK_INSIGHTS = [
+    {
+        title: "Il Significato della Pazienza nell'Islam",
+        excerpt: "La pazienza (Sabr) è uno dei valori fondamentali dell'Islam, menzionata oltre 90 volte nel Corano.",
+        content: `## الصَّبْرُ نِصْفُ الإِيمَانِ — La Pazienza è metà della Fede\n\nAllah dice nel Corano:\n> *"O voi che credete! Cercate aiuto nella pazienza e nella preghiera: in verità Allah è con i pazienti."* (Surah Al-Baqarah 2:153)\n\n### Il Hadith\nIl Profeta Muhammad ﷺ disse: *"Nessuno ha ricevuto un dono migliore e più grande della pazienza."* (Bukhari & Muslim)\n\n### Lezione Pratica\nQuando affrontiamo difficoltà, il primo passo è **fermarsi** prima di reagire. Il respiro consapevole (3 volte) prima di rispondere a una provocazione è Sunnah applicata alla vita moderna.\n\n*بارك الله فيكم*`,
+        category: "Valori Islamici"
+    },
+    {
+        title: "La Preghiera del Fajr: Il Segreto del Successo",
+        excerpt: "Svegliarsi per il Fajr è tra le pratiche più raccomandate, con benefici spirituali e fisici scientificamente provati.",
+        content: `## فَجْرٌ — L'Alba dell'Anima\n\nAllah dice nel Corano:\n> *"Stabilisci la preghiera al tramonto del sole fino all'oscurità della notte, e [recita] il Corano dell'alba. In verità, la recitazione dell'alba è testimoniata."* (Al-Isra' 17:78)\n\n### Il Hadith\n*"Le due rak'ah del Fajr sono più preziose del mondo e di tutto ciò che contiene."* (Muslim)\n\n### Applicazione Moderna\nSvegliarsi all'alba (circa 5:30 in Estate in Italia) per la preghiera allinea il corpo con il ritmo circadiano naturale, migliorando energia e concentrazione per tutta la giornata.\n\n*اللهم بارك لنا في أوقاتنا*`,
+        category: "Preghiera"
+    },
+    {
+        title: "Ramadan: La Scuola Mensile della Purificazione",
+        excerpt: "Il digiuno del Ramadan non è solo astenersi dal cibo, ma è un mese completo di riforma spirituale.",
+        content: `## رَمَضَان — Il Mese della Misericordia\n\nAllah dice nel Corano:\n> *"O voi che credete! Vi è stato prescritto il digiuno, come fu prescritto a coloro che vi hanno preceduto, affinché possiate essere giusti."* (Al-Baqarah 2:183)\n\n### Il Hadith\n*"Chi digiuna il Ramadan con fede e sperando nella ricompensa di Allah, gli verranno perdonati i peccati precedenti."* (Bukhari)\n\n### I Tre Livelli del Digiuno\n1. **Fisico**: Astenersi da cibo e bevande\n2. **Verbale**: Controllare lingua, bugie, calunnie\n3. **Spirituale**: Purificare cuore e intenzioni\n\n*رمضان مبارك*`,
+        category: "Ramadan"
+    }
+];
+
 export class BlogService {
-    private static STORAGE_KEY = 'islamic_app_daily_insight';
+    private static STORAGE_KEY = 'islamic_app_daily_insight_v2';
+    private static CACHE_HOURS = 24;
+    // Use ISO date so new Date() parses correctly everywhere (no "Invalid Date")
+    private static todayISO = () => new Date().toISOString().split('T')[0];
 
-    static async getDailyInsight(): Promise<BlogPost> {
-        // check if we already have today's insight
-        const stored = localStorage.getItem(this.STORAGE_KEY);
-        const today = new Date().toLocaleDateString();
 
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            if (parsed.date === today && parsed.title) {
-                return parsed;
+    private static isCacheValid(stored: BlogPost & { cachedAt: string }): boolean {
+        if (!stored?.cachedAt) return false;
+        const ageMs = Date.now() - new Date(stored.cachedAt).getTime();
+        return ageMs < this.CACHE_HOURS * 60 * 60 * 1000;
+    }
+
+    private static getFallback(): BlogPost {
+        const idx = new Date().getDate() % FALLBACK_INSIGHTS.length;
+        const fb = FALLBACK_INSIGHTS[idx];
+        const todayISO = new Date().toISOString().split('T')[0];
+        return {
+            id: 'fallback-' + todayISO,
+            ...fb,
+            date: todayISO,
+            author: 'Islamic Companion',
+            readTime: '3 min',
+            image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800'
+        };
+    }
+
+    static async getDailyInsight(language: string = 'it'): Promise<BlogPost> {
+        const cacheKey = `${this.STORAGE_KEY}_${language}`;
+
+        // Check cache
+        try {
+            const stored = localStorage.getItem(cacheKey);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (this.isCacheValid(parsed) && parsed.title && parsed.content) {
+                    return parsed;
+                }
             }
+        } catch {
+            localStorage.removeItem(cacheKey);
         }
 
-        // Generate new insight
-        const prompt = "Generate a 'Daily Islamic Insight' blog post in Italian. Structure it with a Title, Excerpt, and Full Content using Markdown. CRITICAL: The content MUST be BASED ON AUTHENTIC SOURCES (Quran and Sahih Hadith). Do not use generic or unverified information. The content should connect a specific Quranic verse to a related Hadith and provide a practical life lesson for a modern Muslim. Return ONLY pure JSON: { \"title\": \"...\", \"excerpt\": \"...\", \"content\": \"...\", \"category\": \"Saggezza Quotidiana\" }";
+        // Determine language prompt
+        const langMap: Record<string, string> = {
+            it: 'italiano',
+            en: 'English',
+            ar: 'العربية',
+            fr: 'français',
+            de: 'Deutsch',
+            es: 'español'
+        };
+        const langLabel = langMap[language] || 'italiano';
+
+        const today = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+        const topics = ['Tawhid e Fede', 'Preghiera e Dhikr', 'Etica Islamica', 'Storie dei Profeti', 'Saggezza del Corano', 'Sunnah del Profeta ﷺ', 'Famiglia nell Islam'];
+        const topic = topics[new Date().getDate() % topics.length];
+
+        const prompt = `Sei un accademico islamico di alto livello. Scrivi un articolo del blog islamico in ${langLabel} per oggi (${today}).
+Argomento: ${topic}
+
+STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
+{
+  "title": "Titolo accattivante in ${langLabel}",
+  "excerpt": "Riassunto di 2 frasi in ${langLabel}",
+  "content": "Articolo completo in ${langLabel} usando:\n- Versetti coranici pertinenti con numero sura e versetto\n- Hadith autentici con fonte (Bukhari, Muslim, etc.)\n- Lezione pratica applicabile oggi\n- Usa Markdown (##, >, **testo**)\nMinimo 400 parole.",
+  "category": "Categoria in ${langLabel}"
+}`;
 
         try {
-            const response = await ScholarService.generateContent(prompt, 'it');
-            // Clean up Markdown to get pure JSON if necessary (ScholarService usually returns string)
-            // Since ScholarService.generateContent returns a string, we might need to parse it or just use it as content.
-            // For robustness, let's treat the whole response as the content if parsing fails.
+            const response = await OpenRouterService.generateContent(prompt, 'anthropic/claude-3.5-sonnet');
+            const clean = response.replace(/```json\s?/g, '').replace(/```\s?/g, '').trim();
+            const json = JSON.parse(clean);
 
-            let postData = {
-                title: "Riflessione del Giorno",
-                excerpt: "Un pensiero di saggezza islamica per oggi.",
-                content: response,
-                category: "Spiritualità"
+            if (!json.title || !json.content) throw new Error('Invalid AI response structure');
+
+            const todayISO = new Date().toISOString().split('T')[0];
+            const newPost: BlogPost & { cachedAt: string } = {
+                id: `daily-${language}-${Date.now()}`,
+                title: json.title,
+                excerpt: json.excerpt || json.content.substring(0, 150) + '...',
+                content: json.content,
+                date: todayISO,
+                author: '🤖 AI Scholar (OpenRouter)',
+                category: json.category || topic,
+                readTime: `${Math.ceil(json.content.split(' ').length / 200)} min`,
+                image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800',
+                cachedAt: new Date().toISOString()
             };
 
-            // Attempt to parse if the model followed JSON instructions well
-            try {
-                const clean = response.replace(/```json/g, '').replace(/```/g, '').trim();
-                const json = JSON.parse(clean);
-                if (json.title && json.content) {
-                    postData = { ...postData, ...json };
-                }
-            } catch (e) {
-                // Fallback: use the raw text
-                console.warn("Could not parse JSON from AI, using raw text", e);
-            }
-
-            const newPost: BlogPost = {
-                id: 'daily-' + Date.now(),
-                ...postData,
-                date: today,
-                author: 'AI Scholar',
-                readTime: '3 min read',
-                image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800' // Authentic Mosque Pattern
-            };
-
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newPost));
+            localStorage.setItem(cacheKey, JSON.stringify(newPost));
             return newPost;
         } catch (error) {
-            console.error("Failed to generate daily insight", error);
-            return {
-                id: 'error',
-                title: 'Servizio Momentaneamente Non Disponibile',
-                excerpt: 'Riprova più tardi.',
-                content: 'Ci scusiamo, ma non siamo riusciti a collegarci all\'archivio della sapienza in questo momento.',
-                date: today,
-                author: 'System',
-                category: 'System',
-                readTime: '1 min'
-            };
+            console.error('[BlogService] AI generation failed, using fallback:', error);
+            return this.getFallback();
         }
+    }
+
+    /** Regenerate today's insight (bypass cache) */
+    static async regenerate(language: string = 'it'): Promise<BlogPost> {
+        localStorage.removeItem(`${this.STORAGE_KEY}_${language}`);
+        return this.getDailyInsight(language);
+    }
+
+    /** Clear all blog cache */
+    static clearCache(): void {
+        Object.keys(localStorage)
+            .filter(k => k.startsWith(this.STORAGE_KEY))
+            .forEach(k => localStorage.removeItem(k));
     }
 }

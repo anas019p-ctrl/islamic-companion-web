@@ -5,39 +5,54 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AccessibilityProvider } from "@/contexts/AccessibilityContext";
-import Index from "./pages/Index";
-import DuaPage from "./pages/DuaPage";
-import QuranPage from "./pages/QuranPage";
-import ScholarPage from "./pages/ScholarPage";
-import SmartToolsPage from "./pages/SmartToolsPage";
-import ProphetsPage from "./pages/ProphetsPage";
-import HadithPage from "./pages/HadithPage";
-import SahabaPage from "./pages/SahabaPage";
-import LibraryPage from "./pages/LibraryPage";
-import VideoResourcesPage from "./pages/VideoResourcesPage";
-import EducationalPage from "./pages/EducationalPage";
-import SecurityPage from "./pages/SecurityPage";
-import AdminDashboard from "./pages/AdminDashboard";
 import { FuturisticHub } from "./components/FuturisticHub";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import TranslationPage from "./pages/TranslationPage";
 import { GlobalAudioPlayer } from "./components/GlobalAudioPlayer";
 import { AdhanManager } from "./components/AdhanManager";
-import { InstructionsPage } from "./pages/InstructionsPage";
 import { AncientBackground } from "./components/AncientBackground";
-import { HistoryPage } from "./pages/HistoryPage";
-import BlogPage from "./pages/BlogPage";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { GlowingCursor } from './components/GlowingCursor';
 import { GalaxyAnimation } from './components/effects/GalaxyAnimation';
 import { MagicNavigationMenu } from './components/effects/MagicNavigationMenu';
 import { ContentHeatEffect } from './components/effects/ContentHeatEffect';
-import { useEffect } from "react";
-import KidsPage from "./pages/KidsPage";
-import MosqueMapPage from "./pages/MosqueMapPage";
-import CommonMistakesPage from "./pages/CommonMistakesPage";
+import { useEffect, lazy, Suspense } from "react";
+
+// Lazy loading for heavy sections
+const Index = lazy(() => import("./pages/Index"));
+const DuaPage = lazy(() => import("./pages/DuaPage"));
+const QuranPage = lazy(() => import("./pages/QuranPage"));
+const ScholarPage = lazy(() => import("./pages/ScholarPage"));
+const SmartToolsPage = lazy(() => import("./pages/SmartToolsPage"));
+const ProphetsPage = lazy(() => import("./pages/ProphetsPage"));
+const HadithPage = lazy(() => import("./pages/HadithPage"));
+const SahabaPage = lazy(() => import("./pages/SahabaPage"));
+const LibraryPage = lazy(() => import("./pages/LibraryPage"));
+const VideoResourcesPage = lazy(() => import("./pages/VideoResourcesPage"));
+const EducationalPage = lazy(() => import("./pages/EducationalPage"));
+const SecurityPage = lazy(() => import("./pages/SecurityPage"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const TranslationPage = lazy(() => import("./pages/TranslationPage"));
+const InstructionsPage = lazy(() => import("./pages/InstructionsPage"));
+const HistoryPage = lazy(() => import("./pages/HistoryPage"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const KidsPage = lazy(() => import("./pages/KidsPage"));
+const MosqueMapPage = lazy(() => import("./pages/MosqueMapPage"));
+const CommonMistakesPage = lazy(() => import("./pages/CommonMistakesPage"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-background z-50">
+    <div className="relative w-24 h-24">
+      <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+      <div className="absolute inset-0 border-4 border-primary rounded-full animate-spin border-t-transparent" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-12 h-12 bg-primary/10 rounded-full animate-pulse" />
+      </div>
+    </div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -64,29 +79,31 @@ const AppContent = () => {
         {window.innerWidth >= 768 && <ContentHeatEffect />}
         <GalaxyAnimation />
         {window.innerWidth >= 1024 && <GlowingCursor />}
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dua" element={<DuaPage />} />
-          <Route path="/quran" element={<QuranPage />} />
-          <Route path="/scholar" element={<ScholarPage />} />
-          <Route path="/tools" element={<SmartToolsPage />} />
-          <Route path="/prophets" element={<ProphetsPage />} />
-          <Route path="/hadith" element={<HadithPage />} />
-          <Route path="/sahaba" element={<SahabaPage />} />
-          <Route path="/library" element={<LibraryPage />} />
-          <Route path="/videos" element={<VideoResourcesPage />} />
-          <Route path="/education" element={<EducationalPage />} />
-          <Route path="/translate" element={<TranslationPage />} />
-          <Route path="/instructions" element={<InstructionsPage />} />
-          <Route path="/history" element={<HistoryPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/security" element={<SecurityPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/kids" element={<KidsPage />} />
-          <Route path="/mosques" element={<MosqueMapPage />} />
-          <Route path="/mistakes" element={<CommonMistakesPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/dua" element={<DuaPage />} />
+            <Route path="/quran" element={<QuranPage />} />
+            <Route path="/scholar" element={<ScholarPage />} />
+            <Route path="/tools" element={<SmartToolsPage />} />
+            <Route path="/prophets" element={<ProphetsPage />} />
+            <Route path="/hadith" element={<HadithPage />} />
+            <Route path="/sahaba" element={<SahabaPage />} />
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/videos" element={<VideoResourcesPage />} />
+            <Route path="/education" element={<EducationalPage />} />
+            <Route path="/translate" element={<TranslationPage />} />
+            <Route path="/instructions" element={<InstructionsPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/security" element={<SecurityPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/kids" element={<KidsPage />} />
+            <Route path="/mosques" element={<MosqueMapPage />} />
+            <Route path="/mistakes" element={<CommonMistakesPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
         <MagicNavigationMenu />
         <GlobalAudioPlayer />
         <AdhanManager />

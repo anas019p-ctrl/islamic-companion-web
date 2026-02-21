@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, Square, Volume2, Heart } from 'lucide-react';
 
 export const GlobalAudioPlayer = () => {
-    const [status, setStatus] = useState(VoiceService.getStatus());
+    const [status, setStatus] = useState(AudioService.getStatus());
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const currentStatus = VoiceService.getStatus();
+            const currentStatus = AudioService.getStatus();
             if (currentStatus.isSpeaking !== status.isSpeaking || currentStatus.isPaused !== status.isPaused) {
                 setStatus(currentStatus);
             }
@@ -43,7 +43,7 @@ export const GlobalAudioPlayer = () => {
                             variant="ghost"
                             size="icon"
                             className="h-10 w-10 rounded-full hover:bg-primary/20 transition-colors"
-                            onClick={() => status.isPaused ? VoiceService.resume() : VoiceService.pause()}
+                            onClick={() => status.isPaused ? AudioService.resume() : AudioService.pause()}
                         >
                             {status.isPaused ? (
                                 <Play className="w-5 h-5 text-primary fill-primary/20" />
@@ -56,7 +56,7 @@ export const GlobalAudioPlayer = () => {
                             variant="ghost"
                             size="icon"
                             className="h-10 w-10 rounded-full hover:bg-destructive/20 transition-colors"
-                            onClick={() => VoiceService.stop()}
+                            onClick={() => AudioService.stop()}
                         >
                             <Square className="w-4 h-4 text-destructive fill-destructive/20" />
                         </Button>

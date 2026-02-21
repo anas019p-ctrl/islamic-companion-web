@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usePrayerTimes, PrayerTimes } from '@/hooks/usePrayerTimes';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -86,8 +86,8 @@ export const AdhanManager = () => {
 
         console.log(`🕌 Playing Adhan for ${prayerName}: ${adhan.name}`);
 
-        // Use VoiceService for consistent audio playback
-        VoiceService.playExternal(adhan.url);
+        // Use AudioService for consistent audio playback
+        AudioService.playExternal(adhan.url);
 
         toast({
             title: t('timeForPrayer') || "Time for Prayer",

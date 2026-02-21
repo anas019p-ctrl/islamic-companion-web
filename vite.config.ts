@@ -101,6 +101,7 @@ export default defineConfig(({ mode }) => ({
           framer: ['framer-motion'],
           supabase: ['@supabase/supabase-js'],
           charts: ['recharts'],
+          maps: ['leaflet', 'react-leaflet'],
         },
       },
     },

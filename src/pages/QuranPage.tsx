@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { islamicApi } from '@/services/islamicApi';
 import { useAccessibility } from '@/contexts/AccessibilityContext';
 import { BackButton } from '@/components/BackButton';
-import { VoiceService } from '@/lib/VoiceService';
+import AudioService from '@/lib/AudioService';
 
 interface Ayah {
   id: string;
@@ -37,80 +38,21 @@ const QuranPage = () => {
   const { t, language } = useLanguage();
   const { speak, isDeafMode } = useAccessibility();
   const { toast } = useToast();
-  const [surahs, setSurahs] = useState<Surah[]>([]);
   const [selectedSurah, setSelectedSurah] = useState<Surah | null>(null);
-  const [ayahs, setAyahs] = useState<Array<{ id: string; ayah_number: number; text_ar: string; translation?: string }>>([]);
-  const [isAyahsLoading, setIsAyahsLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isPlaying, setIsPlaying] = useState(VoiceService.getStatus().isSpeaking);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  useEffect(() => {
-    fetchSurahs();
-  }, []);
-
-  useEffect(() => {
-    if (selectedSurah) {
-      fetchAyahs(selectedSurah.number);
-    }
-  }, [selectedSurah]);
-
-  // Sync isPlaying with global VoiceService status
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const status = VoiceService.getStatus();
-      if (status.isSpeaking !== isPlaying) {
-        setIsPlaying(status.isSpeaking);
-      }
-    }, 500);
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
-  const fetchAyahs = async (surahNumber: number) => {
-    setIsAyahsLoading(true);
-    try {
-      // First try API for full content (114 surahs guaranteed)
-      const data = await islamicApi.getSurahWithDetails(surahNumber, language === 'it' ? 'it.piccardo' : 'en.sahih');
-      console.log('Surah details from API:', data);
-
-       
-      const combinedAyahs = data.arabic.map((a: any, i: number) => ({
-        id: `${surahNumber}-${a.numberInSurah}`,
-        ayah_number: a.numberInSurah,
-        text_ar: a.text,
-         
-        translation: data.translation[i]?.text || (data.translation[i] as any)?.translations?.[language] || (data.translation[i] as any)?.translations?.en
-      }));
-
-      setAyahs(combinedAyahs);
-    } catch (error) {
-      console.error('Error fetching ayahs from API, trying Supabase:', error);
-      // Fallback to Supabase if API fails
-      const { data, error: sbError } = await supabase
-        .from('ayahs')
-        .select('*')
-        .eq('surah_number', surahNumber)
-        .order('ayah_number');
-
-      if (!sbError) setAyahs(data || []);
-    } finally {
-      setIsAyahsLoading(false);
-    }
-  };
-
-  const fetchSurahs = async () => {
-    try {
-      // Try Supabase first
+  const { data: surahs = [], isLoading } = useQuery({
+    queryKey: ['surahs'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('surahs')
         .select('*')
         .order('number');
 
-      // If Supabase has data but it's incomplete (less than 114), or if there's an error/no data
       if (error || !data || data.length < 114) {
-        console.log(`Supabase has ${data?.length || 0} surahs. Fetching all 114 from external API...`);
         const apiData = await islamicApi.getAllSurahs();
-        const mappedSurahs: Surah[] = apiData.map(s => ({
+        return apiData.map(s => ({
           id: s.number,
           number: s.number,
           name_ar: s.name,
@@ -118,34 +60,51 @@ const QuranPage = () => {
           revelation_type: s.revelationType.toLowerCase(),
           verses_count: s.numberOfAyahs,
           translations: { en: s.englishNameTranslation }
-        }));
-        setSurahs(mappedSurahs);
-      } else {
-        setSurahs(data);
+        })) as Surah[];
       }
-    } catch (error) {
-      console.error('Error fetching surahs:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      return data as Surah[];
+    },
+    staleTime: 1000 * 60 * 60 * 24, // 24 hours
+  });
+
+  const { data: ayahs = [], isLoading: isAyahsLoading } = useQuery({
+    queryKey: ['ayahs', selectedSurah?.number, language],
+    queryFn: async () => {
+      if (!selectedSurah) return [];
+      try {
+        const data = await islamicApi.getSurahWithDetails(selectedSurah.number, language === 'it' ? 'it.piccardo' : 'en.sahih');
+        return data.arabic.map((a: any, i: number) => ({
+          id: `${selectedSurah.number}-${a.numberInSurah}`,
+          ayah_number: a.numberInSurah,
+          text_ar: a.text,
+          translation: data.translation[i]?.text || (data.translation[i] as any)?.translations?.[language] || (data.translation[i] as any)?.translations?.en
+        }));
+      } catch (error) {
+        const { data, error: sbError } = await supabase
+          .from('ayahs')
+          .select('*')
+          .eq('surah_number', selectedSurah.number)
+          .order('ayah_number');
+        if (sbError) throw sbError;
+        return data || [];
+      }
+    },
+    enabled: !!selectedSurah,
+  });
 
   const playSurahAudio = async (surahNumber: number) => {
     try {
       const url = await islamicApi.getAudioUrl(surahNumber);
-      // Use global VoiceService for all audio to ensure synchronization and GlobalAudioPlayer support
-      await VoiceService.playExternal(url);
-
-      const status = VoiceService.getStatus();
-      setIsPlaying(status.isSpeaking);
+      AudioService.playStream(url);
+      setIsPlaying(true);
 
       toast({
         title: t('playingAudio'),
         description: `${t('surah')} ${surahNumber}`,
       });
 
-      // Speak title but don't stop the external audio being loaded
-      VoiceService.speak(`${language === 'ar' ? 'تشغيل سورة' : 'Playing Surah'} ${surahNumber}`, language === 'ar' ? 'ar' : 'en', 'generic', false);
+      const langToSpeak = language === 'ar' ? 'ar-SA' : 'en-US';
+      AudioService.speak(`${language === 'ar' ? 'تشغيل سورة' : 'Playing Surah'} ${surahNumber}`, langToSpeak);
     } catch (error) {
       setIsPlaying(false);
       console.error('Audio play error:', error);

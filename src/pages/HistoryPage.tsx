@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { BookOpen, MapPin, History, Star, Landmark, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export const HistoryPage = () => {
+const HistoryPage = () => {
     const { t, language, isRTL } = useLanguage();
 
     const islamicTimeline = [
@@ -157,3 +157,5 @@ export const HistoryPage = () => {
         </div>
     );
 };
+
+export default HistoryPage;

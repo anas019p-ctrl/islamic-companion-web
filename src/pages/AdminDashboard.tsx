@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { GlassThermometer } from '@/components/effects/GlassThermometer';
+import { ContentManager } from '@/components/admin/ContentManager';
 
 interface ContentItem {
     id: string;
@@ -130,7 +131,8 @@ const AdminDashboardContent = () => {
             stats: "Statistiche",
             heat: "Calore Contenuti",
             logout: "Esci",
-            reload: "Ricarica App"
+            reload: "Ricarica App",
+            apiContent: "API & Contenuti"
         },
         en: {
             title: "Admin Dashboard",
@@ -157,7 +159,8 @@ const AdminDashboardContent = () => {
             stats: "Statistics",
             heat: "Content Heat",
             logout: "Logout",
-            reload: "Reload App"
+            reload: "Reload App",
+            apiContent: "API & Content"
         },
         ar: {
             title: "لوحة التحكم",
@@ -184,7 +187,8 @@ const AdminDashboardContent = () => {
             stats: "الإحصائيات",
             heat: "حرارة المحتوى",
             logout: "تسجيل الخروج",
-            reload: "تحديث التطبيق"
+            reload: "تحديث التطبيق",
+            apiContent: "API والمحتوى"
         }
     };
     const tA = adminT[adminLang];
@@ -799,6 +803,7 @@ const AdminDashboardContent = () => {
                         <TabsTrigger value="prophets" className="flex-1 min-w-[100px]">{tA.prophets}</TabsTrigger>
                         <TabsTrigger value="blog" className="flex-1 min-w-[100px]">{tA.blog}</TabsTrigger>
                         <TabsTrigger value="library" className="flex-1 min-w-[100px]">{tA.library}</TabsTrigger>
+                        <TabsTrigger value="api" className="flex-1 min-w-[100px]">{tA.apiContent}</TabsTrigger>
                         <TabsTrigger value="errors" className="flex-1 min-w-[100px]">{tA.systemLogs}</TabsTrigger>
                         <TabsTrigger value="settings" className="flex-1 min-w-[100px]">{tA.config}</TabsTrigger>
                     </TabsList>
@@ -1189,6 +1194,10 @@ const AdminDashboardContent = () => {
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+
+                    <TabsContent value="api" className="animate-in fade-in duration-500">
+                        <ContentManager />
                     </TabsContent>
 
                     {/* Errors Tab */}

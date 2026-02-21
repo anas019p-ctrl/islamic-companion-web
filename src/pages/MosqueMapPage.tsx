@@ -1,449 +1,248 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { motion } from 'framer-motion';
-import { useLanguage } from '@/contexts/LanguageContext';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Search, Navigation, MapPin, Phone, Globe, Clock, Building2 as MosqueIcon } from 'lucide-react';
+import { IslamicAPIService } from '@/lib/IslamicAPIService';
 import { useToast } from '@/hooks/use-toast';
-import { MapPin, Navigation, Search, Phone, Clock, Star, ExternalLink } from 'lucide-react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Fix for default marker icons in Leaflet
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-
-const DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
+// Fix Leaflet marker icon issue
+const defaultIcon = L.icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
   iconSize: [25, 41],
-  iconAnchor: [12, 41]
+  iconAnchor: [12, 41],
 });
 
-L.Marker.prototype.options.icon = DefaultIcon;
+const mosqueIcon = L.divIcon({
+  html: `<div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 22v-8a10 10 0 0 0-20 0v8"/><path d="M18 22V12a8 8 0 0 0-16 0v10"/><path d="M2 22h20"/><path d="M7 22v-5a3 3 0 0 1 6 0v5"/><circle cx="12" cy="5" r="1"/></svg>
+         </div>`,
+  className: '',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
 
-interface Mosque {
-  id: number;
-  name: string;
-  nameAr: string;
-  lat: number;
-  lng: number;
-  address: string;
-  addressAr: string;
-  phone?: string;
-  prayerTimes?: string;
-  rating?: number;
-  website?: string;
-}
-
-// Sample mosque data - in production, fetch from Overpass API or your database
-const mosqueData: Mosque[] = [
-  {
-    id: 1,
-    name: 'Grand Mosque of Rome',
-    nameAr: 'المسجد الكبير في روما',
-    lat: 41.9357,
-    lng: 12.4738,
-    address: 'Viale della Moschea, 85, 00197 Roma RM, Italy',
-    addressAr: 'فيالي ديلا موسكيا، 85، 00197 روما، إيطاليا',
-    phone: '+39 06 808 2258',
-    rating: 4.5,
-    website: 'https://www.grandemoscheadiroma.it'
-  },
-  {
-    id: 2,
-    name: 'Islamic Cultural Center',
-    nameAr: 'المركز الثقافي الإسلامي',
-    lat: 41.9027,
-    lng: 12.4963,
-    address: 'Via della Moschea, Roma, Italy',
-    addressAr: 'فيا ديلا موسكيا، روما، إيطاليا',
-    phone: '+39 06 1234567',
-    rating: 4.2
-  },
-  {
-    id: 3,
-    name: 'Mosque of Milan',
-    nameAr: 'مسجد ميلانو',
-    lat: 45.4642,
-    lng: 9.1900,
-    address: 'Via Padova, Milano, Italy',
-    addressAr: 'فيا بادوفا، ميلانو، إيطاليا',
-    phone: '+39 02 1234567',
-    rating: 4.3
-  },
-  {
-    id: 4,
-    name: 'Florence Islamic Center',
-    nameAr: 'المركز الإسلامي في فلورنسا',
-    lat: 43.7696,
-    lng: 11.2558,
-    address: 'Firenze, Italy',
-    addressAr: 'فلورنسا، إيطاليا',
-    rating: 4.1
-  }
-];
-
-// Component to recenter map when user location changes
-function LocationMarker({ position }: { position: [number, number] | null }) {
+// Component to handle map center updates
+const ChangeView = ({ center }: { center: [number, number] }) => {
   const map = useMap();
-
-  useEffect(() => {
-    if (position) {
-      map.flyTo(position, 13, { duration: 1.5 });
-    }
-  }, [position, map]);
-
-  if (!position) return null;
-
-  return (
-    <Marker position={position}>
-      <Popup>📍 Your Location</Popup>
-    </Marker>
-  );
-}
+  map.setView(center, 13);
+  return null;
+};
 
 const MosqueMapPage = () => {
-  const { t, language, isRTL } = useLanguage();
-  const { toast } = useToast();
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [mosques, setMosques] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredMosques, setFilteredMosques] = useState<Mosque[]>(mosqueData);
-  const [selectedMosque, setSelectedMosque] = useState<Mosque | null>(null);
-  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([41.9028, 12.4964]); // Rome default
+  const [selectedMosque, setSelectedMosque] = useState<any>(null);
+  const { toast } = useToast();
 
-  const isArabic = language === 'ar';
+  useEffect(() => {
+    handleSearch();
+  }, []);
 
-  // Get user's current location
-  const getUserLocation = () => {
-    setIsLoadingLocation(true);
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserLocation([latitude, longitude]);
-          setIsLoadingLocation(false);
-          toast({
-            title: isArabic ? '📍 تم العثور على موقعك' : '📍 Location Found',
-            description: isArabic ? 'جاري البحث عن المساجد القريبة...' : 'Finding nearby mosques...',
-          });
-          
-          // In production, fetch nearby mosques from API based on coordinates
-          // For now, we'll use the sample data
-        },
-        (error) => {
-          setIsLoadingLocation(false);
-          toast({
-            title: isArabic ? '❌ خطأ في الموقع' : '❌ Location Error',
-            description: isArabic ? 'لم نتمكن من الوصول إلى موقعك. يرجى التحقق من الإذن.' : 'Could not access your location. Please check permissions.',
-            variant: 'destructive'
-          });
-        }
-      );
-    } else {
-      setIsLoadingLocation(false);
+  const handleSearch = async () => {
+    setLoading(true);
+    try {
+      // If search query is empty, use current map center
+      // In a real app, we might geocode the search query
+      const results = await IslamicAPIService.getNearbyMosques(mapCenter[0], mapCenter[1], 50000);
+      setMosques(results);
+    } catch (error) {
       toast({
-        title: isArabic ? 'غير مدعوم' : 'Not Supported',
-        description: isArabic ? 'متصفحك لا يدعم خدمات الموقع' : 'Your browser does not support geolocation',
+        title: 'Errore',
+        description: 'Impossibile recuperare le moschee vicine.',
         variant: 'destructive'
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Search mosques
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredMosques(mosqueData);
-    } else {
-      const filtered = mosqueData.filter(mosque => 
-        mosque.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        mosque.nameAr.includes(searchQuery) ||
-        mosque.address.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newCenter: [number, number] = [position.coords.latitude, position.coords.longitude];
+          setMapCenter(newCenter);
+          handleSearch();
+          toast({ title: 'Posizione aggiornata', description: 'Mostrando moschee vicino a te.' });
+        },
+        () => {
+          toast({ title: 'Errore', description: 'Permessi di localizzazione negati.', variant: 'destructive' });
+        }
       );
-      setFilteredMosques(filtered);
     }
-  }, [searchQuery]);
-
-  // Calculate distance between two coordinates (Haversine formula)
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
-    const R = 6371; // Earth's radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
   };
-
-  // Default center (Rome)
-  const defaultCenter: [number, number] = [41.9028, 12.4964];
 
   return (
-    <div className={`min-h-screen bg-transparent ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-[#0a0a0b] flex flex-col text-white">
       <Header />
-      <main className="container mx-auto px-4 py-8 pt-24 max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 font-amiri text-primary">
-            🕌 {isArabic ? 'خريطة المساجد' : 'Mosque Finder'}
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            {isArabic ? 'اعثر على أقرب مسجد إليك' : 'Find the nearest mosque to you'}
-          </p>
-        </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-4">
-            <Card className="glass-premium">
-              <CardContent className="p-4 space-y-4">
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                  <Input
-                    type="text"
-                    placeholder={isArabic ? 'ابحث عن مسجد...' : 'Search for a mosque...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-background/50"
-                  />
-                </div>
-
-                {/* Get Location Button */}
-                <Button
-                  onClick={getUserLocation}
-                  disabled={isLoadingLocation}
-                  className="w-full"
-                  variant="outline"
-                >
-                  <Navigation className="w-4 h-4 mr-2" />
-                  {isLoadingLocation ? 
-                    (isArabic ? 'جاري التحديد...' : 'Locating...') : 
-                    (isArabic ? 'حدد موقعي' : 'Use My Location')
-                  }
-                </Button>
-
-                {/* Mosque List */}
-                <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                  {filteredMosques.map((mosque) => {
-                    const distance = userLocation ? 
-                      calculateDistance(userLocation[0], userLocation[1], mosque.lat, mosque.lng) : null;
-
-                    return (
-                      <Card
-                        key={mosque.id}
-                        className={`cursor-pointer transition-all hover:border-primary ${selectedMosque?.id === mosque.id ? 'border-primary bg-primary/5' : ''}`}
-                        onClick={() => setSelectedMosque(mosque)}
-                      >
-                        <CardContent className="p-3 space-y-2">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-sm">
-                                {isArabic ? mosque.nameAr : mosque.name}
-                              </h3>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {isArabic ? mosque.addressAr : mosque.address}
-                              </p>
-                            </div>
-                            <MapPin className="w-5 h-5 text-primary shrink-0 ml-2" />
-                          </div>
-
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {mosque.rating && (
-                              <Badge variant="secondary" className="text-xs">
-                                <Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" />
-                                {mosque.rating}
-                              </Badge>
-                            )}
-                            {distance && (
-                              <Badge variant="outline" className="text-xs">
-                                📍 {distance.toFixed(1)} km
-                              </Badge>
-                            )}
-                          </div>
-
-                          {mosque.phone && (
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <Phone className="w-3 h-3" />
-                              <span>{mosque.phone}</span>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-
-                  {filteredMosques.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p>{isArabic ? 'لم يتم العثور على مساجد' : 'No mosques found'}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+      <main className="flex-grow pt-24 pb-12 container mx-auto px-4 flex flex-col gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-gradient-gold flex items-center gap-3">
+              <MosqueIcon className="w-8 h-8" />
+              Bussola delle Moschee
+            </h1>
+            <p className="text-muted-foreground mt-1 text-sm tracking-wide">
+              Trova luoghi di culto e centri islamici vicino a te in tutta Italia.
+            </p>
           </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Cerca per città..."
+                className="pl-10 glass border-white/10 w-full md:min-w-[250px]"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+            </div>
+            <Button onClick={handleCurrentLocation} variant="outline" className="glass border-primary/30 text-primary">
+              <Navigation className="w-4 h-4 mr-2" />
+              Vicino a me
+            </Button>
+          </div>
+        </div>
 
-          {/* Map */}
-          <div className="lg:col-span-2">
-            <Card className="glass-premium overflow-hidden">
-              <div className="h-[600px] relative">
-                <MapContainer
-                  center={userLocation || selectedMosque ? [selectedMosque?.lat || userLocation![0], selectedMosque?.lng || userLocation![1]] : defaultCenter}
-                  zoom={13}
-                  style={{ height: '100%', width: '100%' }}
-                  className="z-0"
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  />
-
-                  <LocationMarker position={userLocation} />
-
-                  {filteredMosques.map((mosque) => (
-                    <Marker
-                      key={mosque.id}
-                      position={[mosque.lat, mosque.lng]}
-                      eventHandlers={{
-                        click: () => setSelectedMosque(mosque)
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[70vh]">
+          {/* Sidebar - List of Mosques */}
+          <div className="col-span-1 glass-premium rounded-2xl border-white/5 overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-white/5 bg-primary/5">
+              <h2 className="font-bold flex items-center justify-between">
+                Risultati
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                  {mosques.length} trovati
+                </Badge>
+              </h2>
+            </div>
+            <div className="flex-grow overflow-y-auto p-4 space-y-4 custom-scrollbar">
+              <AnimatePresence>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-24 rounded-xl bg-white/5 animate-pulse" />
+                  ))
+                ) : mosques.length > 0 ? (
+                  mosques.map((m, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      onClick={() => {
+                        setMapCenter([m.lat, m.lon || m.lng]);
+                        setSelectedMosque(m);
                       }}
+                      className={`p-4 rounded-xl border transition-all cursor-pointer group ${selectedMosque?.name === m.name
+                        ? 'bg-primary/20 border-primary/50 ring-1 ring-primary/20'
+                        : 'bg-white/5 border-white/5 hover:bg-white/10'
+                        }`}
                     >
-                      <Popup>
-                        <div className="p-2 space-y-2 min-w-[200px]">
-                          <h3 className="font-bold text-base">
-                            {isArabic ? mosque.nameAr : mosque.name}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {isArabic ? mosque.addressAr : mosque.address}
-                          </p>
-                          {mosque.phone && (
-                            <div className="flex items-center gap-2 text-sm">
-                              <Phone className="w-4 h-4" />
-                              <a href={`tel:${mosque.phone}`} className="text-primary hover:underline">
-                                {mosque.phone}
-                              </a>
-                            </div>
-                          )}
-                          {mosque.rating && (
-                            <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                              <span className="text-sm font-semibold">{mosque.rating}/5</span>
-                            </div>
-                          )}
-                          {mosque.website && (
-                            <a
-                              href={mosque.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-sm text-primary hover:underline"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              {isArabic ? 'زيارة الموقع' : 'Visit Website'}
-                            </a>
-                          )}
-                          <Button
-                            size="sm"
-                            className="w-full mt-2"
-                            onClick={() => {
-                              window.open(
-                                `https://www.google.com/maps/dir/?api=1&destination=${mosque.lat},${mosque.lng}`,
-                                '_blank'
-                              );
-                            }}
-                          >
-                            <Navigation className="w-4 h-4 mr-2" />
-                            {isArabic ? 'احصل على الاتجاهات' : 'Get Directions'}
-                          </Button>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
-                </MapContainer>
-              </div>
-            </Card>
-
-            {/* Selected Mosque Details */}
-            {selectedMosque && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4"
-              >
-                <Card className="glass-premium border-primary/30">
-                  <CardContent className="p-6">
-                    <h2 className="text-2xl font-bold mb-4">
-                      {isArabic ? selectedMosque.nameAr : selectedMosque.name}
-                    </h2>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <MapPin className="w-5 h-5 text-primary shrink-0 mt-1" />
-                        <p className="text-muted-foreground">
-                          {isArabic ? selectedMosque.addressAr : selectedMosque.address}
-                        </p>
-                      </div>
-                      {selectedMosque.phone && (
-                        <div className="flex items-center gap-3">
-                          <Phone className="w-5 h-5 text-primary" />
-                          <a href={`tel:${selectedMosque.phone}`} className="text-primary hover:underline">
-                            {selectedMosque.phone}
-                          </a>
-                        </div>
-                      )}
-                      {selectedMosque.rating && (
-                        <div className="flex items-center gap-3">
-                          <Star className="w-5 h-5 fill-yellow-500 text-yellow-500" />
-                          <span className="font-semibold">{selectedMosque.rating}/5 ⭐</span>
-                        </div>
-                      )}
-                      <div className="flex gap-2 pt-4">
-                        <Button
-                          className="flex-1"
-                          onClick={() => {
-                            window.open(
-                              `https://www.google.com/maps/dir/?api=1&destination=${selectedMosque.lat},${selectedMosque.lng}`,
-                              '_blank'
-                            );
-                          }}
-                        >
-                          <Navigation className="w-4 h-4 mr-2" />
-                          {isArabic ? 'احصل على الاتجاهات' : 'Get Directions'}
-                        </Button>
-                        {selectedMosque.website && (
-                          <Button
-                            variant="outline"
-                            onClick={() => window.open(selectedMosque.website, '_blank')}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
+                      <h3 className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{m.name || 'Masjid'}</h3>
+                      <p className="text-[10px] text-muted-foreground mb-2 flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> {m.address || 'Indirizzo non disponibile'}
+                      </p>
+                      <div className="flex gap-2">
+                        {m.phone && (
+                          <Badge variant="outline" className="text-[8px] flex items-center gap-1 border-white/10">
+                            <Phone className="w-2 h-2" /> Chiama
+                          </Badge>
+                        )}
+                        {m.website && (
+                          <Badge variant="outline" className="text-[8px] flex items-center gap-1 border-white/10">
+                            <Globe className="w-2 h-2" /> Sito Web
+                          </Badge>
                         )}
                       </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <MapPin className="w-12 h-12 text-muted-foreground opacity-20 mx-auto mb-4" />
+                    <p className="text-muted-foreground text-sm italic">Nessuna moschea trovata in questa zona.</p>
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Map Section */}
+          <div className="lg:col-span-2 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative z-10 glass">
+            <MapContainer
+              center={mapCenter}
+              zoom={13}
+              style={{ height: '100%', width: '100%' }}
+              className="z-0"
+              zoomControl={false}
+            >
+              <ChangeView center={mapCenter} />
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              />
+              {mosques.map((m, idx) => (
+                <Marker
+                  key={idx}
+                  position={[m.lat, m.lon || m.lng]}
+                  icon={mosqueIcon}
+                  eventHandlers={{
+                    click: () => setSelectedMosque(m),
+                  }}
+                >
+                  <Popup className="custom-popup">
+                    <div className="p-2 min-w-[150px]">
+                      <h4 className="font-bold text-primary mb-1">{m.name}</h4>
+                      <p className="text-[10px] text-gray-400 mb-2">{m.address}</p>
+                      <Button variant="link" className="p-0 h-auto text-[10px] text-emerald-400" onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lon || m.lng}`)}>
+                        Ottieni Indicazioni
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+
+            {/* Float Info Card */}
+            {selectedMosque && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="absolute bottom-6 right-6 z-20 w-72 glass-premium p-4 rounded-2xl border-primary/20 shadow-2xl"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-gradient-gold">{selectedMosque.name}</h3>
+                  <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedMosque(null)}>
+                    ×
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">{selectedMosque.address}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" size="sm" className="glass h-8 text-[10px]" onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${selectedMosque.lat},${selectedMosque.lon || selectedMosque.lng}`)}>
+                    <Navigation className="w-3 h-3 mr-1" /> Percorso
+                  </Button>
+                  {selectedMosque.website && (
+                    <Button variant="outline" size="sm" className="glass h-8 text-[10px]" onClick={() => window.open(selectedMosque.website)}>
+                      <Globe className="w-3 h-3 mr-1" /> Sito
+                    </Button>
+                  )}
+                </div>
               </motion.div>
             )}
           </div>
         </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            {isArabic ? 
-              '💡 نصيحة: استخدم زر "حدد موقعي" للعثور على أقرب مسجد إليك' : 
-              '💡 Tip: Use "Use My Location" button to find mosques near you'
-            }
-          </p>
-        </div>
       </main>
+
       <Footer />
     </div>
   );
