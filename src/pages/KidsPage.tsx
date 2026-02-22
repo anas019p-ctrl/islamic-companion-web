@@ -1,766 +1,695 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { useToast } from '@/hooks/use-toast';
-import { Input } from '@/components/ui/input';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Baby, BookOpen, Gamepad2, Trophy, Star, Sparkles, Video,
-  CheckCircle2, XCircle, Wand2, Send
+    Gamepad2,
+    BookOpen,
+    Video,
+    Star,
+    Trophy,
+    Heart,
+    Sparkles,
+    ArrowRight,
+    ArrowLeft,
+    Play,
+    CheckCircle2,
+    Brain,
+    MessageCircle,
+    Lightbulb,
+    Home,
+    RefreshCw
 } from 'lucide-react';
-import { ScholarService } from '@/lib/ScholarService';
 import { OpenRouterService } from '@/lib/OpenRouterService';
-import { YouTubeService, VideoContent } from '@/lib/YouTubeService';
-import { EducationalErrorBoundary } from '@/components/EducationalErrorBoundary';
-import { useEffect } from 'react';
+import { toast } from 'sonner';
 
-const prophetStories = [
-  {
-    id: 1,
-    name: 'Prophet Adam (AS)',
-    nameAr: 'آدم عليه السلام',
-    nameIt: 'Profeta Adamo (AS)',
-    story: 'The first human and prophet created by Allah. He was made from clay and Allah breathed life into him.',
-    storyAr: 'أول إنسان ونبي خلقه الله من طين ونفخ فيه الروح',
-    storyIt: 'Il primo essere umano e profeta creato da Allah. Fu plasmato dall\'argilla e Allah soffiò in lui la vita.',
-    lesson: 'We should always ask for forgiveness when we make mistakes',
-    lessonAr: 'يجب أن نستغفر دائماً عندما نخطئ',
-    lessonIt: 'Dovremmo sempre chiedere perdono quando commettiamo errori.',
-    emoji: '👨',
-    color: 'from-green-500 to-emerald-600'
-  },
-  {
-    id: 2,
-    name: 'Prophet Nuh (AS)',
-    nameAr: 'نوح عليه السلام',
-    nameIt: 'Profeta Noè (AS)',
-    story: 'Built a big ark (ship) to save believers from the great flood. He called people to worship Allah for 950 years!',
-    storyAr: 'بنى سفينة كبيرة لإنقاذ المؤمنين من الطوفان العظيم. دعا قومه 950 سنة!',
-    storyIt: 'Costruì una grande arca (nave) per salvare i credenti dal grande diluvio. Invitò le persone a adorare Allah per 950 anni!',
-    lesson: 'Never give up on doing good, even if it takes a long time',
-    lessonAr: 'لا تيأس من فعل الخير حتى لو استغرق وقتاً طويلاً',
-    lessonIt: 'Non rinunciare mai a fare il bene, anche se richiede molto tempo.',
-    emoji: '🚢',
-    color: 'from-blue-500 to-cyan-600'
-  },
-  {
-    id: 3,
-    name: 'Prophet Ibrahim (AS)',
-    nameAr: 'إبراهيم عليه السلام',
-    nameIt: 'Profeta Abramo (AS)',
-    story: 'The father of prophets who built the Kaaba with his son Ismail. He loved Allah more than anything!',
-    storyAr: 'أبو الأنبياء الذي بنى الكعبة مع ابنه إسماعيل. أحب الله أكثر من أي شيء!',
-    storyIt: 'Il padre dei profeti che costruì la Kaaba con suo figlio Ismaele. Amava Allah più di ogni altra cosa!',
-    lesson: 'Put your trust in Allah in all situations',
-    lessonAr: 'توكل على الله في كل الأحوال',
-    lessonIt: 'Riponi la tua fiducia in Allah in ogni situazione.',
-    emoji: '🕋',
-    color: 'from-amber-500 to-orange-600'
-  },
-  {
-    id: 4,
-    name: 'Prophet Yusuf (AS)',
-    nameAr: 'يوسف عليه السلام',
-    nameIt: 'Profeta Giuseppe (AS)',
-    story: 'A beautiful prophet who was thrown in a well by his brothers but became a king of Egypt. He forgave them!',
-    storyAr: 'نبي جميل ألقاه إخوته في البئر لكنه أصبح ملكاً في مصر. ثم سامحهم!',
-    storyIt: 'Un bellissimo profeta che fu gettato in un pozzo dai suoi fratelli ma divenne re d\'Egitto. Li perdonò tutti!',
-    lesson: 'Forgive others even when they hurt you',
-    lessonAr: 'اعفُ عن الآخرين حتى لو آذوك',
-    lessonIt: 'Perdona gli altri anche quando ti fanno del male.',
-    emoji: '👑',
-    color: 'from-purple-500 to-pink-600'
-  },
-  {
-    id: 5,
-    name: 'Prophet Musa (AS)',
-    nameAr: 'موسى عليه السلام',
-    nameIt: 'Profeta Mosè (AS)',
-    story: 'Talked directly to Allah and split the sea with his staff to save his people from Pharaoh!',
-    storyAr: 'كلم الله مباشرة وشق البحر بعصاه لإنقاذ قومه من فرعون!',
-    storyIt: 'Parlò direttamente con Allah e divise il mare con il suo bastone per salvare il suo popolo dal Faraone!',
-    lesson: 'Have courage and trust in Allah\'s help',
-    lessonAr: 'كن شجاعاً وثق بعون الله',
-    lessonIt: 'Abbi coraggio e fida nell\'aiuto di Allah.',
-    emoji: '🌊',
-    color: 'from-teal-500 to-blue-600'
-  },
-  {
-    id: 6,
-    name: 'Prophet Muhammad (ﷺ)',
-    nameAr: 'محمد صلى الله عليه وسلم',
-    nameIt: 'Profeta Muhammad (ﷺ)',
-    story: 'The last and greatest prophet. He was kind to everyone - children, animals, and even his enemies!',
-    storyAr: 'آخر وأعظم الأنبياء. كان رحيماً بالجميع - الأطفال والحيوانات وحتى أعدائه!',
-    storyIt: 'L\'ultimo e il più grande dei profeti. Era gentile con tutti: bambini, animali e persino i suoi nemici!',
-    lesson: 'Be kind and merciful to all of Allah\'s creation',
-    lessonAr: 'كن رحيماً ولطيفاً مع كل مخلوقات الله',
-    lessonIt: 'Sii gentile e misericordioso con tutto il creato di Allah.',
-    emoji: '✨',
-    color: 'from-emerald-500 to-green-600'
-  }
+type Section = 'home' | 'stories' | 'quiz' | 'videos' | 'deeds';
+
+// 🎨 Kids-friendly color palette
+const KIDS_COLORS = {
+    stories: { bg: 'from-blue-500 to-indigo-600', border: 'border-blue-400/40', text: 'text-blue-400' },
+    quiz: { bg: 'from-orange-500 to-red-500', border: 'border-orange-400/40', text: 'text-orange-400' },
+    videos: { bg: 'from-purple-500 to-pink-500', border: 'border-purple-400/40', text: 'text-purple-400' },
+    deeds: { bg: 'from-green-500 to-teal-500', border: 'border-green-400/40', text: 'text-green-400' }
+};
+
+// 📺 Safe Islamic Kids YouTube Videos
+const KIDS_VIDEOS = [
+    { id: 'adam', title: "Story of Prophet Adam (AS)", titleIt: "Storia del Profeta Adamo (AS)", url: "https://www.youtube.com/embed/bX_G6p82G_o", time: "12 min", thumbnail: "🌍" },
+    { id: 'nuh', title: "Prophet Nuh (AS) & The Ark", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/p17iH98P5zM", time: "10 min", thumbnail: "🚢" },
+    { id: 'yunus', title: "Prophet Yunus (AS) & The Whale", titleIt: "Il Profeta Yunus (AS) e la Balena", url: "https://www.youtube.com/embed/Y-K7xK9pDks", time: "8 min", thumbnail: "🐋" },
+    { id: 'ibrahim', title: "Prophet Ibrahim (AS)", titleIt: "Il Profeta Ibrahim (AS)", url: "https://www.youtube.com/embed/5tHNj5VvZKk", time: "15 min", thumbnail: "⭐" },
+    { id: 'musa', title: "Prophet Musa (AS)", titleIt: "Il Profeta Musa (AS)", url: "https://www.youtube.com/embed/QYqQpHWjNuE", time: "14 min", thumbnail: "🌊" },
+    { id: 'yusuf', title: "Prophet Yusuf (AS)", titleIt: "Il Profeta Yusuf (AS)", url: "https://www.youtube.com/embed/wkKgTbMQQ_U", time: "16 min", thumbnail: "🌙" },
 ];
 
-const quizQuestions = [
-  {
-    question: 'Who built the Kaaba?',
-    questionAr: 'من بنى الكعبة؟',
-    questionIt: 'Chi ha costruito la Kaaba?',
-    options: ['Prophet Ibrahim and Ismail', 'Prophet Muhammad', 'Prophet Musa', 'Prophet Adam'],
-    optionsAr: ['النبي إبراهيم وإسماعيل', 'النبي محمد', 'النبي موسى', 'النبي آدم'],
-    optionsIt: ['Profeta Abramo e Ismaele', 'Profeta Muhammad', 'Profeta Mosè', 'Profeta Adamo'],
-    correct: 0,
-    emoji: '🕋'
-  },
-  {
-    question: 'How many times do we pray each day?',
-    questionAr: 'كم مرة نصلي في اليوم؟',
-    questionIt: 'Quante volte preghiamo ogni giorno?',
-    options: ['3 times', '5 times', '7 times', '10 times'],
-    optionsAr: ['3 مرات', '5 مرات', '7 مرات', '10 مرات'],
-    optionsIt: ['3 volte', '5 volte', '7 volte', '10 volte'],
-    correct: 1,
-    emoji: '🤲'
-  },
-  {
-    question: 'What is the first pillar of Islam?',
-    questionAr: 'ما هو الركن الأول من أركان الإسلام؟',
-    questionIt: 'Qual è il primo pilastro dell\'Islam?',
-    options: ['Prayer', 'Fasting', 'Shahada (Faith)', 'Charity'],
-    optionsAr: ['الصلاة', 'الصيام', 'الشهادة', 'الزكاة'],
-    optionsIt: ['Preghiera', 'Digiuno', 'Shahada (Fede)', 'Elemosina'],
-    correct: 2,
-    emoji: '☪️'
-  },
-  {
-    question: 'Which prophet could talk to animals?',
-    questionAr: 'أي نبي كان يتكلم مع الحيوانات؟',
-    questionIt: 'Quale profeta poteva parlare con gli animali?',
-    options: ['Prophet Nuh', 'Prophet Sulayman', 'Prophet Yusuf', 'Prophet Isa'],
-    optionsAr: ['النبي نوح', 'النبي سليمان', 'النبي يوسف', 'النبي عيسى'],
-    optionsIt: ['Profeta Noè', 'Profeta Salomone', 'Profeta Giuseppe', 'Profeta Gesù'],
-    correct: 1,
-    emoji: '🦜'
-  },
-  {
-    question: 'What do we say before eating?',
-    questionAr: 'ماذا نقول قبل الأكل؟',
-    questionIt: 'Cosa diciamo prima di mangiare?',
-    options: ['Alhamdulillah', 'Bismillah', 'SubhanAllah', 'Allahu Akbar'],
-    optionsAr: ['الحمد لله', 'بسم الله', 'سبحان الله', 'الله أكبر'],
-    optionsIt: ['Alhamdulillah', 'Bismillah', 'SubhanAllah', 'Allahu Akbar'],
-    correct: 1,
-    emoji: '🍽️'
-  },
-  {
-    question: 'Which month do we fast?',
-    questionAr: 'في أي شهر نصوم؟',
-    questionIt: 'In quale mese digiuniamo?',
-    options: ['Muharram', 'Ramadan', 'Shawwal', 'Dhul Hijjah'],
-    optionsAr: ['محرم', 'رمضان', 'شوال', 'ذو الحجة'],
-    optionsIt: ['Muharram', 'Ramadan', 'Shawwal', 'Dhul Hijjah'],
-    correct: 1,
-    emoji: '🌙'
-  }
-];
-
-const goodDeeds = [
-  { id: 1, deed: 'Say Bismillah before eating', deedAr: 'قل بسم الله قبل الأكل', deedIt: 'Dì Bismillah prima di mangiare', points: 5, icon: '🍽️' },
-  { id: 2, deed: 'Pray 5 times a day', deedAr: 'صلِّ خمس مرات في اليوم', deedIt: 'Prega 5 volte al giorno', points: 20, icon: '🤲' },
-  { id: 3, deed: 'Help your parents', deedAr: 'ساعد والديك', deedIt: 'Aiuta i tuoi genitori', points: 15, icon: '❤️' },
-  { id: 4, deed: 'Read Quran', deedAr: 'اقرأ القرآن', deedIt: 'Leggi il Corano', points: 10, icon: '📖' },
-  { id: 5, deed: 'Be kind to friends', deedAr: 'كن لطيفاً مع الأصدقاء', deedIt: 'Sii gentile con gli amici', points: 8, icon: '🤝' },
-  { id: 6, deed: 'Say Alhamdulillah', deedAr: 'قل الحمد لله', deedIt: 'Dì Alhamdulillah', points: 5, icon: '🙏' },
-  { id: 7, deed: 'Smile at others', deedAr: 'ابتسم للآخرين', deedIt: 'Sorridi agli altri', points: 3, icon: '😊' },
-  { id: 8, deed: 'Give charity', deedAr: 'تصدق', deedIt: 'Fai l\'elemosina (Sadaqa)', points: 12, icon: '💝' }
+// 📖 Story Topics for Kids
+const STORY_TOPICS = [
+    { id: 'adam', name: 'Prophet Adam (AS)', nameIt: 'Profeta Adamo (AS)', emoji: '🌍' },
+    { id: 'nuh', name: 'Prophet Nuh (AS)', nameIt: 'Profeta Nuh (AS)', emoji: '🚢' },
+    { id: 'ibrahim', name: 'Prophet Ibrahim (AS)', nameIt: 'Profeta Ibrahim (AS)', emoji: '⭐' },
+    { id: 'yusuf', name: 'Prophet Yusuf (AS)', nameIt: 'Profeta Yusuf (AS)', emoji: '🌙' },
+    { id: 'musa', name: 'Prophet Musa (AS)', nameIt: 'Profeta Musa (AS)', emoji: '🌊' },
+    { id: 'muhammad', name: 'Prophet Muhammad ﷺ', nameIt: 'Profeta Muhammad ﷺ', emoji: '☀️' },
 ];
 
 const KidsPage = () => {
-  const { t, language, isRTL } = useLanguage();
-  const { toast } = useToast();
-  const [selectedStory, setSelectedStory] = useState<number | null>(null);
-  const [quizScore, setQuizScore] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [quizFinished, setQuizFinished] = useState(false);
-  const [totalPoints, setTotalPoints] = useState(0);
-  const [completedDeeds, setCompletedDeeds] = useState<number[]>([]);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [aiStories, setAiStories] = useState<any[]>([]);
-  const [aiQuiz, setAiQuiz] = useState<any[]>([]);
-  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
-  const [prophetInput, setProphetInput] = useState('');
-  const [selectedVideo, setSelectedVideo] = useState<VideoContent | null>(null);
-  const [badges, setBadges] = useState<string[]>([]);
+    const { t, language } = useLanguage();
+    const [activeSection, setActiveSection] = useState<Section>('home');
+    const [stars, setStars] = useState(0);
+    const [badges, setBadges] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [story, setStory] = useState('');
+    const [selectedStoryTopic, setSelectedStoryTopic] = useState<string | null>(null);
+    const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+    const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+    const [quizScore, setQuizScore] = useState(0);
+    const [quizCompleted, setQuizCompleted] = useState(false);
+    const [selectedVideo, setSelectedVideo] = useState<typeof KIDS_VIDEOS[0] | null>(null);
 
-  // Persistence for Gamification
-  useEffect(() => {
-    const savedPoints = localStorage.getItem('kids_points');
-    const savedBadges = localStorage.getItem('kids_badges');
-    if (savedPoints) setTotalPoints(parseInt(savedPoints));
-    if (savedBadges) setBadges(JSON.parse(savedBadges));
-  }, []);
+    const isRTL = language === 'ar' || language === 'ur';
+    const isIt = language === 'it';
 
-  useEffect(() => {
-    localStorage.setItem('kids_points', totalPoints.toString());
-    localStorage.setItem('kids_badges', JSON.stringify(badges));
+    // 💾 Persistence
+    useEffect(() => {
+        const savedStars = localStorage.getItem('kids_stars');
+        const savedBadges = localStorage.getItem('kids_badges');
+        if (savedStars) setStars(parseInt(savedStars));
+        if (savedBadges) setBadges(JSON.parse(savedBadges));
+    }, []);
 
-    // Check for new badges
-    if (totalPoints >= 100 && !badges.includes('explorer')) {
-      const newBadges = [...badges, 'explorer'];
-      setBadges(newBadges);
-      toast({ title: `🎓 ${t('congratulations')}`, description: t('badgeExplorer') });
-    }
-    if (totalPoints >= 500 && !badges.includes('scholar')) {
-      const newBadges = [...badges, 'scholar'];
-      setBadges(newBadges);
-      toast({ title: `🏮 ${t('congratulations')}`, description: t('badgeScholar') });
-    }
-  }, [totalPoints, badges]);
+    const addStars = (amount: number) => {
+        const newStars = stars + amount;
+        setStars(newStars);
+        localStorage.setItem('kids_stars', newStars.toString());
 
-  const isArabic = language === 'ar';
-  const isItalian = language === 'it';
+        // Check for badges
+        if (newStars >= 50 && !badges.includes('Star Beginner')) {
+            const newBadges = [...badges, 'Star Beginner'];
+            setBadges(newBadges);
+            localStorage.setItem('kids_badges', JSON.stringify(newBadges));
+            toast.success(isIt ? 'Nuovo Badge: Principiante Stellare! ⭐' : 'New Badge: Star Beginner! ⭐');
+        }
+        if (newStars >= 100 && !badges.includes('Star Explorer')) {
+            const newBadges = [...badges, 'Star Explorer'];
+            setBadges(newBadges);
+            localStorage.setItem('kids_badges', JSON.stringify(newBadges));
+            toast.success(isIt ? 'Nuovo Badge: Esploratore Stellare! 🌟' : 'New Badge: Star Explorer! 🌟');
+        }
+        if (newStars >= 250 && !badges.includes('Star Master')) {
+            const newBadges = [...badges, 'Star Master'];
+            setBadges(newBadges);
+            localStorage.setItem('kids_badges', JSON.stringify(newBadges));
+            toast.success(isIt ? 'Nuovo Badge: Maestro delle Stelle! 🏆' : 'New Badge: Star Master! 🏆');
+        }
+    };
 
-  const handleAnswerSelect = (index: number) => {
-    setSelectedAnswer(index);
-    const activeQuiz = aiQuiz.length > 0 ? aiQuiz : quizQuestions;
-    const isCorrect = index === activeQuiz[currentQuestion].correct;
+    // 📖 Generate Story
+    const generateStory = async (topic: string) => {
+        setLoading(true);
+        setStory('');
+        setSelectedStoryTopic(topic);
+        setActiveSection('stories');
+        
+        try {
+            const prompt = isIt 
+                ? `Racconta una storia bellissima e interattiva per bambini sul ${topic}. Usa un linguaggio semplice e divertente.`
+                : `Tell a beautiful and interactive story for children about ${topic}. Use simple and fun language.`;
+            
+            const result = await OpenRouterService.generateKidsStory(prompt, language);
+            setStory(result);
+        } catch (err) {
+            console.error('Story generation error:', err);
+            toast.error(isIt ? 'Oops! La storia sta facendo una pausa. Riprova!' : 'Oops! Story time is taking a break. Try again!');
+            setStory(isIt 
+                ? 'Mi dispiace, non sono riuscito a generare la storia. Riprova tra poco! 📖'
+                : 'Sorry, I could not generate the story. Please try again soon! 📖');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    if (isCorrect) {
-      setQuizScore(prev => prev + 1);
-      toast({
-        title: t('quizFeedback').split('!')[0] + '!',
-        description: t('excellentMashaAllah'),
-      });
-    } else {
-      toast({
-        title: t('tryAgain'),
-        description: t('tryAgain'),
-        variant: 'destructive'
-      });
-    }
+    // 🧠 Start Quiz
+    const startQuiz = async () => {
+        setLoading(true);
+        setQuizQuestions([]);
+        setCurrentQuizIndex(0);
+        setQuizScore(0);
+        setQuizCompleted(false);
+        setActiveSection('quiz');
+        
+        try {
+            const topic = isIt ? 'Conoscenza islamica per bambini' : 'Islamic Knowledge for kids';
+            const questions = await OpenRouterService.generateQuizQuestions(topic, 'easy', 5);
+            
+            if (questions && questions.length > 0) {
+                setQuizQuestions(questions);
+            } else {
+                throw new Error('No questions generated');
+            }
+        } catch (err) {
+            console.error('Quiz generation error:', err);
+            toast.error(isIt ? 'Errore nel caricamento del quiz' : 'Error loading quiz');
+            // Provide fallback questions
+            setQuizQuestions([
+                {
+                    question: "How many times do Muslims pray each day?",
+                    questionAr: "كم مرة يصلي المسلمون في اليوم؟",
+                    options: ["3 times", "5 times", "7 times", "2 times"],
+                    optionsAr: ["3 مرات", "5 مرات", "7 مرات", "مرتين"],
+                    correct: 1,
+                    explanation: "Muslims pray 5 times daily: Fajr, Dhuhr, Asr, Maghrib, and Isha",
+                    encouragement: "Excellent! You know about Salah! 🌟"
+                },
+                {
+                    question: "What is the holy book of Islam?",
+                    questionAr: "ما هو الكتاب المقدس في الإسلام؟",
+                    options: ["Torah", "Bible", "Quran", "Vedas"],
+                    optionsAr: ["التوراة", "الإنجيل", "القرآن", "الفيدا"],
+                    correct: 2,
+                    explanation: "The Quran is the holy book revealed to Prophet Muhammad ﷺ",
+                    encouragement: "Amazing! You know about the Quran! 📖"
+                },
+                {
+                    question: "Which prophet built the Ark?",
+                    questionAr: "أي نبي بنى السفينة؟",
+                    options: ["Adam (AS)", "Ibrahim (AS)", "Nuh (AS)", "Musa (AS)"],
+                    optionsAr: ["آدم (ع)", "إبراهيم (ع)", "نوح (ع)", "موسى (ع)"],
+                    correct: 2,
+                    explanation: "Prophet Nuh (AS) built the Ark to save believers from the flood",
+                    encouragement: "Great job! You know about Prophet Nuh! 🚢"
+                }
+            ]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    setTimeout(() => {
-      if (currentQuestion < activeQuiz.length - 1) {
-        setCurrentQuestion(prev => prev + 1);
-        setSelectedAnswer(null);
-      } else {
-        setQuizFinished(true);
-      }
-    }, 1500);
-  };
+    // 🎯 Handle Quiz Answer
+    const handleQuizAnswer = (index: number) => {
+        const currentQuestion = quizQuestions[currentQuizIndex];
+        const isCorrect = index === currentQuestion.correct;
+        
+        if (isCorrect) {
+            setQuizScore(prev => prev + 1);
+            toast.success(currentQuestion.encouragement || (isIt ? 'Fantastico! 🌟' : 'Great job! 🌟'));
+            addStars(10);
+        } else {
+            toast.error(isIt ? 'Non proprio! Ma continua a provare! 💪' : 'Not quite! But keep trying! 💪');
+        }
 
-  const resetQuiz = () => {
-    setCurrentQuestion(0);
-    setQuizScore(0);
-    setSelectedAnswer(null);
-    setQuizFinished(false);
-  };
+        if (currentQuizIndex < quizQuestions.length - 1) {
+            setTimeout(() => setCurrentQuizIndex(prev => prev + 1), 1000);
+        } else {
+            setTimeout(() => {
+                setQuizCompleted(true);
+                const finalScore = quizScore + (isCorrect ? 1 : 0);
+                toast.success(isIt 
+                    ? `Quiz Completato! Punteggio: ${finalScore}/${quizQuestions.length} 🎉`
+                    : `Quiz Completed! Score: ${finalScore}/${quizQuestions.length} 🎉`);
+            }, 1000);
+        }
+    };
 
-  const completeDeed = (deedId: number, points: number) => {
-    if (!completedDeeds.includes(deedId)) {
-      setCompletedDeeds(prev => [...prev, deedId]);
-      setTotalPoints(prev => prev + points);
-      toast({
-        title: `⭐ ${t('congratulations')}`,
-        description: `+${points} ${t('points')}`,
-      });
-    }
-  };
-
-  const generateAIStory = async () => {
-    if (!prophetInput) return;
-
-    setIsGenerating(true);
-    setIsAiDialogOpen(false);
-    try {
-      const story = await ScholarService.generateKidsStoryWithAI(prophetInput, language);
-      const newStory = {
-        id: Date.now(),
-        name: prophetInput,
-        nameAr: prophetInput,
-        nameIt: prophetInput,
-        story: story,
-        storyAr: story,
-        storyIt: story,
-        lesson: "Always trust Allah.",
-        lessonAr: "ثق بالله دائماً.",
-        lessonIt: "Fidati sempre di Allah.",
-        emoji: '✨',
-        color: 'from-pink-500 to-rose-600',
-        isAiGenerated: true
-      };
-      setAiStories(prev => [newStory, ...prev]);
-      setSelectedStory(newStory.id);
-      setProphetInput('');
-      toast({ title: t('storyGenerated'), description: t('aiStoryReady') });
-    } catch (error) {
-      toast({ title: '❌ Error', description: t('storyError'), variant: 'destructive' });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const generateAIQuiz = async () => {
-    setIsGenerating(true);
-    try {
-      const questions = await OpenRouterService.generateQuizQuestions('islamic basics for kids', language);
-      setAiQuiz(questions);
-      resetQuiz();
-      toast({ title: t('quizReady'), description: t('aiQuizFresh') });
-    } catch (error) {
-      toast({ title: '❌ Error', description: t('quizError'), variant: 'destructive' });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  return (
-    <div className={`min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-900 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <Header />
-      <main className="container mx-auto px-4 py-8 pt-24 max-w-6xl pb-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+    // 🏠 Navigation Button Component
+    const BackButton = () => (
+        <Button 
+            variant="outline" 
+            onClick={() => setActiveSection('home')}
+            className="mb-4 sm:mb-6 gap-2 rounded-full border-primary/30 hover:bg-primary/10 text-sm sm:text-base"
         >
-          <div className="inline-block px-4">
-            <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent leading-tight">
-              {t('kidsCorner')}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {t('learnPlayEarn')}
-            </p>
-          </div>
+            <ArrowLeft className="w-4 h-4" />
+            {isIt ? 'Indietro' : 'Back'}
+        </Button>
+    );
 
-          <div className="mt-6 flex flex-col items-center gap-4">
-            <Badge variant="secondary" className="text-lg py-2 px-8 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-lg animate-pulse border-none">
-              <Star className="w-6 h-6 mr-2 fill-white" />
-              {totalPoints} {t('starPoints')}
-            </Badge>
+    return (
+        <div className={`min-h-screen bg-transparent ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+            <Header />
 
-            <AnimatePresence>
-              {badges.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-wrap justify-center gap-2 mt-2"
+            <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pt-20 sm:pt-24 max-w-5xl">
+                {/* 🎮 Kids Header with Stats - Mobile Optimized */}
+                <motion.div 
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col items-center justify-center mb-6 sm:mb-10 gap-4 sm:gap-6 glass-premium p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-primary/20 shadow-xl relative overflow-hidden"
                 >
-                  {badges.map(badge => (
-                    <Badge key={badge} className="bg-purple-500/20 text-purple-600 border-purple-500/30 px-3 py-1 flex items-center gap-1">
-                      <Trophy className="w-3 h-3" />
-                      {badge === 'explorer' ? t('badgeExplorer') : t('badgeScholar')}
-                    </Badge>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
+                    {/* Animated top bar */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-orange-500 to-primary animate-pulse" />
 
-        <Tabs defaultValue="stories" className="w-full">
-          <TabsList className="flex md:grid w-full grid-cols-4 mb-8 h-16 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl p-1.5 gap-2 border border-purple-500/20 overflow-x-auto no-scrollbar">
-            <TabsTrigger value="stories" className="flex-1 min-w-[80px] rounded-xl data-[state=active]:bg-purple-600 data-[state=active]:text-white transition-all">
-              <BookOpen className="w-5 h-5 md:mr-2" />
-              <span className="hidden md:inline">{t('prophetStories')}</span>
-              <span className="md:hidden text-[10px] mt-1 block">Stories</span>
-            </TabsTrigger>
-            <TabsTrigger value="quiz" className="flex-1 min-w-[80px] rounded-xl data-[state=active]:bg-emerald-600 data-[state=active]:text-white transition-all">
-              <Gamepad2 className="w-5 h-5 md:mr-2" />
-              <span className="hidden md:inline">Quiz</span>
-              <span className="md:hidden text-[10px] mt-1 block">Quiz</span>
-            </TabsTrigger>
-            <TabsTrigger value="videos" className="flex-1 min-w-[80px] rounded-xl data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all">
-              <Video className="w-5 h-5 md:mr-2" />
-              <span className="hidden md:inline">Video</span>
-              <span className="md:hidden text-[10px] mt-1 block">Video</span>
-            </TabsTrigger>
-            <TabsTrigger value="deeds" className="flex-1 min-w-[80px] rounded-xl data-[state=active]:bg-pink-600 data-[state=active]:text-white transition-all">
-              <Star className="w-5 h-5 md:mr-2" />
-              <span className="hidden md:inline">Deeds</span>
-              <span className="md:hidden text-[10px] mt-1 block">Deeds</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* PROPHET STORIES TAB */}
-          <TabsContent value="stories" className="space-y-6">
-            <EducationalErrorBoundary>
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-                <h2 className="text-2xl font-bold flex items-center gap-2">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                  {t('prophetStories')}
-                </h2>
-
-                <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      disabled={isGenerating}
-                      className="w-full md:w-auto bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-2xl p-4 md:p-6 h-auto flex flex-row md:flex-col items-center gap-3 shadow-xl hover:shadow-2xl transition-all border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1"
-                    >
-                      <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                        <Wand2 className={`w-5 h-5 md:w-6 md:h-6 ${isGenerating ? 'animate-spin' : 'animate-pulse'}`} />
-                      </div>
-                      <div className="text-left md:text-center">
-                        <p className="font-bold text-base md:text-lg">{t('newAiStory')}</p>
-                        <p className="text-[10px] md:text-xs opacity-80">{t('createMagicStory')}</p>
-                      </div>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 border-purple-500/20">
-                    <DialogHeader>
-                      <DialogTitle>{t('newAiStory')}</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex items-center space-x-2 py-4">
-                      <div className="grid flex-1 gap-2">
-                        <Input
-                          placeholder={t('enterProphetName')}
-                          value={prophetInput}
-                          onChange={(e) => setProphetInput(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && generateAIStory()}
-                          className="bg-slate-50 dark:bg-slate-800 border-purple-500/20"
-                        />
-                      </div>
-                      <Button type="button" size="sm" onClick={generateAIStory} className="bg-purple-600 hover:bg-purple-700">
-                        <Send className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...aiStories, ...prophetStories].map((prophet, index) => (
-                  <motion.div
-                    key={prophet.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Card
-                      className={`h-full min-h-[120px] cursor-pointer hover:scale-[1.02] active:scale-95 transition-all duration-300 bg-gradient-to-br ${prophet.color} text-white border-0 shadow-lg hover:shadow-2xl overflow-hidden`}
-                      onClick={() => setSelectedStory(selectedStory === prophet.id ? null : prophet.id)}
-                    >
-                      <CardHeader className="pb-2">
-                        <CardTitle className="flex items-center justify-between">
-                          <span className="text-2xl">{prophet.emoji}</span>
-                          <span className="text-lg font-bold">
-                            {isArabic ? prophet.nameAr : isItalian ? (prophet.nameIt || prophet.name) : prophet.name}
-                          </span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <AnimatePresence>
-                          {selectedStory === prophet.id ? (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
-                              className="space-y-3"
-                            >
-                              <p className="text-sm leading-relaxed opacity-90">
-                                {isArabic ? prophet.storyAr : isItalian ? (prophet.storyIt || prophet.story) : prophet.story}
-                              </p>
-                              <div className="pt-3 border-t border-white/30">
-                                <p className="text-xs font-bold mb-1 uppercase tracking-wider">
-                                  {isArabic ? '💡 العبرة:' : isItalian ? '💡 Lezione:' : '💡 Lesson:'}
-                                </p>
-                                <p className="text-sm italic opacity-100 font-medium">
-                                  {isArabic ? prophet.lessonAr : isItalian ? (prophet.lessonIt || prophet.lesson) : prophet.lesson}
-                                </p>
-                              </div>
-                            </motion.div>
-                          ) : (
-                            <p className="text-xs opacity-70 italic line-clamp-1">
-                              {isArabic ? 'انقر للقراءة...' : isItalian ? 'Clicca per leggere...' : 'Click to read...'}
+                    {/* Title Section */}
+                    <div className="flex items-center gap-3 sm:gap-4 text-center">
+                        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+                            <Gamepad2 className="w-7 h-7 sm:w-10 sm:h-10 text-white" />
+                        </div>
+                        <div className="text-left">
+                            <h1 className="text-xl sm:text-3xl md:text-4xl font-bold font-amiri text-primary">
+                                {isIt ? 'Esploratore Kids' : 'Kids Explorer'} 🚀
+                            </h1>
+                            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                                {isIt ? 'Impara, Gioca e Vinci Stelle!' : 'Learn, Play & Earn Stars!'}
                             </p>
-                          )}
-                        </AnimatePresence>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </div>
-            </EducationalErrorBoundary>
-          </TabsContent>
-
-          {/* QUIZ TAB */}
-          <TabsContent value="quiz">
-            <EducationalErrorBoundary>
-              <Card className="glass-premium border-purple-500/30 overflow-hidden">
-                <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-                  <CardTitle className="text-center sm:text-left text-2xl">
-                    {t('testYourKnowledge')}
-                  </CardTitle>
-                  <Button
-                    onClick={generateAIQuiz}
-                    disabled={isGenerating}
-                    variant="outline"
-                    className="w-full sm:w-auto glass border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20"
-                  >
-                    {isGenerating ? <Sparkles className="w-4 h-4 animate-spin mr-2" /> : <Gamepad2 className="w-4 h-4 mr-2" />}
-                    {t('newAiQuiz')}
-                  </Button>
-                </CardHeader>
-                <CardContent className="space-y-6 p-6">
-                  {!quizFinished ? (
-                    <>
-                      <div className="space-y-4">
-                        <div className="flex justify-between text-sm font-medium text-muted-foreground">
-                          <span>{isArabic ? 'السؤال' : isItalian ? 'Domanda' : 'Question'} {currentQuestion + 1}/{(aiQuiz.length > 0 ? aiQuiz : quizQuestions).length}</span>
-                          <span>{t('yourScore')}: {quizScore}</span>
                         </div>
-                        <Progress value={((currentQuestion + 1) / (aiQuiz.length > 0 ? aiQuiz : quizQuestions).length) * 100} className="h-3 bg-slate-200 dark:bg-slate-800" />
-                      </div>
-
-                      <div className="text-center py-6 sm:py-10">
-                        <motion.span
-                          key={currentQuestion}
-                          initial={{ scale: 0.5, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="text-7xl mb-6 block"
-                        >
-                          {(aiQuiz.length > 0 ? aiQuiz : quizQuestions)[currentQuestion].emoji || '❓'}
-                        </motion.span>
-                        <h3 className="text-xl sm:text-2xl font-bold mb-8 px-2 leading-tight">
-                          {isArabic ? (aiQuiz.length > 0 ? aiQuiz[currentQuestion].question : quizQuestions[currentQuestion].questionAr) : isItalian ? (aiQuiz.length > 0 ? aiQuiz[currentQuestion].question : quizQuestions[currentQuestion].questionIt) : (aiQuiz.length > 0 ? aiQuiz[currentQuestion].question : quizQuestions[currentQuestion].question)}
-                        </h3>
-
-                        <div className="grid gap-3 sm:gap-4 max-w-md mx-auto">
-                          {(aiQuiz.length > 0 ? aiQuiz : quizQuestions)[currentQuestion].options.map((option, index) => {
-                            const activeQuiz = aiQuiz.length > 0 ? aiQuiz : quizQuestions;
-                            const isCorrect = index === activeQuiz[currentQuestion].correct;
-                            const currentOptions = isArabic && aiQuiz.length === 0 ? quizQuestions[currentQuestion].optionsAr :
-                              isItalian && aiQuiz.length === 0 ? quizQuestions[currentQuestion].optionsIt :
-                                activeQuiz[currentQuestion].options;
-
-                            return (
-                              <Button
-                                key={index}
-                                onClick={() => handleAnswerSelect(index)}
-                                disabled={selectedAnswer !== null}
-                                variant={selectedAnswer === index ? (isCorrect ? 'default' : 'destructive') : 'outline'}
-                                className={`h-auto py-5 text-base sm:text-lg font-medium transition-all shadow-sm ${selectedAnswer === index && isCorrect ? 'bg-green-500 hover:bg-green-600 border-none scale-105' :
-                                  selectedAnswer === index && !isCorrect ? 'animate-shake' :
-                                    'hover:border-purple-500 hover:bg-purple-50'
-                                  }`}
-                              >
-                                {selectedAnswer === index && (
-                                  isCorrect ? <CheckCircle2 className="w-5 h-5 mr-2" /> : <XCircle className="w-5 h-5 mr-2" />
-                                )}
-                                {currentOptions[index]}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <motion.div
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-center py-10 sm:py-16 space-y-6"
-                    >
-                      <div className="text-8xl mb-4 animate-bounce">
-                        {quizScore >= (aiQuiz.length > 0 ? aiQuiz : quizQuestions).length * 0.8 ? '🏆' : quizScore >= (aiQuiz.length > 0 ? aiQuiz : quizQuestions).length * 0.5 ? '🎉' : '📚'}
-                      </div>
-                      <h3 className="text-3xl font-bold">{t('quizComplete')}</h3>
-                      <p className="text-4xl font-black text-primary">
-                        {t('yourScore')}: {quizScore}/{(aiQuiz.length > 0 ? aiQuiz : quizQuestions).length}
-                      </p>
-                      <p className="text-xl font-medium text-muted-foreground max-w-xs mx-auto">
-                        {quizScore >= (aiQuiz.length > 0 ? aiQuiz : quizQuestions).length * 0.8 ?
-                          t('excellentMashaAllah') :
-                          quizScore >= (aiQuiz.length > 0 ? aiQuiz : quizQuestions).length * 0.5 ?
-                            t('goodJobKeepItUp') :
-                            t('tryAgain')
-                        }
-                      </p>
-                      <Button onClick={resetQuiz} size="lg" className="mt-8 px-10 h-14 rounded-2xl text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all">
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        {t('playAgain')}
-                      </Button>
-                    </motion.div>
-                  )}
-                </CardContent>
-              </Card>
-            </EducationalErrorBoundary>
-          </TabsContent>
-
-          {/* VIDEOS TAB */}
-          <TabsContent value="videos">
-            <EducationalErrorBoundary>
-              <div className="flex flex-col gap-10">
-                {['stories', 'learning', 'songs'].map((cat) => (
-                  <div key={cat} className="space-y-6">
-                    <h3 className="text-2xl font-bold capitalize flex items-center gap-3 px-2">
-                      <div className={`w-3 h-10 rounded-full ${cat === 'stories' ? 'bg-purple-500' : cat === 'learning' ? 'bg-amber-500' : 'bg-pink-500'}`} />
-                      {cat === 'stories' ? t('storyTime') : cat === 'learning' ? t('learning') : t('songs')}
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {YouTubeService.getVideos(cat as any).map((video, idx) => (
-                        <motion.div
-                          key={video.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="group relative cursor-pointer overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg hover:shadow-2xl transition-all"
-                          onClick={() => setSelectedVideo(video)}
-                        >
-                          <div className="relative aspect-video overflow-hidden">
-                            <img
-                              src={video.thumbnail}
-                              alt={video.title}
-                              className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-40 group-hover:opacity-60 transition-opacity flex items-center justify-center">
-                              <div className="w-14 h-14 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/40 shadow-2xl group-hover:scale-110 transition-transform">
-                                <Video className="w-7 h-7 fill-white" />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-5">
-                            <h4 className="font-bold text-base line-clamp-2 leading-snug">{video.title}</h4>
-                            <div className="flex items-center gap-2 mt-3">
-                              <Badge variant="outline" className="text-[10px] uppercase tracking-wider px-2 py-0 border-purple-500/30 text-purple-600">{video.channel}</Badge>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </EducationalErrorBoundary>
-          </TabsContent>
 
-          {/* VIDEO OVERLAY */}
-          <AnimatePresence>
-            {selectedVideo && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 md:p-12 backdrop-blur-sm"
-              >
-                <motion.div
-                  initial={{ scale: 0.9, y: 20 }}
-                  animate={{ scale: 1, y: 0 }}
-                  exit={{ scale: 0.9, y: 20 }}
-                  className="relative w-full max-w-5xl aspect-video bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10"
-                >
-                  <Button
-                    onClick={() => setSelectedVideo(null)}
-                    className="absolute top-4 right-4 z-[110] bg-black/50 hover:bg-black/80 rounded-full w-12 h-12 p-0 backdrop-blur-md border border-white/20"
-                  >
-                    <XCircle className="w-7 h-7 text-white" />
-                  </Button>
-                  <iframe
-                    src={YouTubeService.getEmbedUrl(selectedVideo.id)}
-                    className="w-full h-full border-0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
+                    {/* Stats Row - Mobile Friendly */}
+                    <div className="flex gap-3 sm:gap-4 w-full justify-center">
+                        <div className="glass px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl flex items-center gap-2 sm:gap-3 border border-yellow-500/30 bg-yellow-500/10">
+                            <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
+                            <span className="text-lg sm:text-2xl font-bold text-yellow-500">{stars}</span>
+                        </div>
+                        <div className="glass px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl flex items-center gap-2 sm:gap-3 border border-primary/30 bg-primary/10">
+                            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                            <span className="text-lg sm:text-2xl font-bold text-primary">{badges.length}</span>
+                        </div>
+                    </div>
                 </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
-          <TabsContent value="deeds">
-            <Card className="glass-premium border-green-500/30 overflow-hidden">
-              <CardHeader className="p-6 sm:p-8">
-                <CardTitle className="text-center text-2xl sm:text-3xl font-bold">
-                  {t('deedsTracker')}
-                </CardTitle>
-                <p className="text-center text-muted-foreground mt-2">
-                  {t('earnPointsDaily')}
-                </p>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-8 pt-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {goodDeeds.map((deed, index) => {
-                    const isDone = completedDeeds.includes(deed.id);
-                    return (
-                      <motion.div
-                        key={deed.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        <Card
-                          className={`group transition-all duration-300 border-2 ${isDone ? 'bg-green-500/10 border-green-500/40 shadow-inner' : 'hover:border-primary/40 hover:shadow-md bg-white/50 dark:bg-slate-900/50'}`}
+                <AnimatePresence mode="wait">
+                    {/* 🏠 HOME SECTION */}
+                    {activeSection === 'home' && (
+                        <motion.div
+                            key="home"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
                         >
-                          <CardContent className="p-4 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-4">
-                              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-sm transition-transform group-hover:scale-110 ${isDone ? 'bg-green-500/20' : 'bg-slate-100 dark:bg-slate-800'}`}>
-                                {deed.icon}
-                              </div>
-                              <div>
-                                <p className="font-bold text-base sm:text-lg leading-tight">
-                                  {isArabic ? deed.deedAr : isItalian ? (deed.deedIt || deed.deed) : deed.deed}
-                                </p>
-                                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                                  +{deed.points} {t('points')}
-                                </p>
-                              </div>
-                            </div>
-                            <Button
-                              onClick={() => completeDeed(deed.id, deed.points)}
-                              disabled={isDone}
-                              variant={isDone ? 'default' : 'outline'}
-                              size="sm"
-                              className={`rounded-xl px-4 h-10 font-bold transition-all ${isDone ? 'bg-green-500 hover:bg-green-500 border-none opacity-100' : 'border-primary/30 text-primary hover:bg-primary/10'}`}
-                            >
-                              {isDone ? (
-                                <>
-                                  <CheckCircle2 className="w-4 h-4 mr-1.5" />
-                                  {t('didIt')}
-                                </>
-                              ) : (
-                                t('interact')
-                              )}
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                            {[
+                                {
+                                    id: 'stories',
+                                    title: isIt ? 'Storie dei Profeti' : 'Prophet Stories',
+                                    desc: isIt ? 'Ascolta storie magiche' : 'Listen to magical tales',
+                                    icon: <BookOpen className="w-6 h-6 sm:w-8 sm:h-8" />,
+                                    color: KIDS_COLORS.stories,
+                                    action: () => setActiveSection('stories')
+                                },
+                                {
+                                    id: 'quiz',
+                                    title: isIt ? 'Super Quiz' : 'Super Quiz',
+                                    desc: isIt ? 'Metti alla prova la mente' : 'Test your brain power',
+                                    icon: <Brain className="w-6 h-6 sm:w-8 sm:h-8" />,
+                                    color: KIDS_COLORS.quiz,
+                                    action: () => startQuiz()
+                                },
+                                {
+                                    id: 'videos',
+                                    title: isIt ? 'Video Hub' : 'Video Hub',
+                                    desc: isIt ? 'Guarda video divertenti' : 'Watch fun videos',
+                                    icon: <Video className="w-6 h-6 sm:w-8 sm:h-8" />,
+                                    color: KIDS_COLORS.videos,
+                                    action: () => setActiveSection('videos')
+                                },
+                                {
+                                    id: 'deeds',
+                                    title: isIt ? 'Buone Azioni' : 'Good Deeds',
+                                    desc: isIt ? 'Fai del bene ogni giorno' : 'Do good every day',
+                                    icon: <Heart className="w-6 h-6 sm:w-8 sm:h-8" />,
+                                    color: KIDS_COLORS.deeds,
+                                    action: () => setActiveSection('deeds')
+                                }
+                            ].map((card) => (
+                                <motion.div
+                                    key={card.id}
+                                    whileHover={{ y: -5, scale: 1.02 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={card.action}
+                                    className="cursor-pointer group"
+                                >
+                                    <Card className={`h-full border-2 ${card.color.border} shadow-xl overflow-hidden glass hover:bg-white/10 transition-all duration-300`}>
+                                        <div className={`h-2 bg-gradient-to-r ${card.color.bg}`} />
+                                        <CardContent className="p-3 sm:pt-6 sm:p-6 text-center">
+                                            <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl mx-auto mb-2 sm:mb-4 bg-gradient-to-br ${card.color.bg} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                                                {card.icon}
+                                            </div>
+                                            <h3 className="text-sm sm:text-xl font-bold mb-1 sm:mb-2 line-clamp-2">{card.title}</h3>
+                                            <p className="text-muted-foreground text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2 hidden sm:block">{card.desc}</p>
+                                            <Button variant="ghost" size="sm" className={`rounded-full gap-1 sm:gap-2 ${card.color.text} font-bold text-xs sm:text-sm`}>
+                                                {isIt ? 'Inizia' : 'Start'} <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    )}
 
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  className="mt-10 text-center p-8 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10 rounded-3xl border border-white/20 shadow-xl"
-                >
-                  <p className="text-sm font-medium text-muted-foreground mb-3 tracking-wide uppercase">
-                    {t('rememberAllahLovesGood')}
-                  </p>
-                  <p className="text-3xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    {t('mayAllahBlessYou')}
-                  </p>
-                </motion.div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
-      <Footer />
-    </div>
-  );
+                    {/* 📖 STORIES SECTION */}
+                    {activeSection === 'stories' && (
+                        <motion.div
+                            key="stories"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="space-y-4 sm:space-y-6"
+                        >
+                            <BackButton />
+
+                            {!story && !loading ? (
+                                // Story Topic Selection
+                                <div className="space-y-4 sm:space-y-6">
+                                    <div className="text-center mb-4 sm:mb-8">
+                                        <Badge variant="outline" className={`${KIDS_COLORS.stories.text} ${KIDS_COLORS.stories.border} mb-3 sm:mb-4`}>
+                                            <Sparkles className="w-3 h-3 mr-1" /> {isIt ? 'Scegli una Storia' : 'Choose a Story'}
+                                        </Badge>
+                                        <h2 className="text-xl sm:text-3xl font-bold font-amiri">
+                                            {isIt ? 'Quale storia vuoi ascoltare?' : 'Which story do you want to hear?'}
+                                        </h2>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                                        {STORY_TOPICS.map((topic) => (
+                                            <motion.div
+                                                key={topic.id}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                            >
+                                                <Card 
+                                                    className={`cursor-pointer glass ${KIDS_COLORS.stories.border} hover:bg-blue-500/10 transition-all`}
+                                                    onClick={() => generateStory(isIt ? topic.nameIt : topic.name)}
+                                                >
+                                                    <CardContent className="p-4 sm:p-6 text-center">
+                                                        <div className="text-3xl sm:text-5xl mb-2 sm:mb-3">{topic.emoji}</div>
+                                                        <h3 className="text-xs sm:text-base font-bold line-clamp-2">
+                                                            {isIt ? topic.nameIt : topic.name}
+                                                        </h3>
+                                                    </CardContent>
+                                                </Card>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                // Story Display
+                                <Card className={`glass overflow-hidden min-h-[50vh] ${KIDS_COLORS.stories.border}`}>
+                                    <CardContent className="p-4 sm:p-8">
+                                        {loading ? (
+                                            <div className="flex flex-col items-center justify-center py-12 sm:py-20 space-y-4">
+                                                <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                                                <p className="animate-pulse font-bold text-sm sm:text-base text-center">
+                                                    {isIt ? 'Scrivendo la tua storia magica...' : 'Writing your magical story...'}
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none">
+                                                <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-lg md:text-xl font-medium">
+                                                    {story}
+                                                </div>
+                                                <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                                                    <Button 
+                                                        className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90"
+                                                        onClick={() => { addStars(15); setStory(''); setSelectedStoryTopic(null); }}
+                                                    >
+                                                        <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                        {isIt ? 'Ho Letto! +15 ⭐' : 'I Read It! +15 ⭐'}
+                                                    </Button>
+                                                    <Button 
+                                                        variant="outline"
+                                                        className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3"
+                                                        onClick={() => { setStory(''); setSelectedStoryTopic(null); }}
+                                                    >
+                                                        <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                        {isIt ? 'Altra Storia' : 'Another Story'}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {/* 🧠 QUIZ SECTION */}
+                    {activeSection === 'quiz' && (
+                        <motion.div
+                            key="quiz"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="max-w-2xl mx-auto"
+                        >
+                            <BackButton />
+
+                            {loading ? (
+                                <div className="text-center py-12 sm:py-20">
+                                    <Brain className="w-12 h-12 sm:w-16 sm:h-16 text-orange-500 mx-auto animate-bounce mb-4" />
+                                    <p className="text-lg sm:text-xl font-bold">
+                                        {isIt ? 'Preparando le domande...' : 'Preparing questions...'}
+                                    </p>
+                                </div>
+                            ) : quizCompleted ? (
+                                // Quiz Results
+                                <Card className={`glass-premium ${KIDS_COLORS.quiz.border}`}>
+                                    <CardContent className="p-6 sm:p-8 text-center">
+                                        <div className="text-5xl sm:text-7xl mb-4">🎉</div>
+                                        <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+                                            {isIt ? 'Quiz Completato!' : 'Quiz Completed!'}
+                                        </h2>
+                                        <p className="text-lg sm:text-xl text-muted-foreground mb-6">
+                                            {isIt ? `Punteggio: ${quizScore}/${quizQuestions.length}` : `Score: ${quizScore}/${quizQuestions.length}`}
+                                        </p>
+                                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                                            <Button 
+                                                className="rounded-full px-6 py-4 h-auto bg-gradient-to-r from-orange-500 to-red-500"
+                                                onClick={() => startQuiz()}
+                                            >
+                                                <RefreshCw className="w-5 h-5 mr-2" />
+                                                {isIt ? 'Gioca Ancora' : 'Play Again'}
+                                            </Button>
+                                            <Button 
+                                                variant="outline"
+                                                className="rounded-full px-6 py-4 h-auto"
+                                                onClick={() => setActiveSection('home')}
+                                            >
+                                                <Home className="w-5 h-5 mr-2" />
+                                                {isIt ? 'Torna Home' : 'Go Home'}
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ) : quizQuestions.length > 0 ? (
+                                // Quiz Questions
+                                <Card className={`glass-premium ${KIDS_COLORS.quiz.border}`}>
+                                    <CardContent className="p-4 sm:p-8">
+                                        <div className="mb-4 sm:mb-6 flex justify-between items-center">
+                                            <span className="text-xs sm:text-sm font-bold text-orange-500 uppercase tracking-widest">
+                                                {isIt ? 'Domanda' : 'Question'} {currentQuizIndex + 1}/{quizQuestions.length}
+                                            </span>
+                                            <Badge className="bg-orange-500 hover:bg-orange-600">
+                                                {isIt ? 'Punti' : 'Score'}: {quizScore}
+                                            </Badge>
+                                        </div>
+                                        
+                                        {/* Progress Bar */}
+                                        <div className="w-full h-2 bg-muted rounded-full mb-6 overflow-hidden">
+                                            <div 
+                                                className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-500"
+                                                style={{ width: `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%` }}
+                                            />
+                                        </div>
+                                        
+                                        <h2 className="text-lg sm:text-2xl font-bold mb-6 sm:mb-8 text-center">
+                                            {isRTL 
+                                                ? quizQuestions[currentQuizIndex].questionAr 
+                                                : quizQuestions[currentQuizIndex].question}
+                                        </h2>
+                                        
+                                        <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                                            {(isRTL 
+                                                ? quizQuestions[currentQuizIndex].optionsAr 
+                                                : quizQuestions[currentQuizIndex].options
+                                            ).map((option: string, i: number) => (
+                                                <Button
+                                                    key={i}
+                                                    variant="outline"
+                                                    className="justify-start text-left h-auto py-3 sm:py-4 px-4 sm:px-6 text-sm sm:text-lg hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all rounded-xl"
+                                                    onClick={() => handleQuizAnswer(i)}
+                                                >
+                                                    <span className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 mr-3 sm:mr-4 flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">
+                                                        {String.fromCharCode(65 + i)}
+                                                    </span>
+                                                    <span className="line-clamp-2">{option}</span>
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ) : null}
+                        </motion.div>
+                    )}
+
+                    {/* 📺 VIDEOS SECTION */}
+                    {activeSection === 'videos' && (
+                        <motion.div 
+                            key="videos" 
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="space-y-4 sm:space-y-6"
+                        >
+                            <BackButton />
+                            
+                            {selectedVideo ? (
+                                // Video Player
+                                <div className="space-y-4">
+                                    <Button 
+                                        variant="ghost" 
+                                        onClick={() => setSelectedVideo(null)}
+                                        className="gap-2"
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                        {isIt ? 'Tutti i Video' : 'All Videos'}
+                                    </Button>
+                                    
+                                    <Card className={`glass overflow-hidden ${KIDS_COLORS.videos.border}`}>
+                                        <div className="aspect-video w-full">
+                                            <iframe
+                                                src={selectedVideo.url}
+                                                className="w-full h-full"
+                                                title={isIt ? selectedVideo.titleIt : selectedVideo.title}
+                                                allowFullScreen
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            />
+                                        </div>
+                                        <CardContent className="p-4 sm:p-6">
+                                            <h3 className="text-lg sm:text-xl font-bold mb-2">
+                                                {isIt ? selectedVideo.titleIt : selectedVideo.title}
+                                            </h3>
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-sm text-muted-foreground">{selectedVideo.time}</span>
+                                                <Button 
+                                                    size="sm" 
+                                                    className="bg-purple-500 hover:bg-purple-600 rounded-full"
+                                                    onClick={() => { addStars(5); toast.success(isIt ? 'Video guardato! +5 ⭐' : 'Video watched! +5 ⭐'); }}
+                                                >
+                                                    +5 ⭐
+                                                </Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            ) : (
+                                // Video Grid
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6">
+                                    {KIDS_VIDEOS.map((video) => (
+                                        <motion.div
+                                            key={video.id}
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.97 }}
+                                        >
+                                            <Card 
+                                                className={`glass overflow-hidden cursor-pointer group ${KIDS_COLORS.videos.border} hover:bg-purple-500/10 transition-all`}
+                                                onClick={() => setSelectedVideo(video)}
+                                            >
+                                                <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center relative">
+                                                    <span className="text-4xl sm:text-6xl">{video.thumbnail}</span>
+                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <Play className="w-10 h-10 sm:w-14 sm:h-14 text-white" />
+                                                    </div>
+                                                </div>
+                                                <CardContent className="p-3 sm:p-4">
+                                                    <h4 className="font-bold text-xs sm:text-sm line-clamp-2 mb-1">
+                                                        {isIt ? video.titleIt : video.title}
+                                                    </h4>
+                                                    <span className="text-xs text-muted-foreground">{video.time}</span>
+                                                </CardContent>
+                                            </Card>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {/* ❤️ GOOD DEEDS SECTION */}
+                    {activeSection === 'deeds' && (
+                        <motion.div 
+                            key="deeds"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            className="max-w-2xl mx-auto space-y-4 sm:space-y-6"
+                        >
+                            <BackButton />
+                            
+                            <div className="text-center mb-6 sm:mb-8">
+                                <Heart className="w-12 h-12 sm:w-16 sm:h-16 text-green-500 mx-auto mb-3 sm:mb-4 animate-pulse" />
+                                <h2 className="text-2xl sm:text-3xl font-bold font-amiri">
+                                    {isIt ? 'Le Mie Buone Azioni' : 'My Good Deeds'}
+                                </h2>
+                                <p className="text-sm sm:text-base text-muted-foreground">
+                                    {isIt ? 'Ogni piccola azione conta!' : 'Every small act counts!'}
+                                </p>
+                            </div>
+                            
+                            <div className="space-y-3 sm:space-y-4">
+                                {[
+                                    { 
+                                        icon: <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />, 
+                                        text: isIt ? 'Ho detto Salam a qualcuno oggi' : 'I said Salam to someone today', 
+                                        stars: 5,
+                                        color: 'border-blue-500/30 hover:border-blue-500/60'
+                                    },
+                                    { 
+                                        icon: <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />, 
+                                        text: isIt ? 'Ho aiutato i miei genitori' : 'I helped my parents', 
+                                        stars: 10,
+                                        color: 'border-yellow-500/30 hover:border-yellow-500/60'
+                                    },
+                                    { 
+                                        icon: <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />, 
+                                        text: isIt ? 'Ho imparato un nuovo Versetto' : 'I learned a new Ayah', 
+                                        stars: 20,
+                                        color: 'border-orange-500/30 hover:border-orange-500/60'
+                                    },
+                                    { 
+                                        icon: <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />, 
+                                        text: isIt ? 'Ho fatto un sorriso a un amico' : 'I smiled at a friend', 
+                                        stars: 5,
+                                        color: 'border-red-500/30 hover:border-red-500/60'
+                                    },
+                                    { 
+                                        icon: <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />, 
+                                        text: isIt ? 'Ho letto il Corano oggi' : 'I read Quran today', 
+                                        stars: 15,
+                                        color: 'border-purple-500/30 hover:border-purple-500/60'
+                                    }
+                                ].map((deed, i) => (
+                                    <Card key={i} className={`glass-premium border-2 ${deed.color} transition-all`}>
+                                        <CardContent className="p-4 sm:p-6 flex items-center justify-between gap-3">
+                                            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0">
+                                                    {deed.icon}
+                                                </div>
+                                                <span className="text-sm sm:text-lg font-medium line-clamp-2">{deed.text}</span>
+                                            </div>
+                                            <Button 
+                                                size="sm" 
+                                                className="bg-green-500 hover:bg-green-600 rounded-full flex-shrink-0 text-xs sm:text-sm px-3 sm:px-4"
+                                                onClick={() => { 
+                                                    addStars(deed.stars); 
+                                                    toast.success('Masha Allah! 💚'); 
+                                                }}
+                                            >
+                                                +{deed.stars} ⭐
+                                            </Button>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </main>
+
+            <Footer />
+        </div>
+    );
 };
 
 export default KidsPage;

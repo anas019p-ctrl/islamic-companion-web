@@ -153,8 +153,11 @@ const BlogPage = () => {
 
     // ── Format date ────────────────────────────────────────────────────────────
     const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
         try {
-            return new Date(dateStr).toLocaleDateString(
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return dateStr;
+            return d.toLocaleDateString(
                 language === 'ar' ? 'ar-SA' : language === 'it' ? 'it-IT' : 'en-US',
                 { year: 'numeric', month: 'long', day: 'numeric' }
             );

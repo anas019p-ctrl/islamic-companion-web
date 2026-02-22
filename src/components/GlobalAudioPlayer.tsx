@@ -24,7 +24,7 @@ export const GlobalAudioPlayer = () => {
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
-                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] glass-premium rounded-full p-2 flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-primary/30 px-6 backdrop-blur-2xl"
+                    className="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] glass-premium rounded-full p-2 flex items-center gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-primary/30 px-6 backdrop-blur-2xl"
                 >
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">

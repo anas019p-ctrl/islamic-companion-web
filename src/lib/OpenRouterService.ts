@@ -8,44 +8,94 @@
  * - Scholar-level responses
  * - Multi-model support (GPT-4, Claude, Gemini)
  * - Zero rate limits!
+ * 
+ * 🛡️ STRICT RELIGIOUS FILTER: Only Islamic topics allowed
  */
 
 export class OpenRouterService {
   private static API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
   private static BASE_URL = 'https://openrouter.ai/api/v1';
-  private static DEFAULT_MODEL = 'google/gemini-2.0-flash-lite-preview-02-05:free'; // ⚡ Ultra-fast & Free
+  private static DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free'; // ⚡ Stable Free Model
+
+  // 🛡️ STRICT ISLAMIC SYSTEM PROMPT - Applied to ALL requests
+  private static ISLAMIC_GUARD_PROMPT = `
+🛡️ STRICT OPERATING RULES - YOU ARE AN ISLAMIC SCHOLAR ASSISTANT:
+
+1. TOPIC RESTRICTION: You are ONLY allowed to answer questions about:
+   - Islamic Theology (Tawhid, Aqidah, Names of Allah)
+   - Islamic Jurisprudence (Fiqh, Halal/Haram, Worship)
+   - Quran and Hadith studies (Tafsir, Seerah)
+   - Islamic History (Prophets, Sahaba, Islamic Empires, Al-Andalus)
+   - Islamic Ethics and Spirituality (Akhlaq, Tasawwuf)
+   - Arabic language learning for religious purposes
+   - Daily Muslim practices (Salah, Dua, Dhikr, Ramadan)
+
+2. OFF-TOPIC PROTOCOL: If the user asks about ANYTHING ELSE (politics, pop culture, sports, generic science, non-Islamic history, personal advice, coding, technology, entertainment, gossip, etc.):
+   - Politely decline with: "Mi scuso, sono specializzato esclusivamente in temi islamici. Posso aiutarti con domande sulla religione islamica, storia islamica, Corano, Hadith o pratiche religiose. Come posso assisterti in questi ambiti?"
+   - Do NOT provide any information on off-topic subjects
+   - Redirect the user to ask an Islamic question
+
+3. RESPONSE STYLE:
+   - Provide clear, authentic answers based on Quran and Sunnah
+   - Cite supporting evidence (verse/hadith references)
+   - Mention scholarly differences when relevant
+   - Follow a balanced (wasatiyyah) approach
+   - Be respectful and educational
+`;
 
   /**
-   * Main AI request function
+   * Main AI request function with retry logic
    */
-  private static async request(messages: any[], model: string = this.DEFAULT_MODEL, temperature: number = 0.7): Promise<string> {
-    try {
-      const response = await fetch(`${this.BASE_URL}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Islamic Companion App - Miracle Edition'
-        },
-        body: JSON.stringify({
-          model,
-          messages,
-          temperature,
-          max_tokens: 4000
-        })
-      });
+  private static async request(messages: any[], model: string = this.DEFAULT_MODEL, temperature: number = 0.7, retries: number = 3): Promise<string> {
+    let lastError: Error | null = null;
+    
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        console.log(`🤖 AI Request [${model}] Attempt ${attempt}:`, messages[messages.length - 1].content.substring(0, 50) + '...');
 
-      if (!response.ok) {
-        throw new Error(`OpenRouter API error: ${response.status}`);
+        const response = await fetch(`${this.BASE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': window.location.origin,
+            'X-Title': 'Islamic Companion App - Miracle Edition'
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature,
+            max_tokens: 4000
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('OpenRouter API Error Details:', errorData);
+          
+          // If rate limited or server error, retry with backoff
+          if (response.status === 429 || response.status >= 500) {
+            lastError = new Error(`OpenRouter API error: ${response.status}`);
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+            continue;
+          }
+          
+          throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown'}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+      } catch (error) {
+        console.error(`OpenRouter Service Failure (Attempt ${attempt}):`, error);
+        lastError = error as Error;
+        
+        if (attempt < retries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
       }
-
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (error) {
-      console.error('OpenRouter API Error:', error);
-      throw error;
     }
+    
+    throw lastError || new Error('OpenRouter request failed after retries');
   }
 
   /**
@@ -177,25 +227,27 @@ export class OpenRouterService {
   /**
    * 📚 GENERATE ISLAMIC QUIZ QUESTIONS
    */
-  static async generateQuizQuestions(topic: string, language: string = 'en', difficulty: string = 'medium', count: number = 5): Promise<any[]> {
+  static async generateQuizQuestions(topic: string, difficulty: string = 'medium', count: number = 5): Promise<any[]> {
     const messages = [
       {
         role: 'system',
-        content: `Generate ${count} ${difficulty} difficulty multiple-choice quiz questions about ${topic} in ${language}.
+        content: `Generate ${count} ${difficulty} difficulty multiple-choice quiz questions about ${topic}.
         Return ONLY a valid JSON array with this exact structure:
         [
           {
-            "question": "Question text in ${language}",
+            "question": "Question text",
+            "questionAr": "Arabic translation",
             "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+            "optionsAr": ["خيار 1", "خيار 2", "خيار 3", "خيار 4"],
             "correct": 0,
-            "explanation": "Brief explanation in ${language}",
-            "encouragement": "A very encouraging message for a child in ${language} (e.g., 'Amazing! You know so much!')"
+            "explanation": "Brief explanation",
+            "encouragement": "A very encouraging message for a child (e.g., 'Amazing! You know so much about our Prophets!')"
           }
         ]
         
         Ensure questions are factually correct and appropriate for Islamic education.`
       },
-      { role: 'user', content: `Generate quiz about ${topic} in ${language}` }
+      { role: 'user', content: `Generate quiz about ${topic}` }
     ];
 
     const response = await this.request(messages, this.DEFAULT_MODEL, 0.6);
@@ -205,43 +257,47 @@ export class OpenRouterService {
     } catch (e) {
       const jsonMatch = response.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[jsonMatch.length - 1]); // Get last array if multiple
+        return JSON.parse(jsonMatch[0]);
       }
-      const rawMatch = response.match(/\[.*\]/s);
-      if (rawMatch) return JSON.parse(rawMatch[0]);
       throw new Error('Failed to parse quiz questions');
     }
   }
 
   /**
    * ❓ ISLAMIC Q&A - Scholar-level answers with STRICT RELIGIOUS FILTERS
+   * 🛡️ This function ONLY responds to Islamic topics
    */
   static async answerIslamicQuestion(question: string, language: string = 'en'): Promise<string> {
+    const langResponses: Record<string, { decline: string; redirect: string }> = {
+      'it': {
+        decline: "Mi scuso, sono specializzato esclusivamente in temi islamici (teologia, giurisprudenza, storia islamica, Corano, Hadith, etica e spiritualità).",
+        redirect: "Posso aiutarti con domande sulla religione islamica, storia islamica, Corano, Hadith o pratiche religiose. Come posso assisterti in questi ambiti?"
+      },
+      'en': {
+        decline: "I apologize, I am specialized exclusively in Islamic topics (theology, jurisprudence, Islamic history, Quran, Hadith, ethics and spirituality).",
+        redirect: "I can help you with questions about Islamic religion, Islamic history, Quran, Hadith, or religious practices. How can I assist you in these areas?"
+      },
+      'ar': {
+        decline: "أعتذر، أنا متخصص حصريًا في المواضيع الإسلامية (العقيدة، الفقه، التاريخ الإسلامي، القرآن، الحديث، الأخلاق والروحانيات).",
+        redirect: "يمكنني مساعدتك في الأسئلة المتعلقة بالدين الإسلامي، التاريخ الإسلامي، القرآن، الحديث، أو الممارسات الدينية. كيف يمكنني مساعدتك في هذه المجالات؟"
+      }
+    };
+
+    const responses = langResponses[language] || langResponses['en'];
+
     const messages = [
       {
         role: 'system',
-        content: `You are a specialized Islamic Scholar Assistant.
-        
-        STRICT OPERATING RULES:
-        1. TOPIC RESTRICTION: You are ONLY allowed to answer questions about:
-           - Islamic Theology (Tawhid, Akida)
-           - Islamic Jurisprudence (Fiqh, Halal/Haram)
-           - Quran and Hadith studies
-           - Islamic History and Seerah (Prophets, Sahaba, Empires)
-           - Islamic Ethics and Spirituality
-           
-        2. OFF-TOPIC PROTOCOL: If the user asks about ANYTHING ELSE (politics, pop culture, sports, generic science, non-Islamic history, personal advice, coding, etc.):
-           - Politely decline.
-           - Explain that your expertise is strictly limited to Islamic religious and historical knowledge.
-           - Offer to answer a question within your domain.
-        
-        3. RESPONSE STYLE:
-           - Provide clear, authentic answers based on Quran and Sunnah.
-           - Cite supporting evidence (verse/hadith references).
-           - Mention scholarly differences when relevant.
-           - Follow a balanced (wasatiyyah) approach.
-        
-        LANGUAGE: Respond in ${language}.`
+        content: `${this.ISLAMIC_GUARD_PROMPT}
+
+LANGUAGE: Respond in ${language === 'it' ? 'ITALIAN' : language === 'ar' ? 'ARABIC' : 'ENGLISH'}.
+
+DECLINE MESSAGE (use this exact text if question is off-topic):
+"${responses.decline}
+
+${responses.redirect}"
+
+Remember: You are a STRICT Islamic scholar. ANY question not related to Islam must be politely declined using the message above.`
       },
       { role: 'user', content: question }
     ];
