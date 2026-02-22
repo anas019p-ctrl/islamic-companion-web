@@ -159,29 +159,41 @@ const KidsPage = () => {
                 {
                     question: "How many times do Muslims pray each day?",
                     questionAr: "كم مرة يصلي المسلمون في اليوم؟",
+                    questionIt: "Quante volte pregano i musulmani ogni giorno?",
                     options: ["3 times", "5 times", "7 times", "2 times"],
                     optionsAr: ["3 مرات", "5 مرات", "7 مرات", "مرتين"],
+                    optionsIt: ["3 volte", "5 volte", "7 volte", "2 volte"],
                     correct: 1,
                     explanation: "Muslims pray 5 times daily: Fajr, Dhuhr, Asr, Maghrib, and Isha",
-                    encouragement: "Excellent! You know about Salah! 🌟"
+                    explanationIt: "I musulmani pregano 5 volte al giorno: Fajr, Dhuhr, Asr, Maghrib e Isha",
+                    encouragement: "Excellent! You know about Salah! 🌟",
+                    encouragementIt: "Eccellente! Conosci la Salah! 🌟"
                 },
                 {
                     question: "What is the holy book of Islam?",
                     questionAr: "ما هو الكتاب المقدس في الإسلام؟",
+                    questionIt: "Qual è il libro sacro dell'Islam?",
                     options: ["Torah", "Bible", "Quran", "Vedas"],
                     optionsAr: ["التوراة", "الإنجيل", "القرآن", "الفيدا"],
+                    optionsIt: ["Torah", "Bibbia", "Corano", "Veda"],
                     correct: 2,
                     explanation: "The Quran is the holy book revealed to Prophet Muhammad ﷺ",
-                    encouragement: "Amazing! You know about the Quran! 📖"
+                    explanationIt: "Il Corano è il libro sacro rivelato al Profeta Muhammad ﷺ",
+                    encouragement: "Amazing! You know about the Quran! 📖",
+                    encouragementIt: "Incredibile! Conosci il Corano! 📖"
                 },
                 {
                     question: "Which prophet built the Ark?",
                     questionAr: "أي نبي بنى السفينة؟",
+                    questionIt: "Quale profeta costruì l'Arca?",
                     options: ["Adam (AS)", "Ibrahim (AS)", "Nuh (AS)", "Musa (AS)"],
                     optionsAr: ["آدم (ع)", "إبراهيم (ع)", "نوح (ع)", "موسى (ع)"],
+                    optionsIt: ["Adamo (AS)", "Ibrahim (AS)", "Nuh (AS)", "Musa (AS)"],
                     correct: 2,
                     explanation: "Prophet Nuh (AS) built the Ark to save believers from the flood",
-                    encouragement: "Great job! You know about Prophet Nuh! 🚢"
+                    explanationIt: "Il Profeta Nuh (AS) costruì l'Arca per salvare i credenti dal diluvio",
+                    encouragement: "Great job! You know about Prophet Nuh! 🚢",
+                    encouragementIt: "Ottimo lavoro! Conosci il Profeta Nuh! 🚢"
                 }
             ]);
         } finally {
@@ -196,7 +208,12 @@ const KidsPage = () => {
         
         if (isCorrect) {
             setQuizScore(prev => prev + 1);
-            toast.success(currentQuestion.encouragement || (isIt ? 'Fantastico! 🌟' : 'Great job! 🌟'));
+            const encouragement = isRTL 
+                ? currentQuestion.encouragementAr 
+                : isIt && currentQuestion.encouragementIt 
+                    ? currentQuestion.encouragementIt 
+                    : currentQuestion.encouragement;
+            toast.success(encouragement || (isIt ? 'Fantastico! 🌟' : 'Great job! 🌟'));
             addStars(10);
         } else {
             toast.error(isIt ? 'Non proprio! Ma continua a provare! 💪' : 'Not quite! But keep trying! 💪');
@@ -396,7 +413,7 @@ const KidsPage = () => {
                                             </div>
                                         ) : (
                                             <div className="prose prose-sm sm:prose-lg dark:prose-invert max-w-none">
-                                                <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-lg md:text-xl font-medium">
+                                                <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-lg md:text-xl font-medium text-slate-800 dark:text-slate-200">
                                                     {story}
                                                 </div>
                                                 {story && !story.includes(isIt ? 'Mi dispiace' : 'Sorry') && (
@@ -410,7 +427,7 @@ const KidsPage = () => {
                                                         </Button>
                                                         <Button 
                                                             variant="outline"
-                                                            className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3"
+                                                            className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 border-blue-200 dark:border-blue-800"
                                                             onClick={() => { setStory(''); setSelectedStoryTopic(null); }}
                                                         >
                                                             <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
@@ -418,7 +435,7 @@ const KidsPage = () => {
                                                         </Button>
                                                     </div>
                                                 )}
-                                                {story && story.includes(isIt ? 'Mi dispiace' : 'Sorry') && (
+                                                {story && (story.includes(isIt ? 'Mi dispiace' : 'Sorry') || story.includes('Oops')) && (
                                                     <div className="mt-8 sm:mt-12 flex justify-center">
                                                         <Button 
                                                             className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600"
@@ -509,13 +526,17 @@ const KidsPage = () => {
                                         <h2 className="text-lg sm:text-2xl font-bold mb-6 sm:mb-8 text-center">
                                             {isRTL 
                                                 ? quizQuestions[currentQuizIndex].questionAr 
-                                                : quizQuestions[currentQuizIndex].question}
+                                                : isIt && quizQuestions[currentQuizIndex].questionIt
+                                                    ? quizQuestions[currentQuizIndex].questionIt
+                                                    : quizQuestions[currentQuizIndex].question}
                                         </h2>
                                         
                                         <div className="grid grid-cols-1 gap-3 sm:gap-4">
                                             {(isRTL 
                                                 ? quizQuestions[currentQuizIndex].optionsAr 
-                                                : quizQuestions[currentQuizIndex].options
+                                                : isIt && quizQuestions[currentQuizIndex].optionsIt
+                                                    ? quizQuestions[currentQuizIndex].optionsIt
+                                                    : quizQuestions[currentQuizIndex].options
                                             ).map((option: string, i: number) => (
                                                 <Button
                                                     key={i}

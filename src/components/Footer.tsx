@@ -102,7 +102,7 @@ export const Footer = () => {
             رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            "Our Lord, accept [this] from us. Indeed You are the Hearing, the Knowing." (2:127)
+            {t('quranicVerseFooter')}
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export const Footer = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="mt-8 flex flex-col items-center gap-4 p-6 glass-premium rounded-3xl border border-primary/20 max-w-sm mx-auto"
           >
-            <p className="text-sm font-bold text-primary">Scan to Access App</p>
+            <p className="text-sm font-bold text-primary">{t('scanToAccess')}</p>
             <div className="p-4 bg-white rounded-2xl">
               <QRCodeSVG
                 value={APP_URL}
@@ -129,9 +129,15 @@ export const Footer = () => {
               onClick={() => setShowQR(false)}
               className="text-xs"
             >
-              Close
+              {t('close')}
             </Button>
           </motion.div>
+        )}
+      </div>
+    </footer>
+  );
+};
+iv>
         )}
       </div>
     </footer>

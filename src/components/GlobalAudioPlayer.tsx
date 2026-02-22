@@ -3,9 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AudioService from '@/lib/AudioService';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, Square, Volume2, Heart } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const GlobalAudioPlayer = () => {
     const [status, setStatus] = useState(AudioService.getStatus());
+    const { language } = useLanguage();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -31,8 +33,12 @@ export const GlobalAudioPlayer = () => {
                             <Volume2 className={`w-4 h-4 text-primary ${status.isSpeaking && !status.isPaused ? 'animate-pulse' : ''}`} />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[8px] uppercase font-black text-primary tracking-[0.2em] leading-none">Audio System</span>
-                            <span className="text-[9px] font-medium opacity-60">Multimedia Control</span>
+                            <span className="text-[8px] uppercase font-black text-primary tracking-[0.2em] leading-none">
+                                {language === 'it' ? 'Sistema Audio' : language === 'ar' ? 'النظام الصوتي' : 'Audio System'}
+                            </span>
+                            <span className="text-[9px] font-medium opacity-60">
+                                {language === 'it' ? 'Controllo Multimedia' : language === 'ar' ? 'التحكم في الوسائط' : 'Multimedia Control'}
+                            </span>
                         </div>
                     </div>
 

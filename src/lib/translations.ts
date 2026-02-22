@@ -229,6 +229,9 @@ export const translations: Record<Language, Record<string, string>> = {
     woman: 'صحابية',
     companion: 'صحابي',
     all: 'الكل',
+    quranicVerseFooter: '"رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ" (البقرة: 127)',
+    scanToAccess: 'امسح الرمز للوصول للتطبيق',
+    close: 'إغلاق',
   },
   en: {
     appName: 'Islam & Muslim',
@@ -483,6 +486,9 @@ export const translations: Record<Language, Record<string, string>> = {
     khutbahModeOn: 'Khutbah Mode: ON (25min+)',
     standardMode: 'Standard Mode',
     scholarInsight: 'SCHOLARLY INSIGHT',
+    quranicVerseFooter: '"Our Lord, accept [this] from us. Indeed You are the Hearing, the Knowing." (2:127)',
+    scanToAccess: 'Scan to Access App',
+    close: 'Close',
   },
   it: {
     appName: 'Islam e Musulmani',
@@ -735,6 +741,9 @@ export const translations: Record<Language, Record<string, string>> = {
     khutbahModeOn: 'Modalità Khutbah: ON (25min+)',
     standardMode: 'Modalità Standard',
     scholarInsight: 'APPROFONDIMENTO STUDIOSO',
+    quranicVerseFooter: '"Signore, accetta [questo] da noi. In verità Tu sei l\'Audiente, il Sapiente." (2:127)',
+    scanToAccess: 'Scansiona per accedere all\'App',
+    close: 'Chiudi',
   },
   fr: {
     appName: 'Islam & Muslim',
