@@ -29,10 +29,10 @@ const suggestedQuestions = {
     'Tell me about the sanctity of Al-Quds (Jerusalem).',
   ],
   it: [
-    'Qual è l\'importanza storica di Al-Andalus?',
+    "Qual è l'importanza storica di Al-Andalus?",
     'Raccontami la vita del Profeta Muhammad (psdl) in breve.',
-    'Come ha contribuito l\'Islam alla scienza?',
-    'Quali sono i diritti della famiglia nell\'Islam?',
+    "Come ha contribuito l'Islam alla scienza?",
+    "Quali sono i diritti della famiglia nell'Islam?",
     'Parlami della sacralità di Al-Quds (Gerusalemme).',
   ],
 };
@@ -92,7 +92,6 @@ const ScholarPage = () => {
       <Header />
 
       <main className="container mx-auto px-4 py-8 pt-24 max-w-4xl relative">
-        {/* Decorative Background Elements */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
           <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] animate-pulse" />
@@ -272,14 +271,6 @@ const ScholarPage = () => {
 
       <Footer />
     </div>
-  );
-};
-
-export default ScholarPage;
-      </main >
-
-  <Footer />
-    </div >
   );
 };
 
