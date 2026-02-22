@@ -50,13 +50,20 @@ export class BlogService {
         const idx = new Date().getDate() % FALLBACK_INSIGHTS.length;
         const fb = FALLBACK_INSIGHTS[idx];
         const todayISO = new Date().toISOString().split('T')[0];
+        
+        const images = [
+            'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800', // Calligraphy
+            'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=800', // Architecture
+            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800'  // Quran
+        ];
+        
         return {
             id: 'fallback-' + todayISO,
             ...fb,
             date: todayISO,
             author: 'Islamic Companion',
             readTime: '3 min',
-            image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800'
+            image: images[idx % images.length]
         };
     }
 
@@ -91,6 +98,15 @@ export class BlogService {
         const topics = ['Tawhid e Fede', 'Preghiera e Dhikr', 'Etica Islamica', 'Storie dei Profeti', 'Saggezza del Corano', 'Sunnah del Profeta ﷺ', 'Famiglia nell Islam'];
         const topic = topics[new Date().getDate() % topics.length];
 
+        const images = [
+            'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800', // Islamic Calligraphy
+            'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=800', // Mosque Architecture
+            'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800', // Lantern/Ramadan
+            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800', // Quran
+            'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=800'  // Geometric Patterns
+        ];
+        const image = images[new Date().getDate() % images.length];
+
         const prompt = `Sei un accademico islamico di alto livello. Scrivi un articolo del blog islamico in ${langLabel} per oggi (${today}).
 Argomento: ${topic}
 
@@ -100,7 +116,9 @@ STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
   "excerpt": "Riassunto di 2 frasi in ${langLabel}",
   "content": "Articolo completo in ${langLabel} usando:\n- Versetti coranici pertinenti con numero sura e versetto\n- Hadith autentici con fonte (Bukhari, Muslim, etc.)\n- Lezione pratica applicabile oggi\n- Usa Markdown (##, >, **testo**)\nMinimo 400 parole.",
   "category": "Categoria in ${langLabel}"
-}`;
+}
+
+IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualità e pratica quotidiana.`;
 
         try {
             const response = await OpenRouterService.generateContent(prompt, 'anthropic/claude-3.5-sonnet');
@@ -128,10 +146,10 @@ STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
                 excerpt: json.excerpt || json.content.substring(0, 150) + '...',
                 content: json.content,
                 date: todayISO,
-                author: '🤖 AI Scholar (OpenRouter)',
+                author: language === 'it' ? '🤖 Studioso AI (OpenRouter)' : '🤖 AI Scholar (OpenRouter)',
                 category: json.category || topic,
                 readTime: `${Math.ceil(json.content.split(' ').length / 200)} min`,
-                image: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800',
+                image: image,
                 cachedAt: new Date().toISOString()
             };
 

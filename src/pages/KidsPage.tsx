@@ -37,14 +37,14 @@ const KIDS_COLORS = {
     deeds: { bg: 'from-green-500 to-teal-500', border: 'border-green-400/40', text: 'text-green-400' }
 };
 
-// 📺 Safe Islamic Kids YouTube Videos
+// 📺 Video Educativi per Bambini (Aggiornati 2026)
 const KIDS_VIDEOS = [
-    { id: 'adam', title: "Story of Prophet Adam (AS)", titleIt: "Storia del Profeta Adamo (AS)", url: "https://www.youtube.com/embed/bX_G6p82G_o", time: "12 min", thumbnail: "🌍" },
-    { id: 'nuh', title: "Prophet Nuh (AS) & The Ark", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/p17iH98P5zM", time: "10 min", thumbnail: "🚢" },
-    { id: 'yunus', title: "Prophet Yunus (AS) & The Whale", titleIt: "Il Profeta Yunus (AS) e la Balena", url: "https://www.youtube.com/embed/Y-K7xK9pDks", time: "8 min", thumbnail: "🐋" },
-    { id: 'ibrahim', title: "Prophet Ibrahim (AS)", titleIt: "Il Profeta Ibrahim (AS)", url: "https://www.youtube.com/embed/5tHNj5VvZKk", time: "15 min", thumbnail: "⭐" },
-    { id: 'musa', title: "Prophet Musa (AS)", titleIt: "Il Profeta Musa (AS)", url: "https://www.youtube.com/embed/QYqQpHWjNuE", time: "14 min", thumbnail: "🌊" },
-    { id: 'yusuf', title: "Prophet Yusuf (AS)", titleIt: "Il Profeta Yusuf (AS)", url: "https://www.youtube.com/embed/wkKgTbMQQ_U", time: "16 min", thumbnail: "🌙" },
+    { id: 'adam', title: "Storia del Profeta Adamo (AS)", titleIt: "Storia del Profeta Adamo (AS)", url: "https://www.youtube.com/embed/5tHNj5VvZKk", time: "12 min", thumbnail: "🌍" },
+    { id: 'nuh', title: "Il Profeta Nuh (AS) e l'Arca", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/p17iH98P5zM", time: "10 min", thumbnail: "🚢" },
+    { id: 'yunus', title: "Il Profeta Yunus (AS) e la Balena", titleIt: "Il Profeta Yunus (AS) e la Balena", url: "https://www.youtube.com/embed/Y-K7xK9pDks", time: "8 min", thumbnail: "🐋" },
+    { id: 'ibrahim', title: "Il Profeta Ibrahim (AS)", titleIt: "Il Profeta Ibrahim (AS)", url: "https://www.youtube.com/embed/wkKgTbMQQ_U", time: "15 min", thumbnail: "⭐" },
+    { id: 'musa', title: "Il Profeta Musa (AS)", titleIt: "Il Profeta Musa (AS)", url: "https://www.youtube.com/embed/QYqQpHWjNuE", time: "14 min", thumbnail: "🌊" },
+    { id: 'muhammad', title: "Il Profeta Muhammad ﷺ", titleIt: "Il Profeta Muhammad ﷺ", url: "https://www.youtube.com/embed/bX_G6p82G_o", time: "16 min", thumbnail: "☀️" },
 ];
 
 // 📖 Story Topics for Kids
@@ -399,23 +399,36 @@ const KidsPage = () => {
                                                 <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-lg md:text-xl font-medium">
                                                     {story}
                                                 </div>
-                                                <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                                                    <Button 
-                                                        className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90"
-                                                        onClick={() => { addStars(15); setStory(''); setSelectedStoryTopic(null); }}
-                                                    >
-                                                        <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" /> 
-                                                        {isIt ? 'Ho Letto! +15 ⭐' : 'I Read It! +15 ⭐'}
-                                                    </Button>
-                                                    <Button 
-                                                        variant="outline"
-                                                        className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3"
-                                                        onClick={() => { setStory(''); setSelectedStoryTopic(null); }}
-                                                    >
-                                                        <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
-                                                        {isIt ? 'Altra Storia' : 'Another Story'}
-                                                    </Button>
-                                                </div>
+                                                {story && !story.includes(isIt ? 'Mi dispiace' : 'Sorry') && (
+                                                    <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                                                        <Button 
+                                                            className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90"
+                                                            onClick={() => { addStars(15); setStory(''); setSelectedStoryTopic(null); }}
+                                                        >
+                                                            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                            {isIt ? 'Ho Letto! +15 ⭐' : 'I Read It! +15 ⭐'}
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline"
+                                                            className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3"
+                                                            onClick={() => { setStory(''); setSelectedStoryTopic(null); }}
+                                                        >
+                                                            <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                            {isIt ? 'Altra Storia' : 'Another Story'}
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                {story && story.includes(isIt ? 'Mi dispiace' : 'Sorry') && (
+                                                    <div className="mt-8 sm:mt-12 flex justify-center">
+                                                        <Button 
+                                                            className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600"
+                                                            onClick={() => selectedStoryTopic && generateStory(selectedStoryTopic)}
+                                                        >
+                                                            <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                            {isIt ? 'Riprova' : 'Try Again'}
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </CardContent>
@@ -547,10 +560,18 @@ const KidsPage = () => {
                                     </Button>
                                     
                                     <Card className={`glass overflow-hidden ${KIDS_COLORS.videos.border}`}>
-                                        <div className="aspect-video w-full">
+                                        <div className="aspect-video w-full relative group/video">
+                                            <picture className="absolute inset-0 z-0">
+                                                <source srcSet={`https://img.youtube.com/vi/${selectedVideo.url.split('/').pop()}/maxresdefault.jpg`} media="(min-width: 800px)" />
+                                                <img 
+                                                    src={`https://img.youtube.com/vi/${selectedVideo.url.split('/').pop()}/0.jpg`} 
+                                                    alt="Video preview" 
+                                                    className="w-full h-full object-cover blur-sm opacity-50 transition-all group-hover/video:blur-none group-hover/video:opacity-100"
+                                                />
+                                            </picture>
                                             <iframe
                                                 src={selectedVideo.url}
-                                                className="w-full h-full"
+                                                className="w-full h-full relative z-10"
                                                 title={isIt ? selectedVideo.titleIt : selectedVideo.title}
                                                 allowFullScreen
                                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

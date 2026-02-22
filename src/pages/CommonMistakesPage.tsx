@@ -75,11 +75,11 @@ const CommonMistakesPage = () => {
             <AlertTriangle className="w-4 h-4 mr-2" />
             {isArabic ? 'تصحيح العبادات' : 'Correcting Acts of Worship'}
           </Badge>
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 font-amiri tracking-tight">
             {isArabic ? 'أخطاء شائعة وتصحيحها' : 'Common Mistakes & Corrections'}
           </h1>
-          <p className="text-muted-foreground text-lg">
-            {isArabic ? 'دليلك للتعلم من الأخطاء الشائعة في العبادات اليومية بناءً على السنة النبوية.' : 'Your guide to learning from common mistakes in daily worship based on the Sunnah.'}
+          <p className="text-muted-foreground text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed">
+            {isArabic ? 'دليلك للتعلم من الأخطاء الشائعة في العبادات اليومية بناءً على السنة النبوية الشريفة.' : 'La tua guida per imparare dagli errori comuni nelle adorazioni quotidiane basata sulla Sunnah.'}
           </p>
 
           <div className="mt-8 max-w-md mx-auto relative">
@@ -129,21 +129,28 @@ const CommonMistakesPage = () => {
                         <p className="text-muted-foreground">{isArabic ? mistake.descriptionAr : mistake.description}</p>
                       </div>
 
-                      <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
-                        <h4 className="flex items-center gap-2 font-semibold text-emerald-600 dark:text-emerald-400 mb-1">
-                          <CheckCircle2 className="w-4 h-4" />
+                      <div className="p-4 sm:p-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl shadow-inner">
+                        <h4 className="flex items-center gap-2 font-bold text-emerald-700 dark:text-emerald-400 mb-2 text-lg">
+                          <CheckCircle2 className="w-5 h-5" />
                           {isArabic ? 'التصحيح:' : 'The Correction:'}
                         </h4>
-                        <p className="text-slate-800 dark:text-slate-200">{isArabic ? mistake.correctionAr : mistake.correction}</p>
+                        <p className="text-slate-900 dark:text-slate-100 text-base sm:text-lg leading-relaxed font-medium">
+                          {isArabic ? mistake.correctionAr : mistake.correction}
+                        </p>
                       </div>
 
                       {mistake.hadith && (
-                        <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-lg italic">
-                          <h4 className="flex items-center gap-2 font-semibold text-blue-600 dark:text-blue-400 mb-1 not-italic">
-                            <MessageSquare className="w-4 h-4" />
+                        <div className="p-4 sm:p-6 bg-blue-500/10 border border-blue-500/30 rounded-xl italic relative overflow-hidden">
+                          <div className="absolute top-0 right-0 p-2 opacity-10">
+                            <MessageSquare className="w-12 h-12" />
+                          </div>
+                          <h4 className="flex items-center gap-2 font-bold text-blue-700 dark:text-blue-400 mb-2 not-italic text-lg">
+                            <MessageSquare className="w-5 h-5" />
                             {isArabic ? 'الدليل:' : 'Evidence:'}
                           </h4>
-                          <p className="text-slate-700 dark:text-slate-300">"{isArabic ? mistake.hadithAr : mistake.hadith}"</p>
+                          <p className="text-slate-800 dark:text-slate-200 text-base sm:text-lg leading-relaxed relative z-10">
+                            "{isArabic ? mistake.hadithAr : mistake.hadith}"
+                          </p>
                         </div>
                       )}
                     </CardContent>
