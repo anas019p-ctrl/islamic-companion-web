@@ -107,35 +107,39 @@ export class BlogService {
         ];
         const image = images[new Date().getDate() % images.length];
 
-        const prompt = `Sei un accademico islamico di alto livello. Scrivi un articolo del blog islamico in ${langLabel} per oggi (${today}).
+        const prompt = `Sei un accademico islamico specializzato nella formazione di predicatori (Du'at).
+
+Scrivi un articolo FORMATIVO (non solo informativo) in ${langLabel} per aspiranti predicatori per oggi (${today}).
 Argomento: ${topic}
 
 STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
 {
-  "title": "Titolo accattivante in ${langLabel}",
-  "excerpt": "Riassunto di 2 frasi in ${langLabel}",
-  "content": "Articolo completo in ${langLabel} usando:\n- Versetti coranici pertinenti con numero sura e versetto\n- Hadith autentici con fonte (Bukhari, Muslim, etc.)\n- Lezione pratica applicabile oggi\n- Usa Markdown (##, >, **testo**)\nMinimo 400 parole.",
-  "category": "Categoria in ${langLabel}"
+  "title": "Titolo accademico in ${langLabel}",
+  "excerpt": "Riassunto analitico di 2 frasi in ${langLabel}",
+  "content": "Articolo completo in ${langLabel} seguendo questa struttura:\n\n## Introduzione Accademica\n- Versetto coranico pertinente (numero sura:versetto)\n- Contesto della rivelazione (Asbab al-Nuzul se applicabile)\n\n## Analisi Filologica\n- Spiegazione dei termini chiave in arabo classico\n- Radici e significati profondi\n\n## Hadith Autentici con Takhrij\n- Almeno 2 Hadith con fonte completa (es. Sahih Bukhari, Hadith 756)\n- Grado di autenticità\n\n## Applicazione per il Predicatore Moderno\n- Come usare questa conoscenza nella Da'wah\n- Errori comuni da evitare quando si insegna questo argomento\n\n## Conclusione con Dua\n- Dua pertinente in arabo con traduzione\n\nUsa Markdown (##, >, **testo**). Minimo 800 parole.",
+  "category": "Formazione Predicatori"
 }
 
 IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualità e pratica quotidiana.`;
 
         try {
-            const response = await OpenRouterService.generateContent(prompt, 'anthropic/claude-3.5-sonnet');
-            const clean = response.replace(/```json\s?/g, '').replace(/```\s?/g, '').trim();
-
-            let json;
-            try {
-                json = JSON.parse(clean);
-            } catch (e) {
-                // Try to find JSON in the string if it contains text around it
-                const jsonMatch = clean.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    json = JSON.parse(jsonMatch[0]);
-                } else {
-                    throw new Error('No valid JSON found in AI response');
-                }
+            // Utilizzo di DeepSeek Chat (modello a pagamento) per la massima qualità accademica
+            const response = await OpenRouterService.generateContent(prompt, 'deepseek/deepseek-chat');
+            
+            if (!response) {
+                throw new Error('AI Response is empty');
             }
+
+            // Pulizia dell'output per estrarre solo il JSON
+            const jsonStart = response.indexOf('{');
+            const jsonEnd = response.lastIndexOf('}') + 1;
+            
+            if (jsonStart === -1 || jsonEnd === -1) {
+                throw new Error('No valid JSON found in AI response');
+            }
+
+            const clean = response.substring(jsonStart, jsonEnd).trim();
+            const json = JSON.parse(clean);
 
             if (!json.title || !json.content) throw new Error('Invalid AI response structure');
 
@@ -172,5 +176,8 @@ IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, sp
         Object.keys(localStorage)
             .filter(k => k.startsWith(this.STORAGE_KEY))
             .forEach(k => localStorage.removeItem(k));
+    }
+}
+
     }
 }

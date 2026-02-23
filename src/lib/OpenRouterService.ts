@@ -15,7 +15,7 @@
 export class OpenRouterService {
   private static API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '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';
   private static BASE_URL = 'https://openrouter.ai/api/v1';
-  private static DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free'; // ⚡ Stable Free Model
+  private static DEFAULT_MODEL = 'deepseek/deepseek-chat'; // ⚡ Using DeepSeek Paid Model for excellence
 
   // 🛡️ STRICT ISLAMIC SYSTEM PROMPT - Applied to ALL requests
   private static ISLAMIC_GUARD_PROMPT = `
@@ -44,28 +44,34 @@ export class OpenRouterService {
 `;
 
   /**
-   * Main AI request function with retry logic
+   * Main AI request function with retry logic and enhanced error handling
    */
   private static async request(messages: any[], model: string = this.DEFAULT_MODEL, temperature: number = 0.7, retries: number = 3): Promise<string> {
     let lastError: Error | null = null;
     
+    // Default fallback to free model for all non-explicitly requested paid models
+    let finalModel = model;
+
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
-        console.log(`🤖 AI Request [${model}] Attempt ${attempt}:`, messages[messages.length - 1].content.substring(0, 50) + '...');
+        console.log(`🤖 AI Request [${finalModel}] Attempt ${attempt}:`, messages[messages.length - 1].content.substring(0, 50) + '...');
 
         const response = await fetch(`${this.BASE_URL}/chat/completions`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${this.API_KEY}`,
             'Content-Type': 'application/json',
-            'HTTP-Referer': window.location.origin,
-            'X-Title': 'Islamic Companion App - Miracle Edition'
+            'HTTP-Referer': 'https://islamic-companion.ai', // Custom referer for tracking
+            'X-Title': 'Islamic Companion App - High Excellence Mode'
           },
           body: JSON.stringify({
-            model,
+            model: finalModel,
             messages,
             temperature,
-            max_tokens: 4000
+            max_tokens: 4000,
+            top_p: 0.9,
+            frequency_penalty: 0.1,
+            presence_penalty: 0.1
           })
         });
 
@@ -73,10 +79,15 @@ export class OpenRouterService {
           const errorData = await response.json().catch(() => ({}));
           console.error('OpenRouter API Error Details:', errorData);
           
-          // If rate limited or server error, retry with backoff
+          if (response.status === 402) {
+             console.error('💳 Insufficient credits on OpenRouter. Switching to free fallback...');
+             finalModel = 'google/gemini-2.0-flash-exp:free';
+             continue; // Retry with free model
+          }
+
           if (response.status === 429 || response.status >= 500) {
             lastError = new Error(`OpenRouter API error: ${response.status}`);
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+            await new Promise(resolve => setTimeout(resolve, 2000 * attempt)); 
             continue;
           }
           
@@ -84,18 +95,30 @@ export class OpenRouterService {
         }
 
         const data = await response.json();
-        return data.choices[0].message.content;
+        const content = data.choices[0].message.content;
+        
+        if (!content) {
+          throw new Error('AI response content is empty');
+        }
+
+        return content;
       } catch (error) {
         console.error(`OpenRouter Service Failure (Attempt ${attempt}):`, error);
         lastError = error as Error;
         
         if (attempt < retries) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+          await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
         }
       }
     }
     
-    throw lastError || new Error('OpenRouter request failed after retries');
+    // Final emergency fallback
+    if (finalModel !== 'google/gemini-2.0-flash-exp:free') {
+       console.log('🔄 All retries failed. Attempting final emergency fallback to free model...');
+       return await this.request(messages, 'google/gemini-2.0-flash-exp:free', temperature, 1);
+    }
+
+    throw lastError || new Error('OpenRouter request failed after retries and fallbacks');
   }
 
   /**
@@ -309,6 +332,13 @@ Remember: You are a STRICT Islamic scholar. ANY question not related to Islam mu
    * 🏗️ GENERIC CONTENT GENERATION
    */
   static async generateContent(prompt: string, model: string = this.DEFAULT_MODEL): Promise<string> {
+    const messages = [{ role: 'user', content: prompt }];
+    return await this.request(messages, model);
+  }
+}
+
+export default OpenRouterService;
+tring, model: string = this.DEFAULT_MODEL): Promise<string> {
     const messages = [{ role: 'user', content: prompt }];
     return await this.request(messages, model);
   }
