@@ -1,0 +1,989 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dynamic Scroll Variables */
+    --scroll-hue: 215;
+    --scroll-luminosity: 8%;
+
+    /* Islamic Deep Blue & Gold Theme - Now Dynamic - Semi-transparent to let Galaxy through */
+    --background: var(--scroll-hue) 50% var(--scroll-luminosity);
+    --background-opacity: 0.85;
+    --foreground: 45 30% 95%;
+
+    --card: var(--scroll-hue) 45% calc(var(--scroll-luminosity) + 4%);
+    --card-foreground: 45 30% 95%;
+
+    --popover: 215 45% 10%;
+    --popover-foreground: 45 30% 95%;
+
+    --primary: 43 80% 55%;
+    --primary-foreground: 215 50% 8%;
+
+    --secondary: 215 40% 18%;
+    --secondary-foreground: 45 30% 95%;
+
+    --muted: 215 35% 25%;
+    --muted-foreground: 215 20% 75%;
+
+    --accent: 43 70% 45%;
+    --accent-foreground: 215 50% 8%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 45 30% 95%;
+
+    --border: 215 30% 30%;
+    --input: 215 30% 22%;
+    --ring: 43 80% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom Islamic Theme Colors */
+    --islamic-blue-deep: 215 50% 15%;
+    --islamic-blue-ocean: 210 60% 25%;
+    --islamic-gold: 43 80% 55%;
+    --islamic-gold-light: 45 85% 70%;
+    --islamic-gold-dark: 40 75% 40%;
+    --islamic-cream: 45 30% 92%;
+    --islamic-teal: 175 50% 35%;
+
+    /* Gradients */
+    --gradient-gold: linear-gradient(135deg, hsl(43, 80%, 55%), hsl(40, 75%, 40%));
+    --gradient-blue: linear-gradient(180deg, hsl(215, 50%, 15%), hsl(210, 60%, 8%));
+    --gradient-hero: linear-gradient(180deg, hsl(215, 50%, 12%) 0%, hsl(210, 55%, 6%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(215, 45%, 14%), hsl(215, 45%, 10%));
+
+    /* Shadows */
+    --shadow-gold: 0 4px 30px -5px hsl(43 80% 55% / 0.3);
+    --shadow-card: 0 8px 32px -8px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px hsl(43 80% 55% / 0.15);
+
+    --sidebar-background: 215 50% 10%;
+    --sidebar-foreground: 45 30% 95%;
+    --sidebar-primary: 43 80% 55%;
+    --sidebar-primary-foreground: 215 50% 8%;
+    --sidebar-accent: 215 40% 18%;
+    --sidebar-accent-foreground: 45 30% 95%;
+    --sidebar-border: 215 30% 25%;
+    --sidebar-ring: 43 80% 55%;
+
+    /* Futuristic Neon Colors */
+    --neon-cyan: 180 100% 50%;
+    --neon-blue: 210 100% 60%;
+    --neon-purple: 280 100% 70%;
+    --glass-background: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+
+    /* Unique Holographic Pulse */
+    --holographic-gradient: linear-gradient(45deg,
+        rgba(201, 164, 74, 0.4) 0%,
+        rgba(16, 185, 129, 0.2) 25%,
+        rgba(6, 182, 212, 0.2) 50%,
+        rgba(201, 164, 74, 0.4) 100%);
+  }
+
+  /* 🌙 DARK MODE (Default) - Enhanced Contrast */
+  .dark, :root {
+    --background: 215 50% 6%;
+    --foreground: 45 30% 95%;
+    --card: 215 45% 10%;
+    --card-foreground: 45 30% 95%;
+    --muted: 215 35% 22%;
+    --muted-foreground: 215 15% 70%;
+    --border: 215 30% 28%;
+    --input: 215 30% 18%;
+  }
+
+  .light {
+    --background: 45 30% 97%;
+    --foreground: 215 50% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 50% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 50% 15%;
+
+    --primary: 215 50% 25%;
+    --primary-foreground: 45 30% 97%;
+
+    --secondary: 45 20% 92%;
+    --secondary-foreground: 215 50% 15%;
+
+    --muted: 45 15% 90%;
+    --muted-foreground: 215 20% 40%;
+
+    --accent: 43 80% 50%;
+    --accent-foreground: 215 50% 15%;
+
+    --border: 45 15% 85%;
+    --input: 45 15% 90%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  :root {
+    --background-opacity: 0.1;
+    /* High transparency by default to see Galaxy */
+  }
+
+  html {
+    font-size: 18px;
+  }
+
+  body {
+    background-color: hsla(var(--background), var(--background-opacity, 0.9));
+    @apply text-foreground antialiased transition-[background-color] duration-500 ease-out;
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* Arabic Text Styling */
+  .arabic-text {
+    font-family: 'Amiri', 'Traditional Arabic', serif;
+    direction: rtl;
+  }
+
+  .font-arabic {
+    font-family: 'Amiri', 'Traditional Arabic', serif;
+  }
+}
+
+@layer components {
+
+  /* Islamic Geometric Pattern Overlay */
+  .islamic-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30L30 0z' fill='none' stroke='%23c9a44a' stroke-width='0.5' opacity='0.1'/%3E%3C/svg%3E");
+  }
+
+  /* Gold Shimmer Animation */
+  .gold-shimmer {
+    background: linear-gradient(90deg,
+        hsl(43, 80%, 55%) 0%,
+        hsl(45, 85%, 70%) 50%,
+        hsl(43, 80%, 55%) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Glow Effect */
+  .glow-gold {
+    box-shadow: 0 0 30px hsl(43 80% 55% / 0.3),
+      0 0 60px hsl(43 80% 55% / 0.1);
+  }
+
+  /* Card Hover Effect */
+  .card-islamic {
+    @apply relative overflow-hidden rounded-2xl transition-all duration-500;
+    background: linear-gradient(145deg, hsl(215, 45%, 14%), hsl(215, 45%, 10%));
+    border: 1px solid hsl(215, 30%, 25%);
+  }
+
+  .card-islamic:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px hsl(0 0% 0% / 0.5),
+      0 0 30px hsl(43 80% 55% / 0.1);
+    border-color: hsl(43, 80%, 55%, 0.3);
+  }
+
+  /* Hero Button */
+  .btn-hero {
+    @apply relative px-8 py-4 font-semibold rounded-xl overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, hsl(43, 80%, 55%), hsl(40, 75%, 45%));
+    color: hsl(215, 50%, 8%);
+    box-shadow: 0 4px 20px -5px hsl(43 80% 55% / 0.5);
+  }
+
+  .btn-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px -5px hsl(43 80% 55% / 0.6);
+  }
+
+  /* Section Card */
+  .section-card {
+    @apply relative p-6 rounded-2xl transition-all duration-500 cursor-pointer;
+    background: linear-gradient(145deg, hsl(215, 45%, 14%), hsl(215, 45%, 10%));
+    border: 1px solid hsl(215, 30%, 25%);
+  }
+
+  .section-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: hsl(43, 80%, 55%, 0.4);
+    box-shadow: 0 25px 50px -15px hsl(0 0% 0% / 0.5),
+      0 0 40px hsl(43 80% 55% / 0.15);
+  }
+
+  .section-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500 rounded-2xl;
+    background: linear-gradient(135deg, hsl(43, 80%, 55%, 0.05), transparent);
+  }
+
+  .section-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Text Gradient */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(43, 80%, 55%), hsl(45, 85%, 70%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Floating Animation */
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Pulse Glow */
+  .pulse-glow {
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(43 80% 55% / 0.2);
+    }
+
+    50% {
+      box-shadow: 0 0 40px hsl(43 80% 55% / 0.4);
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, hsl(215, 30%, 25%), hsl(43, 80%, 55%));
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(43, 80%, 55%);
+  }
+
+  /* Futuristic Utilities */
+  .glass {
+    background: var(--glass-background);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .neon-text-cyan {
+    color: hsl(var(--neon-cyan));
+    text-shadow: 0 0 10px hsl(var(--neon-cyan) / 0.5);
+  }
+
+  .neon-border-gold {
+    border: 1px solid hsl(var(--islamic-gold));
+    box-shadow: 0 0 15px hsl(var(--islamic-gold) / 0.3);
+  }
+
+  .futuristic-card {
+    @apply glass rounded-2xl p-6 transition-all duration-500;
+    border: 1px solid hsla(var(--neon-cyan), 0.1);
+  }
+
+  .futuristic-card:hover {
+    border-color: hsla(var(--neon-cyan), 0.5);
+    box-shadow: 0 0 30px hsla(var(--neon-cyan), 0.2);
+    transform: translateY(-5px);
+  }
+
+  .compass-dial {
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.85) 0%, rgba(13, 19, 33, 0.95) 100%);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(201, 164, 74, 0.15);
+    border: 2px solid rgba(201, 164, 74, 0.2);
+  }
+
+  .gold-glow {
+    filter: drop-shadow(0 0 12px rgba(201, 164, 74, 0.6));
+  }
+
+  /* Modern Glowing Navbar & Elements */
+  .glowing-navbar {
+    background: rgba(10, 15, 25, 0.4) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 2px solid rgba(201, 164, 74, 0.3) !important;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(201, 164, 74, 0.2);
+  }
+
+  .neon-glow-primary {
+    box-shadow: 0 0 15px hsla(var(--primary), 0.5), 0 0 30px hsla(var(--primary), 0.2);
+  }
+
+  .neon-glow-cyan {
+    box-shadow: 0 0 15px hsla(var(--neon-cyan), 0.5), 0 0 30px hsla(var(--neon-cyan), 0.2);
+  }
+
+  .magic-nav-item {
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .magic-nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-gold);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(201, 164, 74, 0.8);
+  }
+
+  .magic-nav-item:hover::after {
+    width: 100%;
+  }
+
+  /* Glowing Tubes Animation (Subtle) */
+  .glowing-bg-lines {
+    background: radial-gradient(circle at 50% 50%, rgba(201, 164, 74, 0.05) 0%, transparent 50%);
+    overflow: hidden;
+  }
+
+  .glowing-bg-lines::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: repeating-linear-gradient(transparent,
+        rgba(201, 164, 74, 0.03) 1px,
+        transparent 100px);
+    animation: tubeMove 20s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes tubeMove {
+    0% {
+      transform: translateY(0);
+    }
+
+    100% {
+      transform: translateY(100px);
+    }
+  }
+}
+
+/* Enhanced Background Animations - Now semi-transparent to allow Galaxy/Ancient background through */
+.animated-bg {
+  background: linear-gradient(-45deg,
+      hsla(215, 50%, 8%, 0.4),
+      hsla(210, 55%, 12%, 0.4),
+      hsla(215, 45%, 10%, 0.4),
+      hsla(220, 50%, 8%, 0.4));
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Floating Particles Effect */
+.particles-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(201, 164, 74, 0.3), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(201, 164, 74, 0.2), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.1), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgba(201, 164, 74, 0.15), transparent);
+  background-size: 200% 200%;
+  animation: particlesFloat 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes particlesFloat {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+/* Enhanced Glass Effect */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.neon-glow-gold {
+  box-shadow: 0 0 15px hsla(var(--primary), 0.4), 0 0 30px hsla(var(--primary), 0.2);
+}
+
+.animate-glow {
+  animation: none ease-in-out infinite alternate;
+}
+
+@keyframes auraGlow {
+  0% {
+    filter: drop-shadow(0 0 5px hsla(var(--primary), 0.2));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 20px hsla(var(--primary), 0.6));
+  }
+}
+
+.gradient-border {
+  position: relative;
+  background: var(--background);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, hsl(43, 80%, 55%), hsl(180, 100%, 50%), hsl(280, 100%, 70%));
+  animation: borderRotate 4s linear infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes borderRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Glow Pulse Animation */
+.glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(201, 164, 74, 0.3),
+      0 0 40px rgba(201, 164, 74, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(201, 164, 74, 0.5),
+      0 0 60px rgba(201, 164, 74, 0.2);
+  }
+}
+
+/* Shimmer Effect for Cards */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(201, 164, 74, 0.1),
+      transparent);
+  animation: shimmerSlide 3s infinite;
+}
+
+@keyframes shimmerSlide {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+/* Islamic Pattern Overlay */
+.islamic-pattern-overlay {
+  position: relative;
+}
+
+.islamic-pattern-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l5 15h15l-12 9 5 15-13-9-13 9 5-15-12-9h15z' fill='%23c9a44a' fill-opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 60px 60px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Gradient Text Glow */
+.text-glow-gold {
+  text-shadow:
+    0 0 10px rgba(201, 164, 74, 0.5),
+    0 0 20px rgba(201, 164, 74, 0.3),
+    0 0 30px rgba(201, 164, 74, 0.1);
+}
+
+/* Smooth Hover Lift */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Print & PDF Export Styles */
+@media print {
+
+  /* Hide all UI navigation and interactive elements */
+  .no-print,
+  header,
+  footer,
+  button,
+  .back-button,
+  .badge,
+  .scroll-area-thumb,
+  [role="dialog"] button,
+  .fixed.inset-0.bg-background\/95 {
+    display: none !important;
+  }
+
+  /* Reset Body and Container */
+  body,
+  html {
+    background-color: white !important;
+    background-image: none !important;
+    color: black !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    font-size: 12pt !important;
+  }
+
+  /* Layout Adjustments */
+  .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 2cm !important;
+  }
+
+  /* Reset Card Styles for Print */
+  .glass,
+  .futuristic-card,
+  .card-islamic,
+  .bg-card {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    color: black !important;
+    padding: 0 !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Typography Optimization */
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: #000 !important;
+    page-break-after: avoid;
+    break-after: avoid;
+    text-shadow: none !important;
+  }
+
+  .font-amiri {
+    font-family: 'Amiri', serif !important;
+    line-height: 1.5 !important;
+  }
+
+  p {
+    line-height: 1.6 !important;
+    color: #333 !important;
+    margin-bottom: 1em !important;
+    font-family: 'Inter', serif !important;
+    /* Serif for better print reading */
+  }
+
+  /* Specific handling for Modal Content if printing from modal */
+  /* We want to hide everything BEHIND the modal if possible, or just style the modal content to take over */
+  .fixed.inset-0 {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    background: white !important;
+    z-index: 1000 !important;
+  }
+
+  /* Ensure text colors are dark */
+  .text-muted-foreground,
+  .text-primary,
+  .text-gradient-gold {
+    color: #000 !important;
+    background: none !important;
+    -webkit-text-fill-color: black !important;
+  }
+
+  /* Links */
+  a {
+    text-decoration: underline;
+    color: #000 !important;
+  }
+
+  /* Page Breaks */
+  .page-break {
+    page-break-before: always;
+  }
+}
+
+/* Neon Border */
+.neon-border {
+  border: 1px solid rgba(201, 164, 74, 0.3);
+  box-shadow:
+    inset 0 0 10px rgba(201, 164, 74, 0.1),
+    0 0 10px rgba(201, 164, 74, 0.2);
+}
+
+.neon-border:hover {
+  border-color: rgba(201, 164, 74, 0.5);
+  box-shadow:
+    inset 0 0 15px rgba(201, 164, 74, 0.15),
+    0 0 20px rgba(201, 164, 74, 0.3);
+}
+
+/* Futuristic Loading Skeleton */
+.skeleton-futuristic {
+  background: linear-gradient(90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--primary) / 0.1) 50%,
+      hsl(var(--muted)) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.holographic {
+  background: var(--holographic-gradient);
+  background-size: 200% 200%;
+  animation: holographic 8s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 5px rgba(201, 164, 74, 0.2));
+}
+
+@keyframes holographic {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Page Transition Effect */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+/* ============================================
+   🎨 KIDS SECTION - Enhanced Mobile Styles
+   ============================================ */
+
+/* Kids Card Enhancements */
+.kids-card {
+  @apply glass-premium transition-all duration-300;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.kids-card:hover {
+  border-color: rgba(201, 164, 74, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(201, 164, 74, 0.15);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  /* Larger touch targets on mobile */
+  .kids-card button,
+  .kids-card [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better text visibility on mobile */
+  .kids-card h3,
+  .kids-card h4 {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+
+  /* Quiz options better spacing on mobile */
+  .quiz-option {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  /* Video cards mobile optimization */
+  .video-card .aspect-video {
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+}
+
+/* ============================================
+   🌙 DARK MODE - Enhanced Visibility
+   ============================================ */
+
+/* Improved text contrast in dark mode */
+.dark .text-muted-foreground,
+:root .text-muted-foreground {
+  color: hsl(215, 15%, 72%);
+}
+
+/* Better card backgrounds in dark mode */
+.dark .glass,
+:root .glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .glass-premium,
+:root .glass-premium {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Enhanced button visibility in dark mode */
+.dark button[variant="outline"],
+:root button[variant="outline"] {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark button[variant="outline"]:hover,
+:root button[variant="outline"]:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(201, 164, 74, 0.5);
+}
+
+/* Input fields dark mode enhancement */
+.dark input,
+.dark textarea,
+:root input,
+:root textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: hsl(45, 30%, 95%);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+:root input::placeholder,
+:root textarea::placeholder {
+  color: hsl(215, 15%, 55%);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+:root input:focus,
+:root textarea:focus {
+  border-color: hsl(43, 80%, 55%);
+  box-shadow: 0 0 0 2px rgba(201, 164, 74, 0.2);
+}
+
+/* Badge visibility improvements */
+.dark [class*="badge"],
+:root [class*="badge"] {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Scrollbar dark mode styling */
+.dark ::-webkit-scrollbar-thumb,
+:root ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, hsl(215, 30%, 35%), hsl(43, 80%, 55%));
+}
+
+/* ============================================
+   📱 RESPONSIVE TYPOGRAPHY
+   ============================================ */
+
+@media (max-width: 640px) {
+  html {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  h3 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Smaller padding on mobile */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* ============================================
+   ✨ ANIMATION UTILITIES
+   ============================================ */
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Line clamp utilities for text truncation */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
