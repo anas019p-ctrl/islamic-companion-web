@@ -23,15 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Supabase
-.supabase/functions/.env
-supabase/.temp
-.env
-.env.*
-!.env.example
+# Local Netlify folder
+.netlify
 
-# Build outputs
-build
-out
-.next
-.vercel
+# Secrets & Temp
+.env
+lint_errors.txt
+TEMP_TRANSLATIONS_TO_ADD.txt
