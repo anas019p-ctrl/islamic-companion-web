@@ -23,7 +23,6 @@ export default defineConfig(({ mode }) => ({
         name: 'Islam & Muslim',
         short_name: 'Companion',
         description: 'Your complete Islamic guide. Learn, reflect, and practice authentic Islam.',
-        theme_color: '#0a0a0b',
         background_color: '#0a0a0b',
         display: 'standalone',
         icons: [

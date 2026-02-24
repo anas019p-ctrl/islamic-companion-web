@@ -178,6 +178,3 @@ IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, sp
             .forEach(k => localStorage.removeItem(k));
     }
 }
-
-    }
-}
