@@ -137,9 +137,4 @@ export const Footer = () => {
     </footer>
   );
 };
-iv>
-        )}
-      </div>
-    </footer>
-  );
-};
+
