@@ -318,9 +318,6 @@ const commonMistakes = [
       }
     ]
   },
-      }
-    ]
-  },
   {
     category: 'Fard al-Wudu (Pilastri del Wudu)',
     categoryAr: 'فروض الوضوء',
@@ -517,27 +514,6 @@ const CommonMistakesPage = () => {
                           </p>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </motion.section>
-          ))}
-        </div>
-
-        {filteredMistakes.length === 0 && (
-          <div className="text-center py-20">
-            <Lightbulb className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-20" />
-            <p className="text-muted-foreground text-lg">
-              {isArabic ? 'لم يتم العثور على أخطاء تطابق بحثك.' : isIt ? 'Nessun errore trovato corrispondente alla ricerca.' : 'No mistakes found matching your search.'}
-            </p>
-          </div>
-        )}
-      </main>
-      <Footer />
-    </div>
-  );
-};
                     </CardContent>
                   </Card>
                 ))}
