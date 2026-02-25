@@ -38,6 +38,7 @@ const InstructionsPage = lazy(() => import("./pages/InstructionsPage"));
 const HistoryPage = lazy(() => import("./pages/HistoryPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const KidsPage = lazy(() => import("./pages/KidsPage"));
+const InfiniteQuizPage = lazy(() => import("./pages/InfiniteQuizPage"));
 const MosqueMapPage = lazy(() => import("./pages/MosqueMapPage"));
 const CommonMistakesPage = lazy(() => import("./pages/CommonMistakesPage"));
 
@@ -99,6 +100,7 @@ const AppContent = () => {
             <Route path="/security" element={<SecurityPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/kids" element={<KidsPage />} />
+            <Route path="/quiz" element={<InfiniteQuizPage />} />
             <Route path="/mosques" element={<MosqueMapPage />} />
             <Route path="/mistakes" element={<CommonMistakesPage />} />
             <Route path="*" element={<NotFound />} />

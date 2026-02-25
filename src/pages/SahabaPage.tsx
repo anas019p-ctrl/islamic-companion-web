@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Book, Users, Star, Shield, Heart, Gem, Loader2, BookOpen, Volume2, Search, Download, FileText, X, GraduationCap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Book, Users, Star, Shield, Heart, Gem, Loader2, BookOpen, Volume2, Search, Download, FileText, X, GraduationCap, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScholarService } from '@/lib/ScholarService';
 import AudioService from '@/lib/AudioService';
