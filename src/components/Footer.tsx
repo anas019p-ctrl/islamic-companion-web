@@ -99,7 +99,7 @@ export const Footer = () => {
             {t('authenticSourcesDesc')}
           </p>
           <p className="font-arabic text-lg text-primary/80">
-            رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ
+            Ø±ÙŽØ¨ÙŽÙ‘Ù†ÙŽØ§ ØªÙŽÙ‚ÙŽØ¨ÙŽÙ‘Ù„Ù’ Ù…ÙÙ†ÙŽÙ‘Ø§ Ø¥ÙÙ†ÙŽÙ‘ÙƒÙŽ Ø£ÙŽÙ†Ù’ØªÙŽ Ø§Ù„Ø³ÙŽÙ‘Ù…ÙÙŠØ¹Ù Ø§Ù„Ù’Ø¹ÙŽÙ„ÙÙŠÙ…Ù
           </p>
           <p className="text-xs text-muted-foreground mt-2">
             {t('quranicVerseFooter')}

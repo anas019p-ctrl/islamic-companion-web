@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, BookOpen, ShieldCheck, Clock, Calendar, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';

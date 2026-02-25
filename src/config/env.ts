@@ -1,5 +1,5 @@
 /**
- * 🔐 CENTRALIZED ENV CONFIGURATION
+ * ðŸ” CENTRALIZED ENV CONFIGURATION
  * All environmental variables managed in one place with strict validation.
  */
 
@@ -14,7 +14,7 @@ export const ENV = {
 
 // Simple validation
 if (!ENV.SUPABASE_URL || !ENV.SUPABASE_ANON_KEY) {
-    console.warn("⚠️ Supabase credentials missing. Some features may not work.");
+    console.warn("âš ï¸ Supabase credentials missing. Some features may not work.");
 }
 
 export default ENV;

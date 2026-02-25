@@ -15,20 +15,20 @@ export interface BlogPost {
 const FALLBACK_INSIGHTS = [
     {
         title: "Il Significato della Pazienza nell'Islam",
-        excerpt: "La pazienza (Sabr) è uno dei valori fondamentali dell'Islam, menzionata oltre 90 volte nel Corano.",
-        content: `## الصَّبْرُ نِصْفُ الإِيمَانِ — La Pazienza è metà della Fede\n\nAllah dice nel Corano:\n> *"O voi che credete! Cercate aiuto nella pazienza e nella preghiera: in verità Allah è con i pazienti."* (Surah Al-Baqarah 2:153)\n\n### Il Hadith\nIl Profeta Muhammad ﷺ disse: *"Nessuno ha ricevuto un dono migliore e più grande della pazienza."* (Bukhari & Muslim)\n\n### Lezione Pratica\nQuando affrontiamo difficoltà, il primo passo è **fermarsi** prima di reagire. Il respiro consapevole (3 volte) prima di rispondere a una provocazione è Sunnah applicata alla vita moderna.\n\n*بارك الله فيكم*`,
+        excerpt: "La pazienza (Sabr) Ã¨ uno dei valori fondamentali dell'Islam, menzionata oltre 90 volte nel Corano.",
+        content: `## Ø§Ù„ØµÙŽÙ‘Ø¨Ù’Ø±Ù Ù†ÙØµÙ’ÙÙ Ø§Ù„Ø¥ÙÙŠÙ…ÙŽØ§Ù†Ù â€” La Pazienza Ã¨ metÃ  della Fede\n\nAllah dice nel Corano:\n> *"O voi che credete! Cercate aiuto nella pazienza e nella preghiera: in veritÃ  Allah Ã¨ con i pazienti."* (Surah Al-Baqarah 2:153)\n\n### Il Hadith\nIl Profeta Muhammad ï·º disse: *"Nessuno ha ricevuto un dono migliore e piÃ¹ grande della pazienza."* (Bukhari & Muslim)\n\n### Lezione Pratica\nQuando affrontiamo difficoltÃ , il primo passo Ã¨ **fermarsi** prima di reagire. Il respiro consapevole (3 volte) prima di rispondere a una provocazione Ã¨ Sunnah applicata alla vita moderna.\n\n*Ø¨Ø§Ø±Ùƒ Ø§Ù„Ù„Ù‡ ÙÙŠÙƒÙ…*`,
         category: "Valori Islamici"
     },
     {
         title: "La Preghiera del Fajr: Il Segreto del Successo",
-        excerpt: "Svegliarsi per il Fajr è tra le pratiche più raccomandate, con benefici spirituali e fisici scientificamente provati.",
-        content: `## فَجْرٌ — L'Alba dell'Anima\n\nAllah dice nel Corano:\n> *"Stabilisci la preghiera al tramonto del sole fino all'oscurità della notte, e [recita] il Corano dell'alba. In verità, la recitazione dell'alba è testimoniata."* (Al-Isra' 17:78)\n\n### Il Hadith\n*"Le due rak'ah del Fajr sono più preziose del mondo e di tutto ciò che contiene."* (Muslim)\n\n### Applicazione Moderna\nSvegliarsi all'alba (circa 5:30 in Estate in Italia) per la preghiera allinea il corpo con il ritmo circadiano naturale, migliorando energia e concentrazione per tutta la giornata.\n\n*اللهم بارك لنا في أوقاتنا*`,
+        excerpt: "Svegliarsi per il Fajr Ã¨ tra le pratiche piÃ¹ raccomandate, con benefici spirituali e fisici scientificamente provati.",
+        content: `## ÙÙŽØ¬Ù’Ø±ÙŒ â€” L'Alba dell'Anima\n\nAllah dice nel Corano:\n> *"Stabilisci la preghiera al tramonto del sole fino all'oscuritÃ  della notte, e [recita] il Corano dell'alba. In veritÃ , la recitazione dell'alba Ã¨ testimoniata."* (Al-Isra' 17:78)\n\n### Il Hadith\n*"Le due rak'ah del Fajr sono piÃ¹ preziose del mondo e di tutto ciÃ² che contiene."* (Muslim)\n\n### Applicazione Moderna\nSvegliarsi all'alba (circa 5:30 in Estate in Italia) per la preghiera allinea il corpo con il ritmo circadiano naturale, migliorando energia e concentrazione per tutta la giornata.\n\n*Ø§Ù„Ù„Ù‡Ù… Ø¨Ø§Ø±Ùƒ Ù„Ù†Ø§ ÙÙŠ Ø£ÙˆÙ‚Ø§ØªÙ†Ø§*`,
         category: "Preghiera"
     },
     {
         title: "Ramadan: La Scuola Mensile della Purificazione",
-        excerpt: "Il digiuno del Ramadan non è solo astenersi dal cibo, ma è un mese completo di riforma spirituale.",
-        content: `## رَمَضَان — Il Mese della Misericordia\n\nAllah dice nel Corano:\n> *"O voi che credete! Vi è stato prescritto il digiuno, come fu prescritto a coloro che vi hanno preceduto, affinché possiate essere giusti."* (Al-Baqarah 2:183)\n\n### Il Hadith\n*"Chi digiuna il Ramadan con fede e sperando nella ricompensa di Allah, gli verranno perdonati i peccati precedenti."* (Bukhari)\n\n### I Tre Livelli del Digiuno\n1. **Fisico**: Astenersi da cibo e bevande\n2. **Verbale**: Controllare lingua, bugie, calunnie\n3. **Spirituale**: Purificare cuore e intenzioni\n\n*رمضان مبارك*`,
+        excerpt: "Il digiuno del Ramadan non Ã¨ solo astenersi dal cibo, ma Ã¨ un mese completo di riforma spirituale.",
+        content: `## Ø±ÙŽÙ…ÙŽØ¶ÙŽØ§Ù† â€” Il Mese della Misericordia\n\nAllah dice nel Corano:\n> *"O voi che credete! Vi Ã¨ stato prescritto il digiuno, come fu prescritto a coloro che vi hanno preceduto, affinchÃ© possiate essere giusti."* (Al-Baqarah 2:183)\n\n### Il Hadith\n*"Chi digiuna il Ramadan con fede e sperando nella ricompensa di Allah, gli verranno perdonati i peccati precedenti."* (Bukhari)\n\n### I Tre Livelli del Digiuno\n1. **Fisico**: Astenersi da cibo e bevande\n2. **Verbale**: Controllare lingua, bugie, calunnie\n3. **Spirituale**: Purificare cuore e intenzioni\n\n*Ø±Ù…Ø¶Ø§Ù† Ù…Ø¨Ø§Ø±Ùƒ*`,
         category: "Ramadan"
     }
 ];
@@ -87,15 +87,15 @@ export class BlogService {
         const langMap: Record<string, string> = {
             it: 'italiano',
             en: 'English',
-            ar: 'العربية',
-            fr: 'français',
+            ar: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
+            fr: 'franÃ§ais',
             de: 'Deutsch',
-            es: 'español'
+            es: 'espaÃ±ol'
         };
         const langLabel = langMap[language] || 'italiano';
 
         const today = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-        const topics = ['Tawhid e Fede', 'Preghiera e Dhikr', 'Etica Islamica', 'Storie dei Profeti', 'Saggezza del Corano', 'Sunnah del Profeta ﷺ', 'Famiglia nell Islam'];
+        const topics = ['Tawhid e Fede', 'Preghiera e Dhikr', 'Etica Islamica', 'Storie dei Profeti', 'Saggezza del Corano', 'Sunnah del Profeta ï·º', 'Famiglia nell Islam'];
         const topic = topics[new Date().getDate() % topics.length];
 
         const images = [
@@ -116,14 +116,14 @@ STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
 {
   "title": "Titolo accademico in ${langLabel}",
   "excerpt": "Riassunto analitico di 2 frasi in ${langLabel}",
-  "content": "Articolo completo in ${langLabel} seguendo questa struttura:\n\n## Introduzione Accademica\n- Versetto coranico pertinente (numero sura:versetto)\n- Contesto della rivelazione (Asbab al-Nuzul se applicabile)\n\n## Analisi Filologica\n- Spiegazione dei termini chiave in arabo classico\n- Radici e significati profondi\n\n## Hadith Autentici con Takhrij\n- Almeno 2 Hadith con fonte completa (es. Sahih Bukhari, Hadith 756)\n- Grado di autenticità\n\n## Applicazione per il Predicatore Moderno\n- Come usare questa conoscenza nella Da'wah\n- Errori comuni da evitare quando si insegna questo argomento\n\n## Conclusione con Dua\n- Dua pertinente in arabo con traduzione\n\nUsa Markdown (##, >, **testo**). Minimo 800 parole.",
+  "content": "Articolo completo in ${langLabel} seguendo questa struttura:\n\n## Introduzione Accademica\n- Versetto coranico pertinente (numero sura:versetto)\n- Contesto della rivelazione (Asbab al-Nuzul se applicabile)\n\n## Analisi Filologica\n- Spiegazione dei termini chiave in arabo classico\n- Radici e significati profondi\n\n## Hadith Autentici con Takhrij\n- Almeno 2 Hadith con fonte completa (es. Sahih Bukhari, Hadith 756)\n- Grado di autenticitÃ \n\n## Applicazione per il Predicatore Moderno\n- Come usare questa conoscenza nella Da'wah\n- Errori comuni da evitare quando si insegna questo argomento\n\n## Conclusione con Dua\n- Dua pertinente in arabo con traduzione\n\nUsa Markdown (##, >, **testo**). Minimo 800 parole.",
   "category": "Formazione Predicatori"
 }
 
-IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualità e pratica quotidiana.`;
+IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualitÃ  e pratica quotidiana.`;
 
         try {
-            // Utilizzo di DeepSeek Chat (modello a pagamento) per la massima qualità accademica
+            // Utilizzo di DeepSeek Chat (modello a pagamento) per la massima qualitÃ  accademica
             const response = await OpenRouterService.generateContent(prompt, 'deepseek/deepseek-chat');
             
             if (!response) {
@@ -150,7 +150,7 @@ IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, sp
                 excerpt: json.excerpt || json.content.substring(0, 150) + '...',
                 content: json.content,
                 date: todayISO,
-                author: language === 'it' ? '🤖 Studioso AI (OpenRouter)' : '🤖 AI Scholar (OpenRouter)',
+                author: language === 'it' ? 'ðŸ¤– Studioso AI (OpenRouter)' : 'ðŸ¤– AI Scholar (OpenRouter)',
                 category: json.category || topic,
                 readTime: `${Math.ceil(json.content.split(' ').length / 200)} min`,
                 image: image,

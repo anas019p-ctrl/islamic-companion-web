@@ -1,5 +1,5 @@
 /**
- * 🎵 GLOBAL AUDIO SERVICE - Ultra-Light Singleton
+ * ðŸŽµ GLOBAL AUDIO SERVICE - Ultra-Light Singleton
  * Handles all audio playback with zero pre-loading.
  */
 

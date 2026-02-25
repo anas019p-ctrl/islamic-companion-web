@@ -1,5 +1,5 @@
 /**
- * 📺 YOUTUBE SERVICE - Lightweight Video Hub
+ * ðŸ“º YOUTUBE SERVICE - Lightweight Video Hub
  * Provides filtered YouTube content for Kids without heavy embeds.
  */
 

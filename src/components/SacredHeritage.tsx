@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
 import meccaCosmic from '@/assets/mecca-cosmic.jpg';
 import alAqsaHeritage from '@/assets/al-aqsa-heritage.png';

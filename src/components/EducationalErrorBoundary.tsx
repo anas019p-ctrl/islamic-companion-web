@@ -34,7 +34,7 @@ export class EducationalErrorBoundary extends Component<Props, State> {
                         Ops! Un piccolo intoppo...
                     </h2>
                     <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                        Stiamo sistemando questa lezione. Nel frattempo, che ne dici di fare un ripasso di quelle già aperte o leggere una bella storia?
+                        Stiamo sistemando questa lezione. Nel frattempo, che ne dici di fare un ripasso di quelle giÃ  aperte o leggere una bella storia?
                     </p>
                     <div className="flex gap-4 justify-center">
                         <Button

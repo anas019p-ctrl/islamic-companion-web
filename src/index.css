@@ -86,7 +86,7 @@
         rgba(201, 164, 74, 0.4) 100%);
   }
 
-  /* 🌙 DARK MODE (Default) - Enhanced Contrast */
+  /* ðŸŒ™ DARK MODE (Default) - Enhanced Contrast */
   .dark, :root {
     --background: 215 50% 6%;
     --foreground: 45 30% 95%;
@@ -784,7 +784,7 @@
 }
 
 /* ============================================
-   🎨 KIDS SECTION - Enhanced Mobile Styles
+   ðŸŽ¨ KIDS SECTION - Enhanced Mobile Styles
    ============================================ */
 
 /* Kids Card Enhancements */
@@ -828,7 +828,7 @@
 }
 
 /* ============================================
-   🌙 DARK MODE - Enhanced Visibility
+   ðŸŒ™ DARK MODE - Enhanced Visibility
    ============================================ */
 
 /* Improved text contrast in dark mode */
@@ -908,7 +908,7 @@
 }
 
 /* ============================================
-   📱 RESPONSIVE TYPOGRAPHY
+   ðŸ“± RESPONSIVE TYPOGRAPHY
    ============================================ */
 
 @media (max-width: 640px) {
@@ -936,7 +936,7 @@
 }
 
 /* ============================================
-   ✨ ANIMATION UTILITIES
+   âœ¨ ANIMATION UTILITIES
    ============================================ */
 
 .animate-float {
