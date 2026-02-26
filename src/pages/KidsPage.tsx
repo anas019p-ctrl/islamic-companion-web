@@ -40,11 +40,11 @@ const KIDS_COLORS = {
 // 📺 Video Educativi per Bambini (Aggiornati 2026)
 const KIDS_VIDEOS = [
     { id: 'adam', title: "Storia del Profeta Adamo (AS)", titleIt: "Storia del Profeta Adamo (AS)", url: "https://www.youtube.com/embed/5tHNj5VvZKk", time: "12 min", thumbnail: "🌍" },
-    { id: 'nuh', title: "Il Profeta Nuh (AS) e l'Arca", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/p17iH98P5zM", time: "10 min", thumbnail: "🚢" },
-    { id: 'yunus', title: "Il Profeta Yunus (AS) e la Balena", titleIt: "Il Profeta Yunus (AS) e la Balena", url: "https://www.youtube.com/embed/Y-K7xK9pDks", time: "8 min", thumbnail: "🐋" },
-    { id: 'ibrahim', title: "Il Profeta Ibrahim (AS)", titleIt: "Il Profeta Ibrahim (AS)", url: "https://www.youtube.com/embed/wkKgTbMQQ_U", time: "15 min", thumbnail: "⭐" },
-    { id: 'musa', title: "Il Profeta Musa (AS)", titleIt: "Il Profeta Musa (AS)", url: "https://www.youtube.com/embed/QYqQpHWjNuE", time: "14 min", thumbnail: "🌊" },
-    { id: 'muhammad', title: "Il Profeta Muhammad ﷺ", titleIt: "Il Profeta Muhammad ﷺ", url: "https://www.youtube.com/embed/bX_G6p82G_o", time: "16 min", thumbnail: "☀️" },
+    { id: 'nuh', title: "Il Profeta Nuh (AS) e l'Arca", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/U74Y6iU0jLg", time: "10 min", thumbnail: "🚢" },
+    { id: 'yunus', title: "Il Profeta Yunus (AS) e la Balena", titleIt: "Il Profeta Yunus (AS) e la Balena", url: "https://www.youtube.com/embed/F0396009yXU", time: "8 min", thumbnail: "🐋" },
+    { id: 'ibrahim', title: "Il Profeta Ibrahim (AS)", titleIt: "Il Profeta Ibrahim (AS)", url: "https://www.youtube.com/embed/U0gY1x1Fj1w", time: "15 min", thumbnail: "⭐" },
+    { id: 'musa', title: "Il Profeta Musa (AS)", titleIt: "Il Profeta Musa (AS)", url: "https://www.youtube.com/embed/Wd4lJbLzP-c", time: "14 min", thumbnail: "🌊" },
+    { id: 'muhammad', title: "Il Profeta Muhammad ﷺ", titleIt: "Il Profeta Muhammad ﷺ", url: "https://www.youtube.com/embed/0L3K3b6D50A", time: "16 min", thumbnail: "☀️" },
 ];
 
 // 📖 Story Topics for Kids
@@ -114,18 +114,18 @@ const KidsPage = () => {
         setStory('');
         setSelectedStoryTopic(topic);
         setActiveSection('stories');
-        
+
         try {
-            const prompt = isIt 
+            const prompt = isIt
                 ? `Racconta una storia bellissima e interattiva per bambini sul ${topic}. Usa un linguaggio semplice e divertente.`
                 : `Tell a beautiful and interactive story for children about ${topic}. Use simple and fun language.`;
-            
+
             const result = await OpenRouterService.generateKidsStory(prompt, language);
             setStory(result);
         } catch (err) {
             console.error('Story generation error:', err);
             toast.error(isIt ? 'Oops! La storia sta facendo una pausa. Riprova!' : 'Oops! Story time is taking a break. Try again!');
-            setStory(isIt 
+            setStory(isIt
                 ? 'Mi dispiace, non sono riuscito a generare la storia. Riprova tra poco! 📖'
                 : 'Sorry, I could not generate the story. Please try again soon! 📖');
         } finally {
@@ -141,11 +141,11 @@ const KidsPage = () => {
         setQuizScore(0);
         setQuizCompleted(false);
         setActiveSection('quiz');
-        
+
         try {
             const topic = isIt ? 'Conoscenza islamica per bambini' : 'Islamic Knowledge for kids';
             const questions = await OpenRouterService.generateQuizQuestions(topic, 'easy', 5);
-            
+
             if (questions && questions.length > 0) {
                 setQuizQuestions(questions);
             } else {
@@ -205,13 +205,13 @@ const KidsPage = () => {
     const handleQuizAnswer = (index: number) => {
         const currentQuestion = quizQuestions[currentQuizIndex];
         const isCorrect = index === currentQuestion.correct;
-        
+
         if (isCorrect) {
             setQuizScore(prev => prev + 1);
-            const encouragement = isRTL 
-                ? currentQuestion.encouragementAr 
-                : isIt && currentQuestion.encouragementIt 
-                    ? currentQuestion.encouragementIt 
+            const encouragement = isRTL
+                ? currentQuestion.encouragementAr
+                : isIt && currentQuestion.encouragementIt
+                    ? currentQuestion.encouragementIt
                     : currentQuestion.encouragement;
             toast.success(encouragement || (isIt ? 'Fantastico! 🌟' : 'Great job! 🌟'));
             addStars(10);
@@ -225,7 +225,7 @@ const KidsPage = () => {
             setTimeout(() => {
                 setQuizCompleted(true);
                 const finalScore = quizScore + (isCorrect ? 1 : 0);
-                toast.success(isIt 
+                toast.success(isIt
                     ? `Quiz Completato! Punteggio: ${finalScore}/${quizQuestions.length} 🎉`
                     : `Quiz Completed! Score: ${finalScore}/${quizQuestions.length} 🎉`);
             }, 1000);
@@ -234,8 +234,8 @@ const KidsPage = () => {
 
     // 🏠 Navigation Button Component
     const BackButton = () => (
-        <Button 
-            variant="outline" 
+        <Button
+            variant="outline"
             onClick={() => setActiveSection('home')}
             className="mb-4 sm:mb-6 gap-2 rounded-full border-primary/30 hover:bg-primary/10 text-sm sm:text-base"
         >
@@ -250,7 +250,7 @@ const KidsPage = () => {
 
             <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pt-20 sm:pt-24 max-w-5xl">
                 {/* 🎮 Kids Header with Stats - Mobile Optimized */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="flex flex-col items-center justify-center mb-6 sm:mb-10 gap-4 sm:gap-6 glass-premium p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-primary/20 shadow-xl relative overflow-hidden"
@@ -377,7 +377,7 @@ const KidsPage = () => {
                                             {isIt ? 'Quale storia vuoi ascoltare?' : 'Which story do you want to hear?'}
                                         </h2>
                                     </div>
-                                    
+
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                                         {STORY_TOPICS.map((topic) => (
                                             <motion.div
@@ -385,7 +385,7 @@ const KidsPage = () => {
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                             >
-                                                <Card 
+                                                <Card
                                                     className={`cursor-pointer glass ${KIDS_COLORS.stories.border} hover:bg-blue-500/10 transition-all`}
                                                     onClick={() => generateStory(isIt ? topic.nameIt : topic.name)}
                                                 >
@@ -418,30 +418,30 @@ const KidsPage = () => {
                                                 </div>
                                                 {story && !story.includes(isIt ? 'Mi dispiace' : 'Sorry') && (
                                                     <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-                                                        <Button 
+                                                        <Button
                                                             className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90"
                                                             onClick={() => { addStars(15); setStory(''); setSelectedStoryTopic(null); }}
                                                         >
-                                                            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                            <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
                                                             {isIt ? 'Ho Letto! +15 ⭐' : 'I Read It! +15 ⭐'}
                                                         </Button>
-                                                        <Button 
+                                                        <Button
                                                             variant="outline"
                                                             className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 border-blue-200 dark:border-blue-800"
                                                             onClick={() => { setStory(''); setSelectedStoryTopic(null); }}
                                                         >
-                                                            <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                            <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
                                                             {isIt ? 'Altra Storia' : 'Another Story'}
                                                         </Button>
                                                     </div>
                                                 )}
                                                 {story && (story.includes(isIt ? 'Mi dispiace' : 'Sorry') || story.includes('Oops')) && (
                                                     <div className="mt-8 sm:mt-12 flex justify-center">
-                                                        <Button 
+                                                        <Button
                                                             className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600"
                                                             onClick={() => selectedStoryTopic && generateStory(selectedStoryTopic)}
                                                         >
-                                                            <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" /> 
+                                                            <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
                                                             {isIt ? 'Riprova' : 'Try Again'}
                                                         </Button>
                                                     </div>
@@ -484,14 +484,14 @@ const KidsPage = () => {
                                             {isIt ? `Punteggio: ${quizScore}/${quizQuestions.length}` : `Score: ${quizScore}/${quizQuestions.length}`}
                                         </p>
                                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                                            <Button 
+                                            <Button
                                                 className="rounded-full px-6 py-4 h-auto bg-gradient-to-r from-orange-500 to-red-500"
                                                 onClick={() => startQuiz()}
                                             >
                                                 <RefreshCw className="w-5 h-5 mr-2" />
                                                 {isIt ? 'Gioca Ancora' : 'Play Again'}
                                             </Button>
-                                            <Button 
+                                            <Button
                                                 variant="outline"
                                                 className="rounded-full px-6 py-4 h-auto"
                                                 onClick={() => setActiveSection('home')}
@@ -514,26 +514,26 @@ const KidsPage = () => {
                                                 {isIt ? 'Punti' : 'Score'}: {quizScore}
                                             </Badge>
                                         </div>
-                                        
+
                                         {/* Progress Bar */}
                                         <div className="w-full h-2 bg-muted rounded-full mb-6 overflow-hidden">
-                                            <div 
+                                            <div
                                                 className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-500"
                                                 style={{ width: `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%` }}
                                             />
                                         </div>
-                                        
+
                                         <h2 className="text-lg sm:text-2xl font-bold mb-6 sm:mb-8 text-center">
-                                            {isRTL 
-                                                ? quizQuestions[currentQuizIndex].questionAr 
+                                            {isRTL
+                                                ? quizQuestions[currentQuizIndex].questionAr
                                                 : isIt && quizQuestions[currentQuizIndex].questionIt
                                                     ? quizQuestions[currentQuizIndex].questionIt
                                                     : quizQuestions[currentQuizIndex].question}
                                         </h2>
-                                        
+
                                         <div className="grid grid-cols-1 gap-3 sm:gap-4">
-                                            {(isRTL 
-                                                ? quizQuestions[currentQuizIndex].optionsAr 
+                                            {(isRTL
+                                                ? quizQuestions[currentQuizIndex].optionsAr
                                                 : isIt && quizQuestions[currentQuizIndex].optionsIt
                                                     ? quizQuestions[currentQuizIndex].optionsIt
                                                     : quizQuestions[currentQuizIndex].options
@@ -559,34 +559,34 @@ const KidsPage = () => {
 
                     {/* 📺 VIDEOS SECTION */}
                     {activeSection === 'videos' && (
-                        <motion.div 
-                            key="videos" 
+                        <motion.div
+                            key="videos"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             className="space-y-4 sm:space-y-6"
                         >
                             <BackButton />
-                            
+
                             {selectedVideo ? (
                                 // Video Player
                                 <div className="space-y-4">
-                                    <Button 
-                                        variant="ghost" 
+                                    <Button
+                                        variant="ghost"
                                         onClick={() => setSelectedVideo(null)}
                                         className="gap-2"
                                     >
                                         <ArrowLeft className="w-4 h-4" />
                                         {isIt ? 'Tutti i Video' : 'All Videos'}
                                     </Button>
-                                    
+
                                     <Card className={`glass overflow-hidden ${KIDS_COLORS.videos.border}`}>
                                         <div className="aspect-video w-full relative group/video">
                                             <picture className="absolute inset-0 z-0">
                                                 <source srcSet={`https://img.youtube.com/vi/${selectedVideo.url.split('/').pop()}/maxresdefault.jpg`} media="(min-width: 800px)" />
-                                                <img 
-                                                    src={`https://img.youtube.com/vi/${selectedVideo.url.split('/').pop()}/0.jpg`} 
-                                                    alt="Video preview" 
+                                                <img
+                                                    src={`https://img.youtube.com/vi/${selectedVideo.url.split('/').pop()}/0.jpg`}
+                                                    alt="Video preview"
                                                     className="w-full h-full object-cover blur-sm opacity-50 transition-all group-hover/video:blur-none group-hover/video:opacity-100"
                                                 />
                                             </picture>
@@ -604,8 +604,8 @@ const KidsPage = () => {
                                             </h3>
                                             <div className="flex items-center justify-between">
                                                 <span className="text-sm text-muted-foreground">{selectedVideo.time}</span>
-                                                <Button 
-                                                    size="sm" 
+                                                <Button
+                                                    size="sm"
                                                     className="bg-purple-500 hover:bg-purple-600 rounded-full"
                                                     onClick={() => { addStars(5); toast.success(isIt ? 'Video guardato! +5 ⭐' : 'Video watched! +5 ⭐'); }}
                                                 >
@@ -624,7 +624,7 @@ const KidsPage = () => {
                                             whileHover={{ scale: 1.03 }}
                                             whileTap={{ scale: 0.97 }}
                                         >
-                                            <Card 
+                                            <Card
                                                 className={`glass overflow-hidden cursor-pointer group ${KIDS_COLORS.videos.border} hover:bg-purple-500/10 transition-all`}
                                                 onClick={() => setSelectedVideo(video)}
                                             >
@@ -650,7 +650,7 @@ const KidsPage = () => {
 
                     {/* ❤️ GOOD DEEDS SECTION */}
                     {activeSection === 'deeds' && (
-                        <motion.div 
+                        <motion.div
                             key="deeds"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -658,7 +658,7 @@ const KidsPage = () => {
                             className="max-w-2xl mx-auto space-y-4 sm:space-y-6"
                         >
                             <BackButton />
-                            
+
                             <div className="text-center mb-6 sm:mb-8">
                                 <Heart className="w-12 h-12 sm:w-16 sm:h-16 text-green-500 mx-auto mb-3 sm:mb-4 animate-pulse" />
                                 <h2 className="text-2xl sm:text-3xl font-bold font-amiri">
@@ -668,36 +668,36 @@ const KidsPage = () => {
                                     {isIt ? 'Ogni piccola azione conta!' : 'Every small act counts!'}
                                 </p>
                             </div>
-                            
+
                             <div className="space-y-3 sm:space-y-4">
                                 {[
-                                    { 
-                                        icon: <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />, 
-                                        text: isIt ? 'Ho detto Salam a qualcuno oggi' : 'I said Salam to someone today', 
+                                    {
+                                        icon: <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />,
+                                        text: isIt ? 'Ho detto Salam a qualcuno oggi' : 'I said Salam to someone today',
                                         stars: 5,
                                         color: 'border-blue-500/30 hover:border-blue-500/60'
                                     },
-                                    { 
-                                        icon: <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />, 
-                                        text: isIt ? 'Ho aiutato i miei genitori' : 'I helped my parents', 
+                                    {
+                                        icon: <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />,
+                                        text: isIt ? 'Ho aiutato i miei genitori' : 'I helped my parents',
                                         stars: 10,
                                         color: 'border-yellow-500/30 hover:border-yellow-500/60'
                                     },
-                                    { 
-                                        icon: <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />, 
-                                        text: isIt ? 'Ho imparato un nuovo Versetto' : 'I learned a new Ayah', 
+                                    {
+                                        icon: <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />,
+                                        text: isIt ? 'Ho imparato un nuovo Versetto' : 'I learned a new Ayah',
                                         stars: 20,
                                         color: 'border-orange-500/30 hover:border-orange-500/60'
                                     },
-                                    { 
-                                        icon: <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />, 
-                                        text: isIt ? 'Ho fatto un sorriso a un amico' : 'I smiled at a friend', 
+                                    {
+                                        icon: <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />,
+                                        text: isIt ? 'Ho fatto un sorriso a un amico' : 'I smiled at a friend',
                                         stars: 5,
                                         color: 'border-red-500/30 hover:border-red-500/60'
                                     },
-                                    { 
-                                        icon: <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />, 
-                                        text: isIt ? 'Ho letto il Corano oggi' : 'I read Quran today', 
+                                    {
+                                        icon: <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />,
+                                        text: isIt ? 'Ho letto il Corano oggi' : 'I read Quran today',
                                         stars: 15,
                                         color: 'border-purple-500/30 hover:border-purple-500/60'
                                     }
@@ -710,12 +710,12 @@ const KidsPage = () => {
                                                 </div>
                                                 <span className="text-sm sm:text-lg font-medium line-clamp-2">{deed.text}</span>
                                             </div>
-                                            <Button 
-                                                size="sm" 
+                                            <Button
+                                                size="sm"
                                                 className="bg-green-500 hover:bg-green-600 rounded-full flex-shrink-0 text-xs sm:text-sm px-3 sm:px-4"
-                                                onClick={() => { 
-                                                    addStars(deed.stars); 
-                                                    toast.success('Masha Allah! 💚'); 
+                                                onClick={() => {
+                                                    addStars(deed.stars);
+                                                    toast.success('Masha Allah! 💚');
                                                 }}
                                             >
                                                 +{deed.stars} ⭐

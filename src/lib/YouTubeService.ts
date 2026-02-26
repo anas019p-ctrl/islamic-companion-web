@@ -15,17 +15,17 @@ export class YouTubeService {
     // Safe-listed channels/content for kids
     private static SAFE_PLAYLISTS = {
         stories: [
-            { id: 'L8E_f9s1tX0', title: 'Story of Prophet Yunus', channel: 'Zaky', category: 'stories' },
-            { id: 'jVpYhX4Y7k8', title: 'Story of Prophet Ibrahim', channel: 'Zaky', category: 'stories' },
-            { id: '6vYnNqT-asI', title: 'Prophet Yusuf Story', channel: 'Islamic Kids', category: 'stories' }
+            { id: 'F0396009yXU', title: 'Story of Prophet Yunus', channel: 'One4Kids', category: 'stories' },
+            { id: 'U0gY1x1Fj1w', title: 'Story of Prophet Ibrahim', channel: 'One4Kids', category: 'stories' },
+            { id: 'F7fXyM420_0', title: 'Prophet Yusuf Story', channel: 'Stories for Kids', category: 'stories' }
         ],
         songs: [
-            { id: '7EGu0v6r5v4', title: 'Assalamu Alaikum', channel: 'Omar & Hana', category: 'songs' },
-            { id: 'v_N7Y-w2QzU', title: 'Allah is Great', channel: 'Zaky', category: 'songs' }
+            { id: 'oV2K3158R9A', title: 'Assalamu Alaikum', channel: 'Omar & Hana', category: 'songs' },
+            { id: 'eG41J0P4Kys', title: 'Allah Created Everything', channel: 'Zaky', category: 'songs' }
         ],
         learning: [
-            { id: '2D7G9m3_p0M', title: 'Learn Arabic Alphabet', channel: 'Islamic Kids', category: 'learning' },
-            { id: '5q_vM3Q6wL4', title: 'How to make Wudu', channel: 'Zaky', category: 'learning' }
+            { id: 't-b565gXQ60', title: 'Learn Arabic Alphabet', channel: 'Zaky', category: 'learning' },
+            { id: 'Qn1eYpP725o', title: 'How to make Wudu', channel: 'Zaky', category: 'learning' }
         ]
     };
 
