@@ -177,8 +177,8 @@ const categoryIcons = {
 
 const SahabaPage = () => {
     const { t, language } = useLanguage();
-    const [sahaba, setSahaba] = useState<Sahaba[]>(sahabaData);
-    const [selectedSahbi, setSelectedSahbi] = useState<Sahaba | null>(null);
+    const [sahaba, setSahaba] = useState<HeroFigure[]>(sahabaData);
+    const [selectedSahbi, setSelectedSahbi] = useState<HeroFigure | null>(null);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [deepStories, setDeepStories] = useState<Record<string, string>>({});
@@ -193,17 +193,17 @@ const SahabaPage = () => {
         return matchesCategory && matchesSearch;
     });
 
-    const getName = (item: Sahaba) => {
+    const getName = (item: HeroFigure) => {
         if (language === 'ar') return item.name_ar;
         return item.translations?.[language] || item.name_en;
     };
 
-    const getStory = (item: Sahaba) => {
+    const getStory = (item: HeroFigure) => {
         if (language === 'ar') return item.story_ar;
         return item.story_translations?.[language] || item.story_translations?.en || item.story_ar;
     };
 
-    const handleGenerateDeepStory = async (sahbi: Sahaba) => {
+    const handleGenerateDeepStory = async (sahbi: HeroFigure) => {
         if (deepStories[sahbi.id]) return;
 
         setIsGenerating(true);
@@ -234,7 +234,7 @@ const SahabaPage = () => {
         }
     };
 
-    const handleDownloadPDF = (sahaba: Sahaba) => {
+    const handleDownloadPDF = (sahaba: HeroFigure) => {
         window.print();
         toast({
             title: language === 'ar' ? 'جاري تحضير PDF' : 'PDF Export Initiated',
@@ -242,7 +242,7 @@ const SahabaPage = () => {
         });
     };
 
-    const handleShamilaResearch = async (sahabi: Sahaba) => {
+    const handleShamilaResearch = async (sahabi: HeroFigure) => {
         if (deepStories[sahabi.id]) return;
 
         setIsGenerating(true);
@@ -384,7 +384,7 @@ const SahabaPage = () => {
                                     const prompt = `Genera una biografia professionale, estremamente dettagliata e lunga 15 paragrafi su ${searchQuery}, un Sahabi del Profeta (S). Includi discendenza, vita, ruolo nell'Islam e eredità. Se non è un Sahabi, spiega chi è o correggi gentilmente.`;
                                     const story = await ScholarService.generateContent(prompt, language);
                                     // Create a temporary "Scholar Sahabi" to show
-                                    const aiSahbi: Sahaba = {
+                                    const aiSahbi: HeroFigure = {
                                         id: 'ai-gen',
                                         name_ar: searchQuery,
                                         name_en: searchQuery,

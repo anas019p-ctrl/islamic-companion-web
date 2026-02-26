@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { Heart, Shield, Share2, QrCode } from 'lucide-react';
+import { Heart, Shield, Share2, QrCode, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -83,6 +83,14 @@ export const Footer = () => {
             <div className="flex items-center gap-4">
               <a href="/security" className="hover:text-primary transition-colors text-xs uppercase tracking-widest font-bold">
                 {t('security')}
+              </a>
+              <a
+                href="https://islam4universe.wordpress.com/world-library/italian-library/free-italian-islamic-books/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-primary transition-colors text-xs uppercase tracking-widest font-bold flex items-center gap-1"
+              >
+                Biblioteca <ExternalLink className="w-3 h-3" />
               </a>
               <div className="flex items-center gap-2">
                 <span>{t('madeWith')}</span>

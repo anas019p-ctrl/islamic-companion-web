@@ -6,6 +6,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prophetsData } from '@/data/prophetsData';
+import { ScholarService } from './ScholarService';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -55,7 +56,7 @@ class ProphetsQuizService {
 
     constructor() {
         this.genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        this.model = this.genAI.getGenerativeModel({ model: 'gemini-pro' });
+        this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     }
 
     /**
@@ -179,30 +180,53 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
 
     /**
      * Generate multiple questions (batch)
+     * Now using ScholarService for TRUE infinite variation
      */
     async generateQuestions(count: number, options: {
         prophet?: string;
         difficulty?: 'easy' | 'medium' | 'hard';
         category?: 'story' | 'lesson' | 'miracle' | 'family' | 'general';
     } = {}): Promise<QuizQuestion[]> {
-        const questions: QuizQuestion[] = [];
+        try {
+            const scholarLevel = options.difficulty === 'easy' ? 'beginner' : (options.difficulty === 'hard' ? 'advanced' : 'intermediate');
+            const topic = options.prophet || 'Prophets of Islam';
 
-        for (let i = 0; i < count; i++) {
-            try {
-                const question = await this.generateQuestion(
-                    options.prophet,
-                    options.difficulty,
-                    options.category
-                );
-                questions.push(question);
+            // Call ScholarService for infinite variations
+            const aiQuestions = await ScholarService.generateInfiniteQuizBatch(
+                topic,
+                scholarLevel as any,
+                'it', // Defaulting to 'it' as requested for core, but can be dynamic
+                count
+            );
 
-                // Small delay to avoid rate limiting
-                await new Promise(resolve => setTimeout(resolve, 500));
-            } catch (error) {
-                console.error(`Failed to generate question ${i + 1}:`, error);
+            if (aiQuestions && aiQuestions.length > 0) {
+                return aiQuestions.map(q => ({
+                    id: q.id || `ai_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                    prophet: topic,
+                    prophetAr: topic,
+                    question: q.questionEn,
+                    questionAr: q.questionAr,
+                    questionIt: q.questionIt,
+                    options: q.optionsEn,
+                    optionsAr: q.optionsAr,
+                    optionsIt: q.optionsIt,
+                    correctAnswer: q.correctIndex,
+                    explanation: q.explanationEn,
+                    explanationAr: q.explanationAr,
+                    explanationIt: q.explanationIt,
+                    difficulty: options.difficulty || 'medium',
+                    category: options.category || 'general'
+                }));
             }
+        } catch (error) {
+            console.error("AI batch generation failed, falling back to static questions", error);
         }
 
+        // Fallback to static generation if AI fails
+        const questions: QuizQuestion[] = [];
+        for (let i = 0; i < count; i++) {
+            questions.push(await this.generateQuestion(options.prophet, options.difficulty, options.category));
+        }
         return questions;
     }
 

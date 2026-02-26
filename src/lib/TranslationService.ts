@@ -6,7 +6,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = 'AIzaSyDwhhh92P5dlREFe_hqkT6MoU_Qj79-bDg';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 interface TranslationResult {
     translatedText: string;
@@ -204,10 +204,10 @@ Translation:`;
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.substring(0, 100))}&langpair=auto|en`;
             const response = await fetch(url);
             const data = await response.json();
-            
+
             // MyMemory doesn't provide language detection, use Gemini
             const prompt = `Detect the language of this text and respond with ONLY the ISO 639-1 language code (e.g., 'en', 'ar', 'it'). Text: ${text.substring(0, 200)}`;
-            
+
             const result = await this.model.generateContent(prompt);
             const response2 = await result.response;
             return response2.text().trim().toLowerCase();

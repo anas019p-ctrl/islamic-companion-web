@@ -68,17 +68,18 @@ export class ShamilaService {
 
 اكتب بأسلوب علمي رفيع يناسب الباحثين والمتعلمين.`,
 
-            'it': `Come esperto ricercatore della Maktaba Shamila e del patrimonio islamico, rispondi alla seguente domanda con dettaglio e profondità:
+            'it': `Come esperto ricercatore della Maktaba Shamila e del patrimonio islamico, rispondi alla seguente domanda con dettaglio e profondità accademica:
 
 "${query}"
 
-La tua risposta deve includere:
-- Fonti classiche documentate (Sahih Bukhari, Sahih Muslim, Storia di al-Tabari, Tafsir Ibn Kathir, ecc.)
-- Contesto storico e spirituale
-- Lezioni e insegnamenti derivati
-- Diverse opinioni degli studiosi se presenti
+La tua risposta deve obbligatoriamente citare e basarsi su:
+- Fonti classiche primarie: Sahih Bukhari, Sahih Muslim, Storia di al-Tabari (Tarikh al-Rusul wa al-Muluk), Sirah di Ibn Ishaq/Ibn Hisham.
+- Opere di riferimento della Biblioteca Shamila.
+- Analisi del contesto storico (Asbab al-Wurud) e spirituale.
+- Lezioni etiche e spirituali per il credente moderno.
+- Diverse opinioni degli studiosi se presenti (Ikhtilaf), con un approccio equilibrato.
 
-Scrivi in uno stile accademico elevato adatto a ricercatori e studenti.
+Scrivi in uno stile accademico elevato ma accessibile, adatto a ricercatori e studenti.
 IMPORTANTE: Rispondi SOLO in ITALIANO.`,
 
             'en': `As an expert researcher of the Maktaba Shamila and Islamic heritage, answer the following question with detail and depth:
@@ -100,22 +101,22 @@ Write in an elevated academic style suitable for researchers and students.`
             const content = await OpenRouterService.answerIslamicQuestion(prompt, language);
             return {
                 content: content,
-                source: language === 'it' 
-                    ? "Archivi Storici Islamici (Ricerca AI)" 
+                source: language === 'it'
+                    ? "Archivi Storici Islamici (Ricerca AI)"
                     : language === 'ar'
                         ? "الأرشيف التاريخي الإسلامي (بحث ذكي)"
                         : "Islamic Historical Archives (AI Research)"
             };
         } catch (error) {
             console.error("Shamila AI Fallback failed:", error);
-            
+
             // Final fallback through ScholarService
             try {
                 const fallbackContent = await ScholarService.generateContent(query, language, 'scholar');
                 return {
                     content: fallbackContent,
-                    source: language === 'it' 
-                        ? "Assistente Islamico" 
+                    source: language === 'it'
+                        ? "Assistente Islamico"
                         : "Islamic Assistant"
                 };
             } catch (fallbackError) {

@@ -10,11 +10,31 @@ import { Youtube, PlayCircle, BookOpen, Mic, ExternalLink } from 'lucide-react';
 const videoResources = [
     {
         id: '1',
-        title: 'Introduzione all\'Islam',
-        description: 'Un video introduttivo completo sui principi fondamentali dell\'Islam.',
-        url: 'https://youtu.be/HYYYdgl80qE',
-        embedId: 'HYYYdgl80qE',
-        category: 'Introduzione',
+        title: "Storia del Rasul ﷺ (Parte 1)",
+        description: "Un viaggio dettagliato nella vita del Profeta Muhammad ﷺ (In Italiano).",
+        url: "https://www.youtube.com/watch?v=XGiYLVo8eT8",
+        embedId: "XGiYLVo8eT8",
+        category: 'Storia',
+        icon: PlayCircle,
+        isPlaylist: false
+    },
+    {
+        id: '4',
+        title: "La Storia del Profeta (Parte 2)",
+        description: "Continuazione della vita del Messaggero di Allah ﷺ.",
+        url: "https://www.youtube.com/watch?v=YSp1Aq2iF5E",
+        embedId: "YSp1Aq2iF5E",
+        category: 'Storia',
+        icon: PlayCircle,
+        isPlaylist: false
+    },
+    {
+        id: '5',
+        title: "Islam Kids - Educazione Islamica",
+        description: "Video educativi per bambini in lingua italiana.",
+        url: "https://www.youtube.com/watch?v=PPu75-CSvEs",
+        embedId: "PPu75-CSvEs",
+        category: 'Kids',
         icon: PlayCircle,
         isPlaylist: false
     },

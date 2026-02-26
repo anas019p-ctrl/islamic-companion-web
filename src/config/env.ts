@@ -4,7 +4,7 @@
  */
 
 export const ENV = {
-    OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY || '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',
+    OPENROUTER_API_KEY: import.meta.env.VITE_OPENROUTER_API_KEY || '',
     SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || '',
     SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
     IS_DEV: import.meta.env.MODE === 'development',

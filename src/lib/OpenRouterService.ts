@@ -331,6 +331,11 @@ export class OpenRouterService {
 
     const responses = langResponses[language] || langResponses['en'];
 
+    // Optimize prompt for better results with free models
+    const optimizedQuestion = language !== 'en'
+      ? `[INTERNAL TRANSLATION OF USER QUESTION: ${question}] -> Respond in ${language === 'it' ? 'ITALIAN' : language === 'ar' ? 'ARABIC' : 'ENGLISH'}. User Original: ${question}`
+      : question;
+
     const messages = [
       {
         role: 'system',
@@ -345,7 +350,7 @@ ${responses.redirect}"
 
 Remember: You are a STRICT Islamic scholar. ANY question not related to Islam must be politely declined using the message above.`
       },
-      { role: 'user', content: question }
+      { role: 'user', content: optimizedQuestion }
     ];
 
     return await this.request(messages, this.DEFAULT_MODEL, 0.5);

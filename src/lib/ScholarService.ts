@@ -57,11 +57,11 @@ export class ScholarService {
     private static async rateLimitCheck(): Promise<void> {
         const now = Date.now();
         const timeSinceLastRequest = now - this.lastRequestTime;
-        
+
         if (timeSinceLastRequest < this.RATE_LIMIT_DELAY) {
             await new Promise(resolve => setTimeout(resolve, this.RATE_LIMIT_DELAY - timeSinceLastRequest));
         }
-        
+
         this.lastRequestTime = Date.now();
         this.requestCount++;
     }
@@ -71,8 +71,8 @@ export class ScholarService {
      * Generates Islamic content with context awareness
      */
     static async generateContent(
-        prompt: string, 
-        language: string = 'it', 
+        prompt: string,
+        language: string = 'it',
         role: 'scholar' | 'kids' | 'general' = 'scholar'
     ): Promise<string> {
         await this.rateLimitCheck();
@@ -102,7 +102,7 @@ export class ScholarService {
             return content;
         } catch (error) {
             console.error("ScholarService.generateContent Error:", error);
-            
+
             // Determine error type
             if (error instanceof Error) {
                 if (error.message.includes('429') || error.message.includes('rate')) {
@@ -112,7 +112,7 @@ export class ScholarService {
                     return this.getErrorMessage('connection', language);
                 }
             }
-            
+
             return this.getErrorMessage('retry', language);
         }
     }
@@ -122,7 +122,7 @@ export class ScholarService {
      */
     static async translate(text: string, targetLang: string): Promise<string> {
         await this.rateLimitCheck();
-        
+
         try {
             return await OpenRouterService.translate(text, targetLang, true);
         } catch (error) {
@@ -135,8 +135,8 @@ export class ScholarService {
      * 📡 STREAMING CONTENT (Fallback to non-streaming)
      */
     static async generateStreamContent(
-        prompt: string, 
-        language: string = 'it', 
+        prompt: string,
+        language: string = 'it',
         onChunk: (chunk: string) => void
     ): Promise<void> {
         try {
@@ -149,27 +149,80 @@ export class ScholarService {
     }
 
     /**
-     * 📝 QUIZ QUESTION GENERATION
+     * 📝 QUIZ QUESTION GENERATION (Advanced Batch)
      */
-    static async generateQuizQuestion(
-        level: 'beginner' | 'intermediate' | 'advanced', 
-        language: string = 'it'
-    ): Promise<any> {
-        const prompt = `Generate an Arabic learning quiz question, level ${level}. JSON only: { "question": "", "translation": "", "options": [], "correctAnswer": "" }`;
+    static async generateInfiniteQuizBatch(
+        topic: string = 'Prophets',
+        difficulty: 'beginner' | 'intermediate' | 'advanced' = 'intermediate',
+        language: string = 'it',
+        count: number = 3
+    ): Promise<any[]> {
+        const prompt = `Generate a batch of ${count} unique Islamic quiz questions about "${topic}" (Difficulty: ${difficulty}).
+        Requirements:
+        1. Diversity: Cover history, lessons, and spiritual aspects.
+        2. Multilingual: For EACH question, provide text in English, Arabic, and Italian.
+        3. Format: Return ONLY a JSON array of objects.
         
+        JSON Structure:
+        [
+          {
+            "id": "random_id",
+            "questionEn": "...",
+            "questionAr": "...",
+            "questionIt": "...",
+            "optionsEn": [",",",","],
+            "optionsAr": [",",",","],
+            "optionsIt": [",",",","],
+            "correctIndex": number (0-3),
+            "explanationEn": "...",
+            "explanationAr": "...",
+            "explanationIt": "..."
+          }
+        ]`;
+
         try {
             const response = await this.generateContent(prompt, language);
             const cleanJson = response.replace(/```json/g, '').replace(/```/g, '').trim();
-            return JSON.parse(cleanJson);
+            const startBracket = cleanJson.indexOf('[');
+            const endBracket = cleanJson.lastIndexOf(']');
+
+            if (startBracket === -1 || endBracket === -1) {
+                throw new Error("Invalid JSON structure received from AI");
+            }
+
+            const jsonToParse = cleanJson.substring(startBracket, endBracket + 1);
+            return JSON.parse(jsonToParse);
+        } catch (error) {
+            console.error("Infinite quiz batch generation failed:", error);
+            return [];
+        }
+    }
+
+    /**
+     * 📝 SINGLE QUIZ QUESTION GENERATION
+     */
+    static async generateQuizQuestion(
+        level: 'beginner' | 'intermediate' | 'advanced',
+        language: string = 'it'
+    ): Promise<any> {
+        const prompt = `Generate an Arabic learning quiz question, level ${level}. JSON only: { "question": "", "translation": "", "options": [], "correctAnswer": "" }`;
+
+        try {
+            const response = await this.generateContent(prompt, language);
+            const cleanJson = response.replace(/```json/g, '').replace(/```/g, '').trim();
+            const startBracket = cleanJson.indexOf('{');
+            const endBracket = cleanJson.lastIndexOf('}');
+            const jsonToParse = cleanJson.substring(startBracket, endBracket + 1);
+            return JSON.parse(jsonToParse);
         } catch (error) {
             console.error("Quiz generation failed:", error);
             // Return fallback question
-            return { 
-                question: "شكراً", 
-                translation: language === 'it' ? "Grazie" : "Thank you", 
-                options: language === 'it' 
+            return {
+                question: "شكراً",
+                translation: language === 'it' ? "Grazie" : "Thank you",
+                options: language === 'it'
                     ? ["Grazie", "Prego", "Ciao", "Sì"]
-                    : ["Thank you", "You're welcome", "Hello", "Yes"], 
+                    : ["Thank you", "You're welcome", "Hello", "Yes"],
                 correctAnswer: language === 'it' ? "Grazie" : "Thank you"
             };
         }
@@ -180,7 +233,7 @@ export class ScholarService {
      */
     static async generateBlogPost(topic: string): Promise<{ title: string; content: string; excerpt: string; tags: string[] }> {
         const prompt = `Generate an Islamic blog post about: ${topic}. Return JSON: { "title": "", "content": "markdown content", "excerpt": "brief summary", "tags": ["tag1", "tag2"] }`;
-        
+
         try {
             const content = await this.generateContent(prompt);
             const cleanJson = content.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -200,7 +253,7 @@ export class ScholarService {
     /**
      * 🚀 OPENROUTER ENHANCED METHODS
      */
-    
+
     static async translateWithOpenRouter(text: string, targetLang: string): Promise<string> {
         try {
             return await OpenRouterService.translate(text, targetLang, true);
@@ -212,7 +265,7 @@ export class ScholarService {
 
     static async explainHadithWithAI(hadithText: string, language: string = 'it'): Promise<string> {
         await this.rateLimitCheck();
-        
+
         try {
             return await OpenRouterService.explainHadith(hadithText, language);
         } catch (error) {
@@ -232,7 +285,7 @@ export class ScholarService {
 
     static async verifyHadithAuthenticity(hadithText: string): Promise<string> {
         await this.rateLimitCheck();
-        
+
         try {
             return await OpenRouterService.verifyHadithAuthenticity(hadithText);
         } catch (error) {
@@ -243,7 +296,7 @@ export class ScholarService {
 
     static async generateKidsStoryWithAI(prophetName: string, language: string = 'it'): Promise<string> {
         await this.rateLimitCheck();
-        
+
         try {
             return await OpenRouterService.generateKidsStory(prophetName, language);
         } catch (error) {
@@ -260,7 +313,7 @@ export class ScholarService {
      */
     static async generateTafsir(surah: number, ayah: number, language: string = 'it'): Promise<string> {
         await this.rateLimitCheck();
-        
+
         try {
             return await OpenRouterService.generateTafsir(surah, ayah, language);
         } catch (error) {

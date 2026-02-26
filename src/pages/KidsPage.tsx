@@ -39,12 +39,12 @@ const KIDS_COLORS = {
 
 // 📺 Video Educativi per Bambini (Aggiornati 2026)
 const KIDS_VIDEOS = [
+    { id: 'rasul-1', title: "Storia del Rasul ﷺ (Parte 1)", titleIt: "Storia del Rasul ﷺ (Parte 1)", url: "https://www.youtube.com/embed/XGiYLVo8eT8", time: "15 min", thumbnail: "☀️" },
+    { id: 'rasul-2', title: "Storia del Rasul ﷺ (Parte 2)", titleIt: "Storia del Rasul ﷺ (Parte 2)", url: "https://www.youtube.com/embed/YSp1Aq2iF5E", time: "18 min", thumbnail: "🌙" },
+    { id: 'islam-kids', title: "Islam Kids in Italiano", titleIt: "Islam Kids in Italiano", url: "https://www.youtube.com/embed/PPu75-CSvEs", time: "10 min", thumbnail: "🕌" },
+    { id: 'miracoli', title: "I Miracoli del Profeta", titleIt: "I Miracoli del Profeta", url: "https://www.youtube.com/embed/EjfZMkTYhl8", time: "12 min", thumbnail: "✨" },
     { id: 'adam', title: "Storia del Profeta Adamo (AS)", titleIt: "Storia del Profeta Adamo (AS)", url: "https://www.youtube.com/embed/5tHNj5VvZKk", time: "12 min", thumbnail: "🌍" },
     { id: 'nuh', title: "Il Profeta Nuh (AS) e l'Arca", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/U74Y6iU0jLg", time: "10 min", thumbnail: "🚢" },
-    { id: 'yunus', title: "Il Profeta Yunus (AS) e la Balena", titleIt: "Il Profeta Yunus (AS) e la Balena", url: "https://www.youtube.com/embed/F0396009yXU", time: "8 min", thumbnail: "🐋" },
-    { id: 'ibrahim', title: "Il Profeta Ibrahim (AS)", titleIt: "Il Profeta Ibrahim (AS)", url: "https://www.youtube.com/embed/U0gY1x1Fj1w", time: "15 min", thumbnail: "⭐" },
-    { id: 'musa', title: "Il Profeta Musa (AS)", titleIt: "Il Profeta Musa (AS)", url: "https://www.youtube.com/embed/Wd4lJbLzP-c", time: "14 min", thumbnail: "🌊" },
-    { id: 'muhammad', title: "Il Profeta Muhammad ﷺ", titleIt: "Il Profeta Muhammad ﷺ", url: "https://www.youtube.com/embed/0L3K3b6D50A", time: "16 min", thumbnail: "☀️" },
 ];
 
 // 📖 Story Topics for Kids
