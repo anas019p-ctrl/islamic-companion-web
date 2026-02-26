@@ -454,6 +454,168 @@ export const adhkarData: Dhikr[] = [
       ar: 'حماية من القلق والخوف'
     },
     source: 'Quran 3:173, Bukhari'
+  },
+  {
+    id: 19,
+    arabic: 'رَضِيتُ بِاللَّهِ رَبَّاً وَبِالْإِسْلَامِ دِيناً وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيَّاً',
+    transliteration: 'Raḍītu billāhi Rabban wa bil-Islāmi dīnan wa bi-Muḥammadin ṣallā Allāhu ʿalayhi wa sallama nabiyyan',
+    translation: {
+      en: 'I am pleased with Allah as my Lord, Islam as my religion, and Muhammad (peace be upon him) as my Prophet.',
+      it: 'Ho accettato Allah come mio Signore, l\'Islam come religione, Muhammad come Profeta.',
+      ar: 'رَضِيتُ بِاللَّهِ رَبَّاً'
+    },
+    repetitions: 3,
+    category: 'morning',
+    benefit: {
+      en: 'Allah will make the person satisfied on the Day of Judgment',
+      it: 'Allah renderà soddisfatta la persona nel Giorno del Giudizio',
+      ar: 'يرضي الله الشخص يوم القيامة'
+    },
+    source: 'Abu Dawud, Tirmidhi'
+  },
+  {
+    id: 20,
+    arabic: 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ',
+    transliteration: 'Allāhumma innī as-aluka al-ʿafwa wal-ʿāfiyata fid-dunyā wal-ākhirah',
+    translation: {
+      en: 'O Allah, I ask You for forgiveness and well-being in this world and the hereafter.',
+      it: 'O Allah, Ti chiedo la salvezza [l\'incolumità] nella vita terrena ed in quella ultraterrena.',
+      ar: 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ'
+    },
+    repetitions: 1,
+    category: 'morning',
+    benefit: {
+      en: 'Protection of religion, worldly life, family, and wealth',
+      it: 'Protezione della propria religione, vita mondana, famiglia e ricchezze',
+      ar: 'حماية الدين والدنيا والأهل والمال'
+    },
+    source: 'Abu Dawud, Ibn Majah'
+  },
+  {
+    id: 21,
+    arabic: 'اَللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ',
+    transliteration: 'Allāhumma anta Rabbī lā ilāha illā Anta, khalaqtanī wa ana ʿabduka, wa ana ʿalā ʿahdika wa waʿdika ma-stataʿtu',
+    translation: {
+      en: 'O Allah, You are my Lord, there is no deity but You. You created me and I am Your servant...',
+      it: 'O Allah, Tu sei il mio Signore, non v\'è altro dio all\'infuori di Te. Tu mi hai creato ed io sono Tuo servo...',
+      ar: 'اَللَّهُمَّ أَنْتَ رَبِّي'
+    },
+    repetitions: 1,
+    category: 'morning',
+    benefit: {
+      en: 'Master of Seeking Forgiveness (Sayyid al-Istighfar). Entry to Paradise if died that day.',
+      it: 'L\'eccellenza della richiesta di perdono. Ingresso in Paradiso se si muore quel giorno.',
+      ar: 'سيد الاستغفار. دخول الجنة إذا مات في ذلك اليوم.'
+    },
+    source: 'Bukhari'
+  },
+  {
+    id: 22,
+    arabic: 'اَللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ',
+    transliteration: 'Allāhumma aslamtu nafsī ilayk',
+    translation: {
+      en: 'O Allah, I submit my soul to You.',
+      it: 'O Allah, sottometto tutto me stesso a Te.',
+      ar: 'اَللَّهُمَّ أَسْلَمْتُ نَفْسِي إِلَيْكَ'
+    },
+    repetitions: 1,
+    category: 'sleep',
+    benefit: {
+      en: 'Dying on the Fitrah (natural faith)',
+      it: 'Morire sulla Fitrah (la natura pura della fede)',
+      ar: 'الموت على الفطرة'
+    },
+    source: 'Bukhari, Muslim'
+  },
+  {
+    id: 23,
+    arabic: 'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي وَبِكَ أَرْفَعُهُ',
+    transliteration: 'Bismika Rabbī waḍaʿtu janbī wa bika arfaʿuh',
+    translation: {
+      en: 'In Your name, my Lord, I lie down and in Your name I rise.',
+      it: 'Nel Tuo Nome, o Signore, mi corico e nel Tuo Nome mi rialzo.',
+      ar: 'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي'
+    },
+    repetitions: 1,
+    category: 'sleep',
+    benefit: {
+      en: 'Protection during sleep',
+      it: 'Protezione del dormiente da ciò che potrebbe nuocergli',
+      ar: 'حماية أثناء النوم'
+    },
+    source: 'Bukhari, Muslim'
+  },
+  {
+    id: 24,
+    arabic: 'اَللَّهُمَّ بِارِكْ لَهُمْ فِيمَا رَزَقْتَهُمْ، وَاغْفِرْ لَهُمْ وَارْحَمْهُمْ',
+    transliteration: 'Allāhumma bārik lahum fīmā razaqtahum, waghfir lahum warḥamhum',
+    translation: {
+      en: 'O Allah, bless them in what You have provided for them, forgive them and have mercy on them.',
+      it: 'O Allah, benedici ciò che hai provveduto loro, perdonali e abbi misericordia di loro.',
+      ar: 'اَللَّهُمَّ بَارِكْ لَهُمْ'
+    },
+    repetitions: 1,
+    category: 'eating',
+    benefit: {
+      en: 'Supplication for the host',
+      it: 'Attira la benedizione divina sulla casa dell\'ospite',
+      ar: 'دعاء للمضيف'
+    },
+    source: 'Muslim'
+  },
+  {
+    id: 25,
+    arabic: 'بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى رَبِّنا تَوَكَّلْنَا',
+    transliteration: 'Bismillāhi walajnā, wa Bismillāhi kharajnā, wa ʿalā Rabbinā tawakkalnā',
+    translation: {
+      en: 'In the name of Allah we enter, in the name of Allah we leave, and upon our Lord we rely.',
+      it: 'Nel nome di Allah entriamo, nel nome di Allah usciamo e sul nostro Signore confidiamo.',
+      ar: 'بِسْمِ اللَّهِ وَلَجْنَا'
+    },
+    repetitions: 1,
+    category: 'general',
+    benefit: {
+      en: 'Prevention from Satan entering the house',
+      it: 'Impedisce a Satana di entrare nella casa',
+      ar: 'منع الشيطان من دخول المنزل'
+    },
+    source: 'Abu Dawud'
+  },
+  {
+    id: 26,
+    arabic: 'اَللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
+    transliteration: 'Allāhumma-ftaḥ lī abwāba raḥmatik',
+    translation: {
+      en: 'O Allah, open for me the gates of Your mercy.',
+      it: 'O Allah, aprimi le porte della Tua misericordia.',
+      ar: 'اَللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ'
+    },
+    repetitions: 1,
+    category: 'general',
+    benefit: {
+      en: 'Entering the Mosque',
+      it: 'Richiesta della grazia spirituale entrando in moschea',
+      ar: 'دخول المسجد'
+    },
+    source: 'Muslim'
+  },
+  {
+    id: 27,
+    arabic: 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ',
+    transliteration: 'Allāhumma innī as-aluka min faḍlik',
+    translation: {
+      en: 'O Allah, I ask You from Your favor.',
+      it: 'O Allah, Ti chiedo la Tua grazia [favore].',
+      ar: 'اَللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ'
+    },
+    repetitions: 1,
+    category: 'general',
+    benefit: {
+      en: 'Leaving the Mosque',
+      it: 'Richiesta di provvigione e successo uscendo dalla moschea',
+      ar: 'الخروج من المسجد'
+    },
+    source: 'Muslim'
   }
 ];
 

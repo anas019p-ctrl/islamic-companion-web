@@ -5,8 +5,9 @@
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { prophetsData } from '@/data/prophetsData';
 
-const GEMINI_API_KEY = 'AIzaSyDwhhh92P5dlREFe_hqkT6MoU_Qj79-bDg';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export interface QuizQuestion {
     id: string;
@@ -67,7 +68,7 @@ class ProphetsQuizService {
     ): Promise<QuizQuestion> {
         try {
             // Select random prophet if not specified
-            const prophet = prophetName 
+            const prophet = prophetName
                 ? this.PROPHETS.find(p => p.en.toLowerCase() === prophetName.toLowerCase()) || this.PROPHETS[0]
                 : this.PROPHETS[Math.floor(Math.random() * this.PROPHETS.length)];
 
@@ -123,10 +124,57 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
 
         } catch (error) {
             console.error('Error generating quiz question:', error);
-            
             // Fallback to a default question if generation fails
             return this.getFallbackQuestion(prophetName, difficulty);
         }
+    }
+
+    /**
+     * Fallback question when API fails - uses static data
+     */
+    private getFallbackQuestion(
+        prophetName?: string,
+        difficulty: 'easy' | 'medium' | 'hard' = 'medium'
+    ): QuizQuestion {
+        // Try to find the prophet in our static data
+        const staticProphet = prophetName
+            ? prophetsData.find(p => p.name.toLowerCase() === prophetName.toLowerCase())
+            : prophetsData[Math.floor(Math.random() * prophetsData.length)];
+
+        const prophet = staticProphet || prophetsData[9]; // Muhammad by default
+
+        return {
+            id: `static_${prophet.id}_${Date.now()}`,
+            prophet: prophet.name,
+            prophetAr: prophet.nameAr,
+            question: `Which of these is a key fact about Prophet ${prophet.name}?`,
+            questionAr: `ما هي الحقيقة الرئيسية عن النبي ${prophet.nameAr}؟`,
+            questionIt: `Quale di questi è un fatto chiave sul Profeta ${prophet.name}?`,
+            options: [
+                prophet.keyFacts[0],
+                'Fu il primo re di Roma',
+                'Scoprì l\'America',
+                'Insegnò la filosofia greca'
+            ],
+            optionsAr: [
+                prophet.keyFacts[0],
+                'كان أول ملك لروما',
+                'اكتشف أمريكا',
+                'علم الفلسفة اليونانية'
+            ],
+            optionsIt: [
+                prophet.keyFacts[0],
+                'Fu il primo re di Roma',
+                'Scoprì l\'America',
+                'Insegnò la filosofia greca'
+            ],
+            correctAnswer: 0,
+            explanation: prophet.summary,
+            explanationAr: prophet.summary,
+            explanationIt: prophet.summary,
+            difficulty,
+            category: 'general'
+        };
     }
 
     /**
@@ -138,7 +186,7 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
         category?: 'story' | 'lesson' | 'miracle' | 'family' | 'general';
     } = {}): Promise<QuizQuestion[]> {
         const questions: QuizQuestion[] = [];
-        
+
         for (let i = 0; i < count; i++) {
             try {
                 const question = await this.generateQuestion(
@@ -147,7 +195,7 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
                     options.category
                 );
                 questions.push(question);
-                
+
                 // Small delay to avoid rate limiting
                 await new Promise(resolve => setTimeout(resolve, 500));
             } catch (error) {
@@ -172,50 +220,6 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
         return this.PROPHETS;
     }
 
-    /**
-     * Fallback question when API fails
-     */
-    private getFallbackQuestion(
-        prophetName?: string,
-        difficulty: 'easy' | 'medium' | 'hard' = 'medium'
-    ): QuizQuestion {
-        const prophet = prophetName 
-            ? this.PROPHETS.find(p => p.en.toLowerCase() === prophetName.toLowerCase()) || this.PROPHETS[16]
-            : this.PROPHETS[16]; // Muhammad by default
-
-        return {
-            id: `fallback_${Date.now()}`,
-            prophet: prophet.en,
-            prophetAr: prophet.ar,
-            question: `What is the main message that Prophet ${prophet.en} brought to his people?`,
-            questionAr: `ما هي الرسالة الرئيسية التي جاء بها النبي ${prophet.ar} لقومه؟`,
-            questionIt: `Qual è il messaggio principale che il Profeta ${prophet.it} ha portato al suo popolo?`,
-            options: [
-                'Belief in One God (Tawhid)',
-                'Polytheism is acceptable',
-                'No life after death',
-                'Worship of idols'
-            ],
-            optionsAr: [
-                'الإيمان بالله الواحد (التوحيد)',
-                'الشرك مقبول',
-                'لا حياة بعد الموت',
-                'عبادة الأصنام'
-            ],
-            optionsIt: [
-                'Credere in un Unico Dio (Tawhid)',
-                'Il politeismo è accettabile',
-                'Nessuna vita dopo la morte',
-                'Adorazione degli idoli'
-            ],
-            correctAnswer: 0,
-            explanation: 'All prophets came with the same fundamental message: belief in One God (Tawhid), which is the core of Islam.',
-            explanationAr: 'جميع الأنبياء جاؤوا بنفس الرسالة الأساسية: الإيمان بالله الواحد (التوحيد)، وهو جوهر الإسلام.',
-            explanationIt: 'Tutti i profeti sono venuti con lo stesso messaggio fondamentale: credere in un Unico Dio (Tawhid), che è il nucleo dell\'Islam.',
-            difficulty,
-            category: 'general'
-        };
-    }
 
     /**
      * Clear question cache
