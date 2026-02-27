@@ -53,10 +53,10 @@ export class OpenRouterService {
 
     // List of reliable free models to try on fallback
     const FREE_FALLBACKS = [
-      'google/gemini-2.0-flash:free',
-      'google/gemini-2.0-flash-lite:free',
-      'deepseek/deepseek-chat:free',
-      'openrouter/auto'
+      'google/gemini-flash-1.5-8b:free',
+      'google/gemini-2.0-flash-lite-preview-02-05:free',
+      'openrouter/auto',
+      'mistralai/mistral-7b-instruct:free'
     ];
 
     for (let attempt = 1; attempt <= retries; attempt++) {
@@ -84,8 +84,12 @@ export class OpenRouterService {
           const errorData = await response.json().catch(() => ({}));
           console.error(`OpenRouter API Error (${response.status}):`, errorData);
 
-          // 💳 Insufficient credits (402) or 🚫 Model not found (404) or ⛔ Forbidden (403)
-          if ([402, 403, 404].includes(response.status)) {
+          if (response.status === 402) {
+            console.error("💰 OpenRouter: Insufficient Credits. Please top up your account at openrouter.ai");
+          }
+
+          // 💳 Insufficient credits (402) or 🚫 Model not found (404) or ⛔ Forbidden (403) or ❌ Bad Request (400)
+          if ([400, 402, 403, 404].includes(response.status)) {
             const nextModel = FREE_FALLBACKS[attempt - 1] || FREE_FALLBACKS[FREE_FALLBACKS.length - 1];
             if (finalModel !== nextModel) {
               console.warn(`🔄 Switching from ${finalModel} to ${nextModel} due to status ${response.status}`);
@@ -136,8 +140,12 @@ export class OpenRouterService {
         const result = await geminiModel.generateContent(prompt);
         const response = await result.response;
         return response.text();
-      } catch (geminiError) {
-        console.error('Final emergency fallback failed:', geminiError);
+      } catch (geminiError: any) {
+        if (geminiError.message?.includes('leaked')) {
+          console.error("❌ CRITICAL: Your VITE_GEMINI_API_KEY has been reported as LEAKED by Google. Please generate a new key at https://aistudio.google.com/");
+        } else {
+          console.error('Final emergency fallback failed:', geminiError);
+        }
       }
     }
 

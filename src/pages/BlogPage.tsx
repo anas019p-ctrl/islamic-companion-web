@@ -62,16 +62,21 @@ const BlogPage = () => {
     // ── Fetch posts ────────────────────────────────────────────────────────────
     const fetchPosts = useCallback(async (forceRegen = false) => {
         setIsLoading(true);
+        let currentDbPosts: BlogPost[] = [];
+        let currentAiPost: BlogPost | null = null;
+
+        // 1. Supabase posts
         try {
-            // 1. Supabase posts
-            const { data: dbData } = await supabase
+            const { data: dbData, error: dbError } = await supabase
                 .from('blog_posts' as any)
                 .select('*')
                 .eq('is_published', true)
                 .order('created_at', { ascending: false })
                 .limit(20);
 
-            const dbPosts: BlogPost[] = (dbData || []).map((p: any) => ({
+            if (dbError) throw dbError;
+
+            currentDbPosts = (dbData || []).map((p: any) => ({
                 id: String(p.id),
                 title: p.title,
                 content: p.content,
@@ -84,36 +89,36 @@ const BlogPage = () => {
                 readTime: calcReadTime(p.content || ''),
                 is_draft: false,
             }));
+        } catch (err) {
+            console.error('[BlogPage] Supabase fetch error:', err);
+        }
 
-            // 2. AI Daily Insight
+        // 2. AI Daily Insight
+        try {
             const insight = forceRegen
                 ? await BlogService.regenerate(language)
                 : await BlogService.getDailyInsight(language);
 
-            const aiPost: BlogPost = {
-                id: insight.id,
-                title: insight.title,
-                content: insight.content,
-                excerpt: insight.excerpt,
-                image_url: insight.image,
-                category: insight.category,
-                published_at: insight.date,
-                author: insight.author,
-                readTime: insight.readTime,
-            };
-
-            setPosts([aiPost, ...dbPosts]);
+            if (insight) {
+                currentAiPost = {
+                    id: insight.id,
+                    title: insight.title,
+                    content: insight.content,
+                    excerpt: insight.excerpt,
+                    image_url: insight.image,
+                    category: insight.category,
+                    published_at: insight.date,
+                    author: insight.author,
+                    readTime: insight.readTime,
+                };
+            }
         } catch (err) {
-            console.error('[BlogPage] fetchPosts error:', err);
-            toast({
-                title: 'Errore caricamento',
-                description: 'Impossibile caricare i post. Riprova più tardi.',
-                variant: 'destructive',
-            });
-            setPosts([]);
-        } finally {
-            setIsLoading(false);
+            console.error('[BlogPage] AI fetch error:', err);
         }
+
+        const combinedPosts = currentAiPost ? [currentAiPost, ...currentDbPosts] : currentDbPosts;
+        setPosts(combinedPosts);
+        setIsLoading(false);
     }, [language, toast]);
 
     useEffect(() => {

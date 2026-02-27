@@ -142,7 +142,10 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
             ? prophetsData.find(p => p.name.toLowerCase() === prophetName.toLowerCase())
             : prophetsData[Math.floor(Math.random() * prophetsData.length)];
 
-        const prophet = staticProphet || prophetsData[9]; // Muhammad by default
+        const prophet = staticProphet || prophetsData[0]; // Adam by default
+
+        // Pick a random fact for the correct answer
+        const correctFact = prophet.keyFacts[Math.floor(Math.random() * prophet.keyFacts.length)];
 
         return {
             id: `static_${prophet.id}_${Date.now()}`,
@@ -152,27 +155,27 @@ Return ONLY a valid JSON object (no markdown, no extra text) with this exact str
             questionAr: `ما هي الحقيقة الرئيسية عن النبي ${prophet.nameAr}؟`,
             questionIt: `Quale di questi è un fatto chiave sul Profeta ${prophet.name}?`,
             options: [
-                prophet.keyFacts[0],
-                'Fu il primo re di Roma',
-                'Scoprì l\'America',
-                'Insegnò la filosofia greca'
+                correctFact,
+                'Fu il primo re di un impero moderno',
+                'Scoprì nuove terre oltre l\'oceano',
+                'Insegnò scienze moderne in un\'università'
             ],
             optionsAr: [
-                prophet.keyFacts[0],
-                'كان أول ملك لروما',
-                'اكتشف أمريكا',
-                'علم الفلسفة اليونانية'
+                correctFact,
+                'كان أول ملك لإمبراطورية حديثة',
+                'اكتشف أراضٍ جديدة عبر المحيط',
+                'علم العلوم الحديثة في الجامعة'
             ],
             optionsIt: [
-                prophet.keyFacts[0],
-                'Fu il primo re di Roma',
-                'Scoprì l\'America',
-                'Insegnò la filosofia greca'
+                correctFact,
+                'Fu il primo re di un impero moderno',
+                'Scoprì nuove terre oltre l\'oceano',
+                'Insegnò scienze moderne in un\'università'
             ],
             correctAnswer: 0,
-            explanation: prophet.summary,
+            explanation: prophet.fullStoryIt || prophet.summary,
             explanationAr: prophet.summary,
-            explanationIt: prophet.summary,
+            explanationIt: prophet.fullStoryIt || prophet.summary,
             difficulty,
             category: 'general'
         };

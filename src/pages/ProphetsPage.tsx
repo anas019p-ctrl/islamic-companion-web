@@ -172,18 +172,50 @@ const prophetsFallback: Prophet[] = [
 const ProphetsPage = () => {
   const { language, t } = useLanguage();
   const { toast } = useToast();
-  const { data: prophets = prophetsFallback, isLoading } = useQuery({
+  const { data: prophets = [], isLoading } = useQuery({
     queryKey: ['prophets'],
     queryFn: async () => {
+      // Prioritize local data for consistency with provided PDF
+      const { prophetsData } = await import('@/data/prophetsData');
+
       const { data, error } = await supabase
         .from('prophets')
         .select('*')
         .order('timeline_order');
 
-      if (error || !data || data.length < 6) {
-        return prophetsFallback;
+      // Merge Supabase entries with local enriched data
+      const merged = (data || []).map(dbProphet => {
+        const translations = (dbProphet.story_translations || {}) as Record<string, string>;
+        const local = prophetsData.find(p => p.id.toString() === dbProphet.id.toString() || p.name === dbProphet.name_en);
+        if (local) {
+          return {
+            ...dbProphet,
+            story_translations: {
+              ...translations,
+              it: local.fullStoryIt || translations.it
+            },
+            era: local.era || dbProphet.era
+          };
+        }
+        return dbProphet;
+      });
+
+      if (merged.length < 5) {
+        // Map local data to the Prophet interface format
+        return prophetsData.map(p => ({
+          id: p.id.toString(),
+          name_ar: p.nameAr,
+          name_en: p.name,
+          translations: { it: p.name },
+          story_ar: "",
+          story_translations: { it: p.fullStoryIt, en: p.summary },
+          quranic_verses: [],
+          moral_lessons: { it: p.keyFacts },
+          timeline_order: p.id,
+          era: p.era || null
+        })) as Prophet[];
       }
-      return data as Prophet[];
+      return merged as Prophet[];
     },
     staleTime: 1000 * 60 * 60 * 24, // 24 hours
   });
@@ -198,7 +230,7 @@ const ProphetsPage = () => {
   };
 
   const getProphetStory = (prophet: Prophet) => {
-    if (language === 'ar') return prophet.story_ar;
+    if (language === 'ar' && prophet.story_ar) return prophet.story_ar;
     return prophet.story_translations?.[language] || prophet.story_translations?.en || prophet.story_ar;
   };
 

@@ -41,6 +41,7 @@ const KidsPage = lazy(() => import("./pages/KidsPage"));
 const InfiniteQuizPage = lazy(() => import("./pages/InfiniteQuizPage"));
 const MosqueMapPage = lazy(() => import("./pages/MosqueMapPage"));
 const CommonMistakesPage = lazy(() => import("./pages/CommonMistakesPage"));
+const SunnahPage = lazy(() => import("./pages/SunnahPage"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -103,6 +104,7 @@ const AppContent = () => {
             <Route path="/quiz" element={<InfiniteQuizPage />} />
             <Route path="/mosques" element={<MosqueMapPage />} />
             <Route path="/mistakes" element={<CommonMistakesPage />} />
+            <Route path="/sunnah" element={<SunnahPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

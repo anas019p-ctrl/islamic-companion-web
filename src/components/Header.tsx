@@ -9,7 +9,7 @@ import { BackButton } from './BackButton';
 
 export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const location = useLocation();
 
   return (
@@ -58,6 +58,10 @@ export const Header = () => {
             <Link to="/scholar" className="magic-nav-item text-[11px] font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-400 transition-all flex items-center gap-1">
               {t('ai_guide')} <span className="text-[8px] px-1 bg-emerald-500/10 rounded animate-pulse">{t('new')}</span>
             </Link>
+            <Link to="/sunnah" className="magic-nav-item text-[11px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-400 transition-all">
+              {language === 'it' ? 'Buone Azioni' : (language === 'ar' ? 'أعمال الخير' : 'Good Deeds')}
+              {t('good_deeds')}
+            </Link>
             <Link to="/translate" className="magic-nav-item text-[11px] font-black uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-all">
               {t('translator_nav')}
             </Link>
@@ -99,6 +103,9 @@ export const Header = () => {
               </Link>
               <Link to="/education" className="px-4 py-2 rounded-lg bg-secondary/30 text-sm font-medium">
                 {t('education_short') || 'Education'}
+              </Link>
+              <Link to="/sunnah" className="px-4 py-2 rounded-lg bg-amber-500/10 text-sm font-medium text-amber-500">
+                {language === 'it' ? 'Buone Azioni' : (language === 'ar' ? 'أعمال الخير' : 'Good Deeds')}
               </Link>
               <Link to="/#learn-arabic" className="px-4 py-2 rounded-lg bg-secondary/30 text-sm font-medium">
                 {t('learn_arabic')}

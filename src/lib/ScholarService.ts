@@ -1,4 +1,5 @@
 import OpenRouterService from './OpenRouterService';
+import { prophetsData } from '@/data/prophetsData';
 
 /**
  * 🎓 SCHOLAR SERVICE - Islamic Knowledge Hub
@@ -41,6 +42,20 @@ export class ScholarService {
      */
     static clearHistory() {
         this.sessionHistory = [];
+    }
+
+    /**
+     * Helper to get prophet context for AI prompts
+     */
+    private static getProphetContext(prophetName?: string): string {
+        const prophet = prophetName
+            ? prophetsData.find(p => p.name.toLowerCase().includes(prophetName.toLowerCase()))
+            : null;
+
+        if (prophet) {
+            return `Context on Prophet ${prophet.name}: ${prophet.summary}. ${prophet.fullStoryIt || ''}`;
+        }
+        return `General Prophets history including Noah, Abraham, Moses, Jesus, and Muhammad ﷺ.`;
     }
 
     /**
@@ -157,23 +172,28 @@ export class ScholarService {
         language: string = 'it',
         count: number = 3
     ): Promise<any[]> {
-        const prompt = `Generate a batch of ${count} unique Islamic quiz questions about "${topic}" (Difficulty: ${difficulty}).
-        Requirements:
-        1. Diversity: Cover history, lessons, and spiritual aspects.
+        const prophetContext = this.getProphetContext(topic === 'Prophets' ? undefined : topic);
+        const prompt = `Act as an expert Islamic Scholar and Teacher.
+        Task: Generate ${count} HIGH-QUALITY quiz questions about ${topic}.
+        Level: ${difficulty}.
+        ${prophetContext}
+        
+        STRICT RULES:
+        1. Accuracy: Questions must be historically and religiously accurate.
         2. Multilingual: For EACH question, provide text in English, Arabic, and Italian.
         3. Format: Return ONLY a JSON array of objects.
         
         JSON Structure:
         [
           {
-            "id": "random_id",
+            "id": "q_" + Date.now(),
             "questionEn": "...",
             "questionAr": "...",
             "questionIt": "...",
-            "optionsEn": [",",",","],
-            "optionsAr": [",",",","],
-            "optionsIt": [",",",","],
-            "correctIndex": number (0-3),
+            "optionsEn": ["Correct Answer", "Distractor 1", "Distractor 2", "Distractor 3"],
+            "optionsAr": ["...", "...", "...", "..."],
+            "optionsIt": ["...", "...", "...", "..."],
+            "correctIndex": 0,
             "explanationEn": "...",
             "explanationAr": "...",
             "explanationIt": "..."
@@ -193,8 +213,28 @@ export class ScholarService {
             const jsonToParse = cleanJson.substring(startBracket, endBracket + 1);
             return JSON.parse(jsonToParse);
         } catch (error) {
-            console.error("Infinite quiz batch generation failed:", error);
-            return [];
+            console.error("Infinite quiz batch generation failed, using static fallback:", error);
+
+            // Static fallback using prophetsData
+            const fallbackQuestions = [];
+            for (let i = 0; i < count; i++) {
+                const prophet = prophetsData[Math.floor(Math.random() * prophetsData.length)];
+                const factIdx = Math.floor(Math.random() * prophet.keyFacts.length);
+                fallbackQuestions.push({
+                    id: `static_${prophet.id}_${Date.now()}_${i}`,
+                    questionEn: `What is a known fact about Prophet ${prophet.name}?`,
+                    questionAr: `ما هي الحقيقة المعروفة عن النبي ${prophet.nameAr}؟`,
+                    questionIt: `Qual è un fatto noto sul Profeta ${prophet.name}?`,
+                    optionsEn: [prophet.keyFacts[factIdx], "Fact B", "Fact C", "Fact D"],
+                    optionsAr: [prophet.keyFacts[factIdx], "...", "...", "..."],
+                    optionsIt: [prophet.keyFacts[factIdx], "Dettaglio B", "Dettaglio C", "Dettaglio D"],
+                    correctIndex: 0,
+                    explanationEn: prophet.summary,
+                    explanationAr: prophet.nameAr,
+                    explanationIt: prophet.fullStoryIt || prophet.summary
+                });
+            }
+            return fallbackQuestions;
         }
     }
 

@@ -15,20 +15,20 @@ export interface BlogPost {
 const FALLBACK_INSIGHTS = [
     {
         title: "Il Significato della Pazienza nell'Islam",
-        excerpt: "La pazienza (Sabr) Ã¨ uno dei valori fondamentali dell'Islam, menzionata oltre 90 volte nel Corano.",
-        content: `## Ø§Ù„ØµÙŽÙ‘Ø¨Ù’Ø±Ù Ù†ÙØµÙ’ÙÙ Ø§Ù„Ø¥ÙÙŠÙ…ÙŽØ§Ù†Ù â€” La Pazienza Ã¨ metÃ  della Fede\n\nAllah dice nel Corano:\n> *"O voi che credete! Cercate aiuto nella pazienza e nella preghiera: in veritÃ  Allah Ã¨ con i pazienti."* (Surah Al-Baqarah 2:153)\n\n### Il Hadith\nIl Profeta Muhammad ï·º disse: *"Nessuno ha ricevuto un dono migliore e piÃ¹ grande della pazienza."* (Bukhari & Muslim)\n\n### Lezione Pratica\nQuando affrontiamo difficoltÃ , il primo passo Ã¨ **fermarsi** prima di reagire. Il respiro consapevole (3 volte) prima di rispondere a una provocazione Ã¨ Sunnah applicata alla vita moderna.\n\n*Ø¨Ø§Ø±Ùƒ Ø§Ù„Ù„Ù‡ ÙÙŠÙƒÙ…*`,
+        excerpt: "La pazienza (Sabr) è uno dei valori fondamentali dell'Islam, menzionata oltre 90 volte nel Corano.",
+        content: `## الصَّبْرُ نِصْفُ الإِيمَانِ — La Pazienza è metà della Fede\n\nAllah dice nel Corano:\n> *"O voi che credete! Cercate aiuto nella pazienza e nella preghiera: in verità Allah è con i pazienti."* (Surah Al-Baqarah 2:153)\n\n### Il Hadith\nIl Profeta Muhammad ﷺ disse: *"Nessuno ha ricevuto un dono migliore e più grande della pazienza."* (Bukhari & Muslim)\n\n### Lezione Pratica\nQuando affrontiamo difficoltà, il primo passo è **fermarsi** prima di reagire. Il respiro consapevole (3 volte) prima di rispondere a una provocazione è Sunnah applicata alla vita moderna.\n\n*بارك الله فيكم*`,
         category: "Valori Islamici"
     },
     {
         title: "La Preghiera del Fajr: Il Segreto del Successo",
-        excerpt: "Svegliarsi per il Fajr Ã¨ tra le pratiche piÃ¹ raccomandate, con benefici spirituali e fisici scientificamente provati.",
-        content: `## ÙÙŽØ¬Ù’Ø±ÙŒ â€” L'Alba dell'Anima\n\nAllah dice nel Corano:\n> *"Stabilisci la preghiera al tramonto del sole fino all'oscuritÃ  della notte, e [recita] il Corano dell'alba. In veritÃ , la recitazione dell'alba Ã¨ testimoniata."* (Al-Isra' 17:78)\n\n### Il Hadith\n*"Le due rak'ah del Fajr sono piÃ¹ preziose del mondo e di tutto ciÃ² che contiene."* (Muslim)\n\n### Applicazione Moderna\nSvegliarsi all'alba (circa 5:30 in Estate in Italia) per la preghiera allinea il corpo con il ritmo circadiano naturale, migliorando energia e concentrazione per tutta la giornata.\n\n*Ø§Ù„Ù„Ù‡Ù… Ø¨Ø§Ø±Ùƒ Ù„Ù†Ø§ ÙÙŠ Ø£ÙˆÙ‚Ø§ØªÙ†Ø§*`,
+        excerpt: "Svegliarsi per il Fajr è tra le pratiche più raccomandate, con benefici spirituali e fisici scientificamente provati.",
+        content: `## فَجْرٌ — L'Alba dell'Anima\n\nAllah dice nel Corano:\n> *"Stabilisci la preghiera al tramonto del sole fino all'oscurità della notte, e [recita] il Corano dell'alba. In verità, la recitazione dell'alba è testimoniata."* (Al-Isra' 17:78)\n\n### Il Hadith\n*"Le due rak'ah del Fajr sono più preziose del mondo e di tutto ciò che contiene."* (Muslim)\n\n### Applicazione Moderna\nSvegliarsi all'alba per la preghiera allinea il corpo con il ritmo circadiano naturale, migliorando energia e concentrazione per tutta la giornata.\n\n*اللهم بارك لنا في أوقاتنا*`,
         category: "Preghiera"
     },
     {
         title: "Ramadan: La Scuola Mensile della Purificazione",
-        excerpt: "Il digiuno del Ramadan non Ã¨ solo astenersi dal cibo, ma Ã¨ un mese completo di riforma spirituale.",
-        content: `## Ø±ÙŽÙ…ÙŽØ¶ÙŽØ§Ù† â€” Il Mese della Misericordia\n\nAllah dice nel Corano:\n> *"O voi che credete! Vi Ã¨ stato prescritto il digiuno, come fu prescritto a coloro che vi hanno preceduto, affinchÃ© possiate essere giusti."* (Al-Baqarah 2:183)\n\n### Il Hadith\n*"Chi digiuna il Ramadan con fede e sperando nella ricompensa di Allah, gli verranno perdonati i peccati precedenti."* (Bukhari)\n\n### I Tre Livelli del Digiuno\n1. **Fisico**: Astenersi da cibo e bevande\n2. **Verbale**: Controllare lingua, bugie, calunnie\n3. **Spirituale**: Purificare cuore e intenzioni\n\n*Ø±Ù…Ø¶Ø§Ù† Ù…Ø¨Ø§Ø±Ùƒ*`,
+        excerpt: "Il digiuno del Ramadan non è solo astenersi dal cibo, ma è un mese completo di riforma spirituale.",
+        content: `## رَمَضَان — Il Mese della Misericordia\n\nAllah dice nel Corano:\n> *"O voi che credete! Vi è stato prescritto il digiuno, come fu prescritto a coloro che vi hanno preceduto, affinché possiate essere giusti."* (Al-Baqarah 2:183)\n\n### Il Hadith\n*"Chi digiuna il Ramadan con fede e sperando nella ricompensa di Allah, gli verranno perdonati i peccati precedenti."* (Bukhari)\n\n### I Tre Livelli del Digiuno\n1. **Fisico**: Astenersi da cibo e bevande\n2. **Verbale**: Controllare lingua, bugie, calunnie\n3. **Spirituale**: Purificare cuore e intenzioni\n\n*رمضان مبارك*`,
         category: "Ramadan"
     }
 ];
@@ -36,9 +36,7 @@ const FALLBACK_INSIGHTS = [
 export class BlogService {
     private static STORAGE_KEY = 'islamic_app_daily_insight_v2';
     private static CACHE_HOURS = 24;
-    // Use ISO date so new Date() parses correctly everywhere (no "Invalid Date")
     private static todayISO = () => new Date().toISOString().split('T')[0];
-
 
     private static isCacheValid(stored: BlogPost & { cachedAt: string }): boolean {
         if (!stored?.cachedAt) return false;
@@ -50,13 +48,13 @@ export class BlogService {
         const idx = new Date().getDate() % FALLBACK_INSIGHTS.length;
         const fb = FALLBACK_INSIGHTS[idx];
         const todayISO = new Date().toISOString().split('T')[0];
-        
+
         const images = [
-            'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800', // Calligraphy
-            'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=800', // Architecture
-            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800'  // Quran
+            'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800',
+            'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=800',
+            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800'
         ];
-        
+
         return {
             id: 'fallback-' + todayISO,
             ...fb,
@@ -70,7 +68,6 @@ export class BlogService {
     static async getDailyInsight(language: string = 'it'): Promise<BlogPost> {
         const cacheKey = `${this.STORAGE_KEY}_${language}`;
 
-        // Check cache
         try {
             const stored = localStorage.getItem(cacheKey);
             if (stored) {
@@ -83,27 +80,26 @@ export class BlogService {
             localStorage.removeItem(cacheKey);
         }
 
-        // Determine language prompt
         const langMap: Record<string, string> = {
             it: 'italiano',
             en: 'English',
-            ar: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
-            fr: 'franÃ§ais',
+            ar: 'العربية',
+            fr: 'français',
             de: 'Deutsch',
-            es: 'espaÃ±ol'
+            es: 'español'
         };
         const langLabel = langMap[language] || 'italiano';
 
         const today = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-        const topics = ['Tawhid e Fede', 'Preghiera e Dhikr', 'Etica Islamica', 'Storie dei Profeti', 'Saggezza del Corano', 'Sunnah del Profeta ï·º', 'Famiglia nell Islam'];
+        const topics = ['Tawhid e Fede', 'Preghiera e Dhikr', 'Etica Islamica', 'Storie dei Profeti', 'Saggezza del Corano', 'Sunnah del Profeta ﷺ', 'Famiglia nell Islam'];
         const topic = topics[new Date().getDate() % topics.length];
 
         const images = [
-            'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800', // Islamic Calligraphy
-            'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=800', // Mosque Architecture
-            'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800', // Lantern/Ramadan
-            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800', // Quran
-            'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=800'  // Geometric Patterns
+            'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800',
+            'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?w=800',
+            'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800',
+            'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=800',
+            'https://images.unsplash.com/photo-1519817650390-64a93db51149?w=800'
         ];
         const image = images[new Date().getDate() % images.length];
 
@@ -116,32 +112,26 @@ STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
 {
   "title": "Titolo accademico in ${langLabel}",
   "excerpt": "Riassunto analitico di 2 frasi in ${langLabel}",
-  "content": "Articolo completo in ${langLabel} seguendo questa struttura:\n\n## Introduzione Accademica\n- Versetto coranico pertinente (numero sura:versetto)\n- Contesto della rivelazione (Asbab al-Nuzul se applicabile)\n\n## Analisi Filologica\n- Spiegazione dei termini chiave in arabo classico\n- Radici e significati profondi\n\n## Hadith Autentici con Takhrij\n- Almeno 2 Hadith con fonte completa (es. Sahih Bukhari, Hadith 756)\n- Grado di autenticitÃ \n\n## Applicazione per il Predicatore Moderno\n- Come usare questa conoscenza nella Da'wah\n- Errori comuni da evitare quando si insegna questo argomento\n\n## Conclusione con Dua\n- Dua pertinente in arabo con traduzione\n\nUsa Markdown (##, >, **testo**). Minimo 800 parole.",
+  "content": "Articolo completo in ${langLabel} seguendo questa struttura:\n\n## Introduzione Accademica\n- Versetto coranico pertinente (numero sura:versetto)\n- Contesto della rivelazione\n\n## Analisi Filologica\n- Spiegazione dei termini chiave in arabo classico\n\n## Hadith Autentici\n- Almeno 2 Hadith con fonte completa (es. Sahih Bukhari)\n- Grado di autenticità\n\n## Applicazione per il Predicatore Moderno\n- Come usare questa conoscenza nella Da'wah\n- Errori comuni da evitare\n\n## Conclusione con Dua\n- Dua pertinente in arabo con traduzione\n\nUsa Markdown (##, >, **testo**). Minimo 800 parole.",
   "category": "Formazione Predicatori"
 }
 
-IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualitÃ  e pratica quotidiana.`;
+IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualità e pratica quotidiana.`;
 
         try {
-            // Utilizzo di DeepSeek Chat (modello a pagamento) per la massima qualitÃ  accademica
-            const response = await OpenRouterService.generateContent(prompt, 'deepseek/deepseek-chat');
-            
-            if (!response) {
-                throw new Error('AI Response is empty');
-            }
+            const response = await OpenRouterService.generateContent(prompt, 'google/gemini-2.0-flash-lite-preview-02-05:free');
 
-            // Pulizia dell'output per estrarre solo il JSON
+            if (!response) throw new Error('AI Response is empty');
+
             const jsonStart = response.indexOf('{');
             const jsonEnd = response.lastIndexOf('}') + 1;
-            
-            if (jsonStart === -1 || jsonEnd === -1) {
-                throw new Error('No valid JSON found in AI response');
-            }
+
+            if (jsonStart === -1 || jsonEnd === -1) throw new Error('No valid JSON found');
 
             const clean = response.substring(jsonStart, jsonEnd).trim();
             const json = JSON.parse(clean);
 
-            if (!json.title || !json.content) throw new Error('Invalid AI response structure');
+            if (!json.title || !json.content) throw new Error('Invalid structure');
 
             const todayISO = new Date().toISOString().split('T')[0];
             const newPost: BlogPost & { cachedAt: string } = {
@@ -150,7 +140,7 @@ IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, sp
                 excerpt: json.excerpt || json.content.substring(0, 150) + '...',
                 content: json.content,
                 date: todayISO,
-                author: language === 'it' ? 'ðŸ¤– Studioso AI (OpenRouter)' : 'ðŸ¤– AI Scholar (OpenRouter)',
+                author: language === 'it' ? 'Studioso AI' : 'AI Scholar',
                 category: json.category || topic,
                 readTime: `${Math.ceil(json.content.split(' ').length / 200)} min`,
                 image: image,
@@ -165,13 +155,11 @@ IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, sp
         }
     }
 
-    /** Regenerate today's insight (bypass cache) */
     static async regenerate(language: string = 'it'): Promise<BlogPost> {
         localStorage.removeItem(`${this.STORAGE_KEY}_${language}`);
         return this.getDailyInsight(language);
     }
 
-    /** Clear all blog cache */
     static clearCache(): void {
         Object.keys(localStorage)
             .filter(k => k.startsWith(this.STORAGE_KEY))
