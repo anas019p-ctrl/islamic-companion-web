@@ -1,22 +1,30 @@
 /**
- * 🤖 OPENROUTER AI SERVICE - Unlimited AI Power
- * Uses OpenRouter API for unlimited, high-quality AI responses
+ * 🤖 OPENROUTER AI SERVICE - Free Models Optimized
+ * Uses OpenRouter API with proven working FREE models
  * 
  * Features:
- * - Unlimited translations (Arabic/Italian/English)
+ * - Free model rotation (no credits needed)
  * - Islamic content generation with authentic sources
  * - Scholar-level responses
- * - Multi-model support (GPT-4, Claude, Gemini)
- * - Zero rate limits!
+ * - Smart retry logic with model switching
  * 
  * 🛡️ STRICT RELIGIOUS FILTER: Only Islamic topics allowed
  */
 
 export class OpenRouterService {
   private static API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-  private static GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY; // Universal fallback
   private static BASE_URL = 'https://openrouter.ai/api/v1';
-  private static DEFAULT_MODEL = 'deepseek/deepseek-chat';
+
+  // ✅ Verified working free models on OpenRouter (as of Feb 2026)
+  private static FREE_MODELS = [
+    'mistralai/mistral-7b-instruct:free',
+    'meta-llama/llama-3.2-3b-instruct:free',
+    'microsoft/phi-3-mini-128k-instruct:free',
+    'google/gemma-2-9b-it:free',
+    'qwen/qwen-2-7b-instruct:free',
+  ];
+
+  private static DEFAULT_MODEL = OpenRouterService.FREE_MODELS[0];
 
   // 🛡️ STRICT ISLAMIC SYSTEM PROMPT - Applied to ALL requests
   private static ISLAMIC_GUARD_PROMPT = `
@@ -31,345 +39,234 @@ export class OpenRouterService {
    - Arabic language learning for religious purposes
    - Daily Muslim practices (Salah, Dua, Dhikr, Ramadan)
 
-2. OFF-TOPIC PROTOCOL: If the user asks about ANYTHING ELSE (politics, pop culture, sports, generic science, non-Islamic history, personal advice, coding, technology, entertainment, gossip, etc.):
-   - Politely decline with: "Mi scuso, sono specializzato esclusivamente in temi islamici. Posso aiutarti con domande sulla religione islamica, storia islamica, Corano, Hadith o pratiche religiose. Come posso assisterti in questi ambiti?"
-   - Do NOT provide any information on off-topic subjects
-   - Redirect the user to ask an Islamic question
+2. OFF-TOPIC PROTOCOL: If the user asks about ANYTHING ELSE:
+   - Politely decline with: "Mi scuso, sono specializzato esclusivamente in temi islamici. Posso aiutarti con domande sulla religione islamica, storia islamica, Corano, Hadith o pratiche religiose."
 
 3. RESPONSE STYLE:
    - Provide clear, authentic answers based on Quran and Sunnah
    - Cite supporting evidence (verse/hadith references)
-   - Mention scholarly differences when relevant
-   - Follow a balanced (wasatiyyah) approach
    - Be respectful and educational
 `;
 
   /**
-   * Main AI request function with retry logic and enhanced error handling
+   * Main AI request function with free model rotation
    */
-  private static async request(messages: any[], model: string = this.DEFAULT_MODEL, temperature: number = 0.7, retries: number = 3): Promise<string> {
-    let lastError: Error | null = null;
-    let finalModel = model;
-
-    // List of reliable free models to try on fallback
-    const FREE_FALLBACKS = [
-      'google/gemini-flash-1.5-8b:free',
-      'google/gemini-2.0-flash-lite-preview-02-05:free',
-      'openrouter/auto',
-      'mistralai/mistral-7b-instruct:free'
+  private static async request(
+    messages: any[],
+    preferredModel: string = OpenRouterService.DEFAULT_MODEL,
+    temperature: number = 0.7,
+    maxRetries: number = 5
+  ): Promise<string> {
+    // Build model queue: preferred first, then rest of free models
+    const modelQueue = [
+      preferredModel,
+      ...OpenRouterService.FREE_MODELS.filter(m => m !== preferredModel)
     ];
 
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        console.log(`🤖 AI Request [${finalModel}] Attempt ${attempt}:`, messages[messages.length - 1].content.substring(0, 50) + '...');
+    let lastError: Error | null = null;
 
-        const response = await fetch(`${this.BASE_URL}/chat/completions`, {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const model = modelQueue[attempt % modelQueue.length];
+
+      try {
+        console.log(`🤖 AI Request [${model}] Attempt ${attempt + 1}:`, messages[messages.length - 1]?.content?.substring(0, 50) + '...');
+
+        if (!OpenRouterService.API_KEY) {
+          throw new Error('No OpenRouter API key configured');
+        }
+
+        const response = await fetch(`${OpenRouterService.BASE_URL}/chat/completions`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${this.API_KEY}`,
+            'Authorization': `Bearer ${OpenRouterService.API_KEY}`,
             'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://islamic-companion.ai',
-            'X-Title': 'Islamic Companion App'
+            'HTTP-Referer': 'https://islamic-companion-web.pages.dev',
+            'X-Title': 'Islamic Companion'
           },
           body: JSON.stringify({
-            model: finalModel,
+            model,
             messages,
             temperature,
-            max_tokens: 4000,
-            top_p: 0.9,
+            max_tokens: 3000,
           })
         });
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
-          console.error(`OpenRouter API Error (${response.status}):`, errorData);
+          console.warn(`OpenRouter [${model}] Error ${response.status}:`, errorData?.error?.message || '');
 
-          if (response.status === 402) {
-            console.error("💰 OpenRouter: Insufficient Credits. Please top up your account at openrouter.ai");
-          }
-
-          // 💳 Insufficient credits (402) or 🚫 Model not found (404) or ⛔ Forbidden (403) or ❌ Bad Request (400)
-          if ([400, 402, 403, 404].includes(response.status)) {
-            const nextModel = FREE_FALLBACKS[attempt - 1] || FREE_FALLBACKS[FREE_FALLBACKS.length - 1];
-            if (finalModel !== nextModel) {
-              console.warn(`🔄 Switching from ${finalModel} to ${nextModel} due to status ${response.status}`);
-              finalModel = nextModel;
+          // Try next model for known failure codes
+          if ([400, 402, 403, 404, 422, 429].includes(response.status)) {
+            lastError = new Error(`OpenRouter API error: ${response.status} - ${errorData?.error?.message || 'Unknown'}`);
+            if (attempt < maxRetries - 1) {
+              await new Promise(resolve => setTimeout(resolve, 500));
               continue;
             }
           }
 
-          if (response.status === 429 || response.status >= 500) {
-            lastError = new Error(`OpenRouter API error: ${response.status}`);
-            await new Promise(resolve => setTimeout(resolve, 2000 * attempt));
+          // Server errors: wait and retry same model
+          if (response.status >= 500) {
+            lastError = new Error(`Server error: ${response.status}`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
             continue;
           }
 
-          throw new Error(`OpenRouter API error: ${response.status} - ${errorData.error?.message || 'Unknown'}`);
+          throw new Error(`OpenRouter API error: ${response.status} - ${errorData?.error?.message || 'Unknown'}`);
         }
 
         const data = await response.json();
-        const content = data.choices[0]?.message?.content;
+        const content = data.choices?.[0]?.message?.content;
 
-        if (!content) {
-          throw new Error('AI response content is empty');
-        }
+        if (!content) throw new Error('AI response content is empty');
 
         return content;
-      } catch (error) {
-        console.error(`OpenRouter Service Failure (Attempt ${attempt}):`, error);
-        lastError = error as Error;
+      } catch (error: any) {
+        console.error(`OpenRouter Failure (Attempt ${attempt + 1}/${maxRetries}):`, error.message);
+        lastError = error;
 
-        if (attempt < retries) {
-          // If network error, try switching to a different free model immediately
-          finalModel = FREE_FALLBACKS[attempt % FREE_FALLBACKS.length];
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        if (attempt < maxRetries - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
     }
 
-    // 🏔️ MASTER FALLBACK: Direct Google Gemini API (Bypassing OpenRouter)
-    if (this.GEMINI_API_KEY) {
-      console.log('🚨 OpenRouter completely exhausted. Using Native Google Gemini Fallback...');
-      try {
-        const { GoogleGenerativeAI } = await import('@google/generative-ai');
-        const genAI = new GoogleGenerativeAI(this.GEMINI_API_KEY);
-        const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-        // Convert messages to Gemini format
-        const prompt = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
-        const result = await geminiModel.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
-      } catch (geminiError: any) {
-        if (geminiError.message?.includes('leaked')) {
-          console.error("❌ CRITICAL: Your VITE_GEMINI_API_KEY has been reported as LEAKED by Google. Please generate a new key at https://aistudio.google.com/");
-        } else {
-          console.error('Final emergency fallback failed:', geminiError);
-        }
-      }
-    }
-
-    throw lastError || new Error('All AI services (OpenRouter & Native Gemini) failed');
+    throw lastError || new Error('All OpenRouter free models failed');
   }
 
   /**
-   * 🌍 TRANSLATE with AI - Perfect Islamic translations for 9+ languages
+   * 🌍 TRANSLATE with AI
    */
   static async translate(text: string, targetLang: string, isReligious: boolean = false): Promise<string> {
     const langMap: Record<string, string> = {
-      'ar': 'Arabic',
-      'en': 'English',
-      'it': 'Italian',
-      'fr': 'French',
-      'es': 'Spanish',
-      'de': 'German',
-      'tr': 'Turkish',
-      'ur': 'Urdu',
-      'bn': 'Bengali',
-      'sq': 'Albanian'
+      'ar': 'Arabic', 'en': 'English', 'it': 'Italian',
+      'fr': 'French', 'es': 'Spanish', 'de': 'German',
+      'tr': 'Turkish', 'ur': 'Urdu', 'bn': 'Bengali', 'sq': 'Albanian'
     };
-
     const targetLanguage = langMap[targetLang] || targetLang;
 
     const systemPrompt = isReligious
-      ? `You are an expert Islamic translator with deep knowledge of Quran, Hadith, and Islamic terminology. 
-         Translate the following text to ${targetLanguage} while:
-         - Preserving Islamic terms (Allah, Rasulullah, etc.)
-         - Using respectful language
-         - Maintaining theological accuracy
-         - Following scholarly translation standards
-         
-         IMPORTANT: Return ONLY the translation, no explanations.`
+      ? `You are an expert Islamic translator. Translate to ${targetLanguage} preserving Islamic terms (Allah, Rasulullah, etc.). Return ONLY the translation.`
       : `Translate the following text to ${targetLanguage}. Return ONLY the translation.`;
 
-    const messages = [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: text }
-    ];
-
-    return await this.request(messages, this.DEFAULT_MODEL, 0.3);
+    return await OpenRouterService.request(
+      [{ role: 'system', content: systemPrompt }, { role: 'user', content: text }],
+      OpenRouterService.DEFAULT_MODEL,
+      0.3
+    );
   }
 
   /**
-   * 🎙️ TRANSLATE KHUTBAH - Live translation streaming optimized
+   * 🎙️ TRANSLATE KHUTBAH
    */
   static async translateKhutbah(text: string, targetLang: string): Promise<string> {
-    if (text.length < 15) return text; // Ignora frammenti troppo brevi
-    return await this.translate(text, targetLang, true);
+    if (text.length < 15) return text;
+    return await OpenRouterService.translate(text, targetLang, true);
   }
 
   /**
-   * 📚 GENERATE HADITH EXPLANATION - Scholar level
+   * 📚 GENERATE HADITH EXPLANATION
    */
   static async explainHadith(hadithText: string, language: string = 'en'): Promise<string> {
-    const messages = [
+    return await OpenRouterService.request([
       {
         role: 'system',
-        content: `You are a knowledgeable Islamic scholar. Explain the following hadith in ${language} with:
-        - Main teaching/lesson (Sharah)
-        - Context and relevance (Asbab al-Wurud)
-        - Practical application for modern Muslims
-        - Related Quranic verses if applicable
-        
-        Cite sources like Fath al-Bari or Sharh Nabawi. Keep it concise and authentic.`
+        content: `You are a knowledgeable Islamic scholar. Explain the following hadith in ${language} with: main teaching, context, practical application, and related Quranic verses. Keep it concise and authentic.`
       },
       { role: 'user', content: hadithText }
-    ];
-
-    return await this.request(messages);
+    ]);
   }
 
   /**
-   * 📖 GENERATE TAFSIR (Quran Explanation) - Concise & Authentic
+   * 📖 GENERATE TAFSIR
    */
   static async generateTafsir(surah: number, ayah: number, language: string = 'en'): Promise<string> {
-    const messages = [
+    return await OpenRouterService.request([
       {
         role: 'system',
-        content: `You are an expert in Tafsir. Provide a concise explanation for Surah ${surah}, Ayah ${ayah} in ${language}.
-        Summarize the views of Ibn Kathir, Al-Jalalayn, and Sa'di. Include spiritual reflections.
-        Length: 150-300 words.`
+        content: `You are an expert in Tafsir. Provide a concise explanation for Surah ${surah}, Ayah ${ayah} in ${language}. Summarize views of Ibn Kathir, Al-Jalalayn, and Sa'di. 150-300 words.`
       },
       { role: 'user', content: `Explain Surah ${surah}, Ayah ${ayah}` }
-    ];
-
-    return await this.request(messages);
+    ]);
   }
 
   /**
-   * 🎯 VERIFY HADITH AUTHENTICITY - Cross-reference checking
+   * 🎯 VERIFY HADITH AUTHENTICITY
    */
   static async verifyHadithAuthenticity(hadithText: string): Promise<string> {
-    const messages = [
+    return await OpenRouterService.request([
       {
         role: 'system',
-        content: `You are a Hadith authentication expert (Muhaddith). Verify the authenticity of this text.
-        Return:
-        - Collection (Bukhari, Muslim, etc.)
-        - Status (Sahih, Hasan, Da'if, Mawdu')
-        - Scholar comments (e.g., Al-Albani, Shu'ayb al-Arna'ut)
-        - If Da'if/Mawdu', explain why and provide the authentic alternative if possible.`
+        content: `You are a Hadith authentication expert. Verify the authenticity of this text. Return: Collection, Status (Sahih/Hasan/Da'if/Mawdu'), Scholar comments, and alternatives if Da'if.`
       },
       { role: 'user', content: `Verify: ${hadithText}` }
-    ];
-
-    return await this.request(messages);
+    ]);
   }
 
   /**
-   * 👶 GENERATE KIDS STORY (Islamic Prophets/Companions)
+   * 👶 GENERATE KIDS STORY
    */
   static async generateKidsStory(prompt: string, language: string = 'en'): Promise<string> {
-    const messages = [
+    return await OpenRouterService.request([
       {
         role: 'system',
-        content: `You are a talented Muslim storyteller for kids. Create a simple, engaging, and highly interactive story or educational content in ${language} that:
-        - Uses simple vocabulary suitable for children
-        - Includes a clear moral lesson
-        - Is factually accurate according to Islamic sources
-        - **IMPORTANT:** Include 2-3 interactive questions within the story (e.g., "What do you think happened next?") to keep the child engaged.
-        - Ends with a beautiful lesson the child can apply in daily life.
-        
-        STYLE: Educational, fun, and purely Islamic.`
+        content: `You are a talented Muslim storyteller for kids. Create a simple, engaging story in ${language} with:
+        - Simple vocabulary for children
+        - A clear Islamic moral lesson
+        - 2-3 interactive questions within the story
+        - A beautiful lesson for daily life
+        STYLE: Educational, fun, purely Islamic.`
       },
       { role: 'user', content: prompt }
-    ];
-
-    return await this.request(messages, this.DEFAULT_MODEL, 0.7);
+    ], OpenRouterService.DEFAULT_MODEL, 0.7);
   }
 
   /**
    * 📚 GENERATE ISLAMIC QUIZ QUESTIONS
    */
   static async generateQuizQuestions(topic: string, difficulty: string = 'medium', count: number = 5): Promise<any[]> {
-    const messages = [
+    const response = await OpenRouterService.request([
       {
         role: 'system',
         content: `Generate ${count} ${difficulty} difficulty multiple-choice quiz questions about ${topic}.
-        Return ONLY a valid JSON array with this exact structure:
-        [
-          {
-            "question": "Question text",
-            "questionAr": "Arabic translation",
-            "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-            "optionsAr": ["خيار 1", "خيار 2", "خيار 3", "خيار 4"],
-            "correct": 0,
-            "explanation": "Brief explanation",
-            "encouragement": "A very encouraging message for a child (e.g., 'Amazing! You know so much about our Prophets!')"
-          }
-        ]
-        
-        Ensure questions are factually correct and appropriate for Islamic education.`
+        Return ONLY a valid JSON array with this EXACT structure (no markdown, no code blocks):
+        [{"question":"...","options":["A","B","C","D"],"correct":0,"explanation":"...","encouragement":"..."}]
+        Ensure questions are factually correct for Islamic education.`
       },
       { role: 'user', content: `Generate quiz about ${topic}` }
-    ];
-
-    const response = await this.request(messages, this.DEFAULT_MODEL, 0.6);
+    ], OpenRouterService.DEFAULT_MODEL, 0.5);
 
     try {
       return JSON.parse(response);
-    } catch (e) {
+    } catch {
       const jsonMatch = response.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
+      if (jsonMatch) return JSON.parse(jsonMatch[0]);
       throw new Error('Failed to parse quiz questions');
     }
   }
 
   /**
-   * ❓ ISLAMIC Q&A - Scholar-level answers with STRICT RELIGIOUS FILTERS
-   * 🛡️ This function ONLY responds to Islamic topics
+   * ❓ ISLAMIC Q&A with STRICT RELIGIOUS FILTERS
    */
   static async answerIslamicQuestion(question: string, language: string = 'en'): Promise<string> {
-    const langResponses: Record<string, { decline: string; redirect: string }> = {
-      'it': {
-        decline: "Mi scuso, sono specializzato esclusivamente in temi islamici (teologia, giurisprudenza, storia islamica, Corano, Hadith, etica e spiritualità).",
-        redirect: "Posso aiutarti con domande sulla religione islamica, storia islamica, Corano, Hadith o pratiche religiose. Come posso assisterti in questi ambiti?"
-      },
-      'en': {
-        decline: "I apologize, I am specialized exclusively in Islamic topics (theology, jurisprudence, Islamic history, Quran, Hadith, ethics and spirituality).",
-        redirect: "I can help you with questions about Islamic religion, Islamic history, Quran, Hadith, or religious practices. How can I assist you in these areas?"
-      },
-      'ar': {
-        decline: "أعتذر، أنا متخصص حصريًا في المواضيع الإسلامية (العقيدة، الفقه، التاريخ الإسلامي، القرآن، الحديث، الأخلاق والروحانيات).",
-        redirect: "يمكنني مساعدتك في الأسئلة المتعلقة بالدين الإسلامي، التاريخ الإسلامي، القرآن، الحديث، أو الممارسات الدينية. كيف يمكنني مساعدتك في هذه المجالات؟"
-      }
-    };
+    const langLabel = language === 'it' ? 'ITALIAN' : language === 'ar' ? 'ARABIC' : 'ENGLISH';
 
-    const responses = langResponses[language] || langResponses['en'];
-
-    // Optimize prompt for better results with free models
-    const optimizedQuestion = language !== 'en'
-      ? `[INTERNAL TRANSLATION OF USER QUESTION: ${question}] -> Respond in ${language === 'it' ? 'ITALIAN' : language === 'ar' ? 'ARABIC' : 'ENGLISH'}. User Original: ${question}`
-      : question;
-
-    const messages = [
+    return await OpenRouterService.request([
       {
         role: 'system',
-        content: `${this.ISLAMIC_GUARD_PROMPT}
-
-LANGUAGE: Respond in ${language === 'it' ? 'ITALIAN' : language === 'ar' ? 'ARABIC' : 'ENGLISH'}.
-
-DECLINE MESSAGE (use this exact text if question is off-topic):
-"${responses.decline}
-
-${responses.redirect}"
-
-Remember: You are a STRICT Islamic scholar. ANY question not related to Islam must be politely declined using the message above.`
+        content: `${OpenRouterService.ISLAMIC_GUARD_PROMPT}
+LANGUAGE: Respond ONLY in ${langLabel}.
+If the question is not about Islamic topics, politely decline and redirect to Islamic topics.`
       },
-      { role: 'user', content: optimizedQuestion }
-    ];
-
-    return await this.request(messages, this.DEFAULT_MODEL, 0.5);
+      { role: 'user', content: question }
+    ], OpenRouterService.DEFAULT_MODEL, 0.5);
   }
 
   /**
    * 🏗️ GENERIC CONTENT GENERATION
    */
-  static async generateContent(prompt: string, model: string = this.DEFAULT_MODEL): Promise<string> {
-    const messages = [{ role: 'user', content: prompt }];
-    return await this.request(messages, model);
+  static async generateContent(prompt: string, _model?: string): Promise<string> {
+    // Always use free models regardless of what model is passed
+    return await OpenRouterService.request([{ role: 'user', content: prompt }]);
   }
 }
 

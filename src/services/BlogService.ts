@@ -119,7 +119,7 @@ STRUTTURA RICHIESTA (ritorna SOLO JSON valido, senza markdown code block):
 IMPORTANTE: Evita riferimenti a immagini di persone. Focalizzati su saggezza, spiritualità e pratica quotidiana.`;
 
         try {
-            const response = await OpenRouterService.generateContent(prompt, 'google/gemini-2.0-flash-lite-preview-02-05:free');
+            const response = await OpenRouterService.generateContent(prompt);
 
             if (!response) throw new Error('AI Response is empty');
 

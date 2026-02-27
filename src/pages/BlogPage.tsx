@@ -65,32 +65,32 @@ const BlogPage = () => {
         let currentDbPosts: BlogPost[] = [];
         let currentAiPost: BlogPost | null = null;
 
-        // 1. Supabase posts
+        // 1. Supabase posts (silent - table may not exist yet)
         try {
             const { data: dbData, error: dbError } = await supabase
                 .from('blog_posts' as any)
                 .select('*')
-                .eq('is_published', true)
                 .order('created_at', { ascending: false })
                 .limit(20);
 
-            if (dbError) throw dbError;
-
-            currentDbPosts = (dbData || []).map((p: any) => ({
-                id: String(p.id),
-                title: p.title,
-                content: p.content,
-                excerpt: p.excerpt || p.content?.substring(0, 150) + '...',
-                image_url: p.image_url,
-                video_url: p.video_url,
-                category: p.category,
-                published_at: p.created_at,
-                author: p.author || 'Admin',
-                readTime: calcReadTime(p.content || ''),
-                is_draft: false,
-            }));
-        } catch (err) {
-            console.error('[BlogPage] Supabase fetch error:', err);
+            // Silently skip if table doesn't exist (404) or any other DB error
+            if (!dbError && dbData && dbData.length > 0) {
+                currentDbPosts = dbData.map((p: any) => ({
+                    id: String(p.id),
+                    title: p.title,
+                    content: p.content,
+                    excerpt: p.excerpt || p.content?.substring(0, 150) + '...',
+                    image_url: p.image_url,
+                    video_url: p.video_url,
+                    category: p.category,
+                    published_at: p.published_at || p.created_at,
+                    author: p.author || 'Admin',
+                    readTime: calcReadTime(p.content || ''),
+                    is_draft: p.is_draft || false,
+                })).filter((p: any) => !p.is_draft);
+            }
+        } catch {
+            // Silently ignore - AI content will still show
         }
 
         // 2. AI Daily Insight

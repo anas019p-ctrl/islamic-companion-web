@@ -1,14 +1,11 @@
 /**
  * 📚 PROPHETS QUIZ SERVICE
- * Infinite quiz generation about Prophets' stories using Gemini AI
+ * Infinite quiz generation about Prophets' stories using OpenRouter AI
  * Supports multilingual questions (Arabic, Italian, English)
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prophetsData } from '@/data/prophetsData';
 import { ScholarService } from './ScholarService';
-
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export interface QuizQuestion {
     id: string;
@@ -29,8 +26,6 @@ export interface QuizQuestion {
 }
 
 class ProphetsQuizService {
-    private genAI: GoogleGenerativeAI;
-    private model: any;
     private questionCache: Map<string, QuizQuestion[]> = new Map();
 
     // List of Prophets for quiz generation
@@ -54,11 +49,6 @@ class ProphetsQuizService {
         { en: 'Muhammad', ar: 'محمد', it: 'Muhammad' }
     ];
 
-    constructor() {
-        this.genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-        this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-    }
-
     /**
      * Generate a single quiz question about a specific prophet
      */
@@ -75,53 +65,34 @@ class ProphetsQuizService {
 
             const categoryText = category || ['story', 'lesson', 'miracle', 'family', 'general'][Math.floor(Math.random() * 5)];
 
-            const prompt = `Generate a ${difficulty} multiple-choice quiz question about Prophet ${prophet.en} (${prophet.ar}).
+            // Use ScholarService (OpenRouter) instead of Gemini directly
+            const scholarLevel = difficulty === 'easy' ? 'beginner' : difficulty === 'hard' ? 'advanced' : 'intermediate';
+            const batch = await ScholarService.generateInfiniteQuizBatch(
+                prophet.en, scholarLevel as any, 'it', 1
+            );
 
-Category: ${categoryText}
-- If "story": Ask about events in the prophet's life
-- If "lesson": Ask about moral/spiritual lessons from the prophet
-- If "miracle": Ask about miracles performed by the prophet
-- If "family": Ask about the prophet's family members
-- If "general": Ask general knowledge about the prophet
+            if (batch && batch.length > 0) {
+                const q = batch[0];
+                return {
+                    id: `${prophet.en.toLowerCase()}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    prophet: prophet.en,
+                    prophetAr: prophet.ar,
+                    difficulty,
+                    category: categoryText as any,
+                    question: q.questionEn || q.questionIt || '',
+                    questionAr: q.questionAr || '',
+                    questionIt: q.questionIt || '',
+                    options: q.optionsEn || [],
+                    optionsAr: q.optionsAr || [],
+                    optionsIt: q.optionsIt || [],
+                    correctAnswer: q.correctIndex ?? 0,
+                    explanation: q.explanationEn || '',
+                    explanationAr: q.explanationAr || '',
+                    explanationIt: q.explanationIt || '',
+                };
+            }
 
-Requirements:
-1. The question must be historically accurate based on Islamic sources (Quran and Sahih Hadith)
-2. Provide the question in 3 languages: English, Arabic, and Italian
-3. Provide 4 options (one correct, three plausible but wrong)
-4. Provide a detailed explanation for the correct answer
-5. All content must be in JSON format
-
-Return ONLY a valid JSON object (no markdown, no extra text) with this exact structure:
-{
-  "question": "English question",
-  "questionAr": "Arabic question",
-  "questionIt": "Italian question",
-  "options": ["option1_en", "option2_en", "option3_en", "option4_en"],
-  "optionsAr": ["option1_ar", "option2_ar", "option3_ar", "option4_ar"],
-  "optionsIt": ["option1_it", "option2_it", "option3_it", "option4_it"],
-  "correctAnswer": 0,
-  "explanation": "English explanation",
-  "explanationAr": "Arabic explanation",
-  "explanationIt": "Italian explanation"
-}`;
-
-            const result = await this.model.generateContent(prompt);
-            const response = await result.response;
-            let jsonText = response.text().trim();
-
-            // Clean up the response - remove markdown code blocks if present
-            jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-            const questionData = JSON.parse(jsonText);
-
-            return {
-                id: `${prophet.en.toLowerCase()}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                prophet: prophet.en,
-                prophetAr: prophet.ar,
-                difficulty,
-                category: categoryText as any,
-                ...questionData
-            };
+            return this.getFallbackQuestion(prophetName, difficulty);
 
         } catch (error) {
             console.error('Error generating quiz question:', error);
