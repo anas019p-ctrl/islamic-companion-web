@@ -16,6 +16,7 @@ import { ScholarService } from '@/lib/ScholarService';
 import { useToast } from '@/hooks/use-toast';
 import { AuthenticImage } from '@/components/AuthenticImage';
 import { BlogService } from '@/services/BlogService';
+import { staticBlogPosts } from '@/data/blogData';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface BlogPost {
@@ -65,7 +66,7 @@ const BlogPage = () => {
         let currentDbPosts: BlogPost[] = [];
         let currentAiPost: BlogPost | null = null;
 
-        // 1. Supabase posts (silent - table may not exist yet)
+        // 1. Supabase posts (silent - table may not exist yet) combined with Static Posts
         try {
             const { data: dbData, error: dbError } = await supabase
                 .from('blog_posts' as any)
@@ -90,7 +91,22 @@ const BlogPage = () => {
                 })).filter((p: any) => !p.is_draft);
             }
         } catch {
-            // Silently ignore - AI content will still show
+            // Silently ignore DB errors
+        }
+
+        // Add static fallback posts if DB is empty or fails
+        if (currentDbPosts.length === 0) {
+            currentDbPosts = staticBlogPosts.map(p => ({
+                id: String(p.id),
+                title: language === 'ar' ? (p.title_ar || p.title) : language === 'it' ? (p.title_it || p.title) : p.title,
+                content: language === 'ar' ? (p.content_ar || p.content) : language === 'it' ? (p.content_it || p.content) : p.content,
+                excerpt: language === 'ar' ? (p.excerpt_ar || p.excerpt) : language === 'it' ? (p.excerpt_it || p.excerpt) : p.excerpt,
+                image_url: p.image_url,
+                category: p.category,
+                published_at: p.created_at,
+                author: 'Islamic Companion',
+                readTime: p.read_time || '3 min',
+            }));
         }
 
         // 2. AI Daily Insight

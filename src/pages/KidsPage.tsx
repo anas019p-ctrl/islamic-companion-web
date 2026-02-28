@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { OpenRouterService } from '@/lib/OpenRouterService';
 import { toast } from 'sonner';
+import { staticStories, Story } from '@/data/storiesData';
 
 type Section = 'home' | 'stories' | 'quiz' | 'videos' | 'deeds';
 
@@ -47,15 +48,14 @@ const KIDS_VIDEOS = [
     { id: 'nuh', title: "Il Profeta Nuh (AS) e l'Arca", titleIt: "Il Profeta Nuh (AS) e l'Arca", url: "https://www.youtube.com/embed/U74Y6iU0jLg", time: "10 min", thumbnail: "🚢" },
 ];
 
-// 📖 Story Topics for Kids
-const STORY_TOPICS = [
-    { id: 'adam', name: 'Prophet Adam (AS)', nameIt: 'Profeta Adamo (AS)', emoji: '🌍' },
-    { id: 'nuh', name: 'Prophet Nuh (AS)', nameIt: 'Profeta Nuh (AS)', emoji: '🚢' },
-    { id: 'ibrahim', name: 'Prophet Ibrahim (AS)', nameIt: 'Profeta Ibrahim (AS)', emoji: '⭐' },
-    { id: 'yusuf', name: 'Prophet Yusuf (AS)', nameIt: 'Profeta Yusuf (AS)', emoji: '🌙' },
-    { id: 'musa', name: 'Prophet Musa (AS)', nameIt: 'Profeta Musa (AS)', emoji: '🌊' },
-    { id: 'muhammad', name: 'Prophet Muhammad ﷺ', nameIt: 'Profeta Muhammad ﷺ', emoji: '☀️' },
-];
+// 📖 Story Topics for Kids now comes from staticStories
+const STORY_TOPICS = staticStories.map(story => ({
+    id: story.id,
+    name: story.title_en || story.title,
+    nameIt: story.title_it || story.title, // Map to original language if available
+    nameAr: story.title_ar || story.title,
+    emoji: story.id.includes('adam') ? '🌍' : story.id.includes('nuh') ? '🚢' : story.id.includes('ibrahim') ? '🔥' : '🌊'
+}));
 
 const KidsPage = () => {
     const { t, language } = useLanguage();
@@ -108,29 +108,26 @@ const KidsPage = () => {
         }
     };
 
-    // 📖 Generate Story
-    const generateStory = async (topic: string) => {
+    // 📖 Open Static Story
+    const openStory = (storyId: string) => {
         setLoading(true);
         setStory('');
-        setSelectedStoryTopic(topic);
+        setSelectedStoryTopic(storyId);
         setActiveSection('stories');
 
-        try {
-            const prompt = isIt
-                ? `Racconta una storia bellissima e interattiva per bambini sul ${topic}. Usa un linguaggio semplice e divertente.`
-                : `Tell a beautiful and interactive story for children about ${topic}. Use simple and fun language.`;
+        setTimeout(() => {
+            const staticStory = staticStories.find(s => s.id === storyId);
+            if (staticStory) {
+                const content = isRTL ? (staticStory.content_ar || staticStory.content) : isIt ? (staticStory.content_it || staticStory.content) : (staticStory.content_en || staticStory.content);
+                const moral = isRTL ? (staticStory.moral_ar || staticStory.moral) : isIt ? (staticStory.moral_it || staticStory.moral) : (staticStory.moral_en || staticStory.moral);
 
-            const result = await OpenRouterService.generateKidsStory(prompt, language);
-            setStory(result);
-        } catch (err) {
-            console.error('Story generation error:', err);
-            toast.error(isIt ? 'Oops! La storia sta facendo una pausa. Riprova!' : 'Oops! Story time is taking a break. Try again!');
-            setStory(isIt
-                ? 'Mi dispiace, non sono riuscito a generare la storia. Riprova tra poco! 📖'
-                : 'Sorry, I could not generate the story. Please try again soon! 📖');
-        } finally {
+                setStory(`${content}\n\n🌟 ${isIt ? 'Morale' : isRTL ? 'Ø§Ù„Ø­ÙƒÙ…Ø©' : 'Moral'}: ${moral}`);
+            } else {
+                toast.error(isIt ? 'Ops! Storia non trovata.' : 'Oops! Story not found.');
+                setStory(isIt ? 'Storia non trovata.' : 'Story not found.');
+            }
             setLoading(false);
-        }
+        }, 600); // Simulate brief loading for UX
     };
 
     // 🧠 Start Quiz
@@ -387,12 +384,12 @@ const KidsPage = () => {
                                             >
                                                 <Card
                                                     className={`cursor-pointer glass ${KIDS_COLORS.stories.border} hover:bg-blue-500/10 transition-all`}
-                                                    onClick={() => generateStory(isIt ? topic.nameIt : topic.name)}
+                                                    onClick={() => openStory(topic.id)}
                                                 >
                                                     <CardContent className="p-4 sm:p-6 text-center">
                                                         <div className="text-3xl sm:text-5xl mb-2 sm:mb-3">{topic.emoji}</div>
                                                         <h3 className="text-xs sm:text-base font-bold line-clamp-2">
-                                                            {isIt ? topic.nameIt : topic.name}
+                                                            {isRTL ? topic.nameAr : isIt ? topic.nameIt : topic.name}
                                                         </h3>
                                                     </CardContent>
                                                 </Card>
@@ -439,7 +436,7 @@ const KidsPage = () => {
                                                     <div className="mt-8 sm:mt-12 flex justify-center">
                                                         <Button
                                                             className="rounded-full px-6 sm:px-8 py-4 sm:py-6 h-auto text-sm sm:text-lg gap-2 sm:gap-3 shadow-lg bg-gradient-to-r from-blue-500 to-indigo-600"
-                                                            onClick={() => selectedStoryTopic && generateStory(selectedStoryTopic)}
+                                                            onClick={() => selectedStoryTopic && openStory(selectedStoryTopic)}
                                                         >
                                                             <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />
                                                             {isIt ? 'Riprova' : 'Try Again'}

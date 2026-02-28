@@ -1,5 +1,6 @@
 import OpenRouterService from './OpenRouterService';
 import { prophetsData } from '@/data/prophetsData';
+import { offlineFAQs } from '@/data/faqData';
 
 /**
  * 🎓 SCHOLAR SERVICE - Islamic Knowledge Hub
@@ -16,17 +17,17 @@ const ERROR_MESSAGES: Record<string, { busy: string; connection: string; retry: 
     'it': {
         busy: "Il servizio è momentaneamente occupato. Riprova tra qualche secondo.",
         connection: "Errore di connessione. Verifica la tua connessione internet e riprova.",
-        retry: "Si è verificato un errore. Riprova tra poco."
+        retry: "I server sono in manutenzione, ma ricorda che Allah è con i pazienti. Nel frattempo, esplora le altre bellissime sezioni dell'app!"
     },
     'en': {
         busy: "The service is temporarily busy. Please try again in a few seconds.",
         connection: "Connection error. Please check your internet connection and try again.",
-        retry: "An error occurred. Please try again soon."
+        retry: "The servers are undergoing maintenance, but remember Allah is with the patient. Meanwhile, explore other beautiful sections of the app!"
     },
     'ar': {
         busy: "الخدمة مشغولة مؤقتاً. يرجى المحاولة مرة أخرى بعد بضع ثوانٍ.",
         connection: "خطأ في الاتصال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
-        retry: "حدث خطأ. يرجى المحاولة مرة أخرى قريباً."
+        retry: "الخوادم قيد الصيانة، ولكن تذكر أن الله مع الصابرين. في هذه الأثناء، استكشف الأقسام الجميلة الأخرى في التطبيق!"
     }
 };
 
@@ -118,7 +119,19 @@ export class ScholarService {
         } catch (error) {
             console.error("ScholarService.generateContent Error:", error);
 
-            // Determine error type
+            // 1. OFFLINE FALLBACK: Search in faqData.ts keywords
+            const lowerPrompt = prompt.toLowerCase();
+            const matchedFAQ = offlineFAQs.find(faq =>
+                faq.keywords.some(kw => lowerPrompt.includes(kw.toLowerCase()))
+            );
+
+            if (matchedFAQ) {
+                if (language === 'ar') return matchedFAQ.answer_ar;
+                if (language === 'en') return matchedFAQ.answer_en;
+                return matchedFAQ.answer_it; // default Italian
+            }
+
+            // 2. ERROR MESSAGES (polite, robust)
             if (error instanceof Error) {
                 if (error.message.includes('429') || error.message.includes('rate')) {
                     return this.getErrorMessage('busy', language);
@@ -128,6 +141,7 @@ export class ScholarService {
                 }
             }
 
+            // Ultimate fallback so the UI never breaks
             return this.getErrorMessage('retry', language);
         }
     }
