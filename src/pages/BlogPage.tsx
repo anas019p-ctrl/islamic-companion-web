@@ -109,30 +109,7 @@ const BlogPage = () => {
             }));
         }
 
-        // 2. AI Daily Insight
-        try {
-            const insight = forceRegen
-                ? await BlogService.regenerate(language)
-                : await BlogService.getDailyInsight(language);
-
-            if (insight) {
-                currentAiPost = {
-                    id: insight.id,
-                    title: insight.title,
-                    content: insight.content,
-                    excerpt: insight.excerpt,
-                    image_url: insight.image,
-                    category: insight.category,
-                    published_at: insight.date,
-                    author: insight.author,
-                    readTime: insight.readTime,
-                };
-            }
-        } catch (err) {
-            console.error('[BlogPage] AI fetch error:', err);
-        }
-
-        const combinedPosts = currentAiPost ? [currentAiPost, ...currentDbPosts] : currentDbPosts;
+        const combinedPosts = currentDbPosts;
         setPosts(combinedPosts);
         setIsLoading(false);
     }, [language, toast]);
@@ -227,18 +204,6 @@ const BlogPage = () => {
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-6">
                         {t('blogDesc') || 'Articoli e riflessioni per approfondire la tua conoscenza islamica.'}
                     </p>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRegenerate}
-                        disabled={isRegenerating || isLoading}
-                        className="gap-2 border-primary/30 hover:border-primary/60"
-                    >
-                        {isRegenerating
-                            ? <Loader2 className="w-4 h-4 animate-spin" />
-                            : <Sparkles className="w-4 h-4 text-primary" />}
-                        {isRegenerating ? 'Generando...' : '✨ Rigenera AI Post'}
-                    </Button>
                 </motion.div>
 
                 {/* ── Loading ── */}
@@ -375,12 +340,7 @@ const BlogPage = () => {
                                     className="futuristic-card cursor-pointer group overflow-hidden h-full flex flex-col hover:border-primary/40 transition-all duration-300"
                                     onClick={() => setSelectedPost(post)}
                                 >
-                                    {/* First post badge */}
-                                    {index === 0 && (
-                                        <div className="bg-gradient-to-r from-primary/20 to-primary/5 px-4 py-2 text-xs font-bold text-primary flex items-center gap-2">
-                                            <Sparkles className="w-3 h-3" /> AI Daily Insight
-                                        </div>
-                                    )}
+                                    {/* Normal post rendering without AI badge */}
 
                                     {(post.image_url || post.image) && (
                                         <div className="relative h-48 overflow-hidden">

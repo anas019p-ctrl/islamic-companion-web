@@ -419,7 +419,7 @@ const CommonMistakesPage = () => {
     })).filter(cat => cat.mistakes.length > 0);
 
     return (
-        <div className={`min-h-screen bg-transparent ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className={`min-h-screen bg-slate-50 dark:bg-slate-950 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
             <Header />
             <main className="container mx-auto px-4 py-8 pt-24 max-w-4xl">
                 <motion.div

@@ -1,0 +1,106 @@
+﻿node : Error parsing 
+profeti_italiano.pdf: 
+TypeError: pdf is not 
+a function
+In riga:1 car:62
++ ... t-File 
+-Encoding utf8 
+parse_out.txt; node 
+parse_pdfs.cjs 2>&1 | 
+Out-F ...
++                     
+                     ~
+~~~~~~~~~~~~~~~~~~~~~~
+~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (Error pars   
+ ing p... not a fu    
+nction:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+    at parsePdf 
+(C:\Users\BITAWFEKI LA
+H\Downloads\islamic-co
+mpanion-web-master\par
+se_pdfs.cjs:7:28)
+    at 
+Object.<anonymous> 
+(C:\Users\BITAWFEKI LA
+H\Downloads\islamic-co
+mpanion-web-master\par
+se_pdfs.cjs:15:1)
+    at 
+Module._compile (node:
+internal/modules/cjs/l
+oader:1761:14)
+    at Object..js (nod
+e:internal/modules/cjs
+/loader:1893:10)
+    at Module.load (no
+de:internal/modules/cj
+s/loader:1481:32)
+    at Module._load (n
+ode:internal/modules/c
+js/loader:1300:12)
+    at TracingChannel.
+traceSync (node:diagno
+stics_channel:328:14)
+    at wrapModuleLoad 
+(node:internal/modules
+/cjs/loader:245:24)
+    at Module.executeU
+serEntryPoint [as 
+runMain] (node:interna
+l/modules/run_main:154
+:5)
+    at node:internal/m
+ain/run_main_module:33
+:47
+Error parsing it-gli-a
+tti-di-sunnah-e-le-inv
+ocazioni-quotidiane-de
+l-profeta.pdf: 
+TypeError: pdf is not 
+a function
+    at parsePdf 
+(C:\Users\BITAWFEKI LA
+H\Downloads\islamic-co
+mpanion-web-master\par
+se_pdfs.cjs:7:28)
+    at 
+Object.<anonymous> 
+(C:\Users\BITAWFEKI LA
+H\Downloads\islamic-co
+mpanion-web-master\par
+se_pdfs.cjs:16:1)
+    at 
+Module._compile (node:
+internal/modules/cjs/l
+oader:1761:14)
+    at Object..js (nod
+e:internal/modules/cjs
+/loader:1893:10)
+    at Module.load (no
+de:internal/modules/cj
+s/loader:1481:32)
+    at Module._load (n
+ode:internal/modules/c
+js/loader:1300:12)
+    at TracingChannel.
+traceSync (node:diagno
+stics_channel:328:14)
+    at wrapModuleLoad 
+(node:internal/modules
+/cjs/loader:245:24)
+    at Module.executeU
+serEntryPoint [as 
+runMain] (node:interna
+l/modules/run_main:154
+:5)
+    at node:internal/m
+ain/run_main_module:33
+:47

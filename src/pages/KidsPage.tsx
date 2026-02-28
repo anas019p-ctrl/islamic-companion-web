@@ -139,20 +139,9 @@ const KidsPage = () => {
         setQuizCompleted(false);
         setActiveSection('quiz');
 
-        try {
-            const topic = isIt ? 'Conoscenza islamica per bambini' : 'Islamic Knowledge for kids';
-            const questions = await OpenRouterService.generateQuizQuestions(topic, 'easy', 5);
-
-            if (questions && questions.length > 0) {
-                setQuizQuestions(questions);
-            } else {
-                throw new Error('No questions generated');
-            }
-        } catch (err) {
-            console.error('Quiz generation error:', err);
-            toast.error(isIt ? 'Errore nel caricamento del quiz' : 'Error loading quiz');
-            // Provide fallback questions
-            setQuizQuestions([
+        setTimeout(() => {
+            // Provide static fallback questions since AI generation is disabled for stability
+            const allQuestions = [
                 {
                     question: "How many times do Muslims pray each day?",
                     questionAr: "كم مرة يصلي المسلمون في اليوم؟",
@@ -191,11 +180,39 @@ const KidsPage = () => {
                     explanationIt: "Il Profeta Nuh (AS) costruì l'Arca per salvare i credenti dal diluvio",
                     encouragement: "Great job! You know about Prophet Nuh! 🚢",
                     encouragementIt: "Ottimo lavoro! Conosci il Profeta Nuh! 🚢"
+                },
+                {
+                    question: "Who was the first Prophet?",
+                    questionAr: "من كان أول نبي؟",
+                    questionIt: "Chi è stato il primo Profeta?",
+                    options: ["Muhammad ﷺ", "Isa (AS)", "Adam (AS)", "Dawud (AS)"],
+                    optionsAr: ["محمد ﷺ", "عيسى (ع)", "آدم (ع)", "داود (ع)"],
+                    optionsIt: ["Muhammad ﷺ", "Gesù/Isa (AS)", "Adamo (AS)", "Davide/Dawud (AS)"],
+                    correct: 2,
+                    explanation: "Prophet Adam (AS) was the first human and the first Prophet.",
+                    explanationIt: "Il Profeta Adamo (AS) è stato il primo essere umano e il primo Profeta.",
+                    encouragement: "Masha'Allah! Correct! 🌍",
+                    encouragementIt: "Masha'Allah! Corretto! 🌍"
+                },
+                {
+                    question: "What do we say before eating?",
+                    questionAr: "ماذا نقول قبل الأكل؟",
+                    questionIt: "Cosa diciamo prima di mangiare?",
+                    options: ["Alhamdulillah", "Bismillah", "Allahu Akbar", "Subhanallah"],
+                    optionsAr: ["الحمد لله", "بسم الله", "الله أكبر", "سبحان الله"],
+                    optionsIt: ["Alhamdulillah", "Bismillah", "Allahu Akbar", "Subhanallah"],
+                    correct: 1,
+                    explanation: "We always say Bismillah (In the name of Allah) before starting a meal.",
+                    explanationIt: "Diciamo sempre Bismillah (Nel nome di Allah) prima di iniziare un pasto.",
+                    encouragement: "Very good! Always remember Allah! 🍽️",
+                    encouragementIt: "Molto bene! Ricordati sempre di Allah! 🍽️"
                 }
-            ]);
-        } finally {
+            ];
+            // Shuffle and pick 5
+            const shuffled = allQuestions.sort(() => 0.5 - Math.random()).slice(0, 5);
+            setQuizQuestions(shuffled);
             setLoading(false);
-        }
+        }, 500);
     };
 
     // 🎯 Handle Quiz Answer
